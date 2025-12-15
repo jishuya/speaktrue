@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../../constants/theme';
 import Button from './Button';
 
@@ -14,7 +14,7 @@ export default function EmptyState({
   return (
     <View style={[styles.container, style]}>
       <View style={styles.iconContainer}>
-        <MaterialIcons name={icon} size={48} color={COLORS.textMuted} />
+        <Icon name={icon} size={48} color={COLORS.textMuted} />
       </View>
       <Text style={styles.title}>{title}</Text>
       {description && <Text style={styles.description}>{description}</Text>}

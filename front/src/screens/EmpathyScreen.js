@@ -8,8 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Header } from '../components/common';
+import { Icon } from '../components/ui';
 import { ChatBubble, EmotionTagList, ChatInput } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -96,7 +95,7 @@ export default function EmpathyScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <View style={styles.aiAvatarSmall}>
@@ -109,7 +108,7 @@ export default function EmpathyScreen({ navigation }) {
           </View>
         </View>
         <TouchableOpacity style={styles.helpButton}>
-          <MaterialIcons name="local-florist" size={24} color={COLORS.primary} />
+          <Icon name="local-florist" size={24} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
 
@@ -136,7 +135,7 @@ export default function EmpathyScreen({ navigation }) {
         {/* Perspective Button */}
         <View style={styles.perspectiveButtonContainer}>
           <TouchableOpacity style={styles.perspectiveButton} onPress={handlePerspectivePress}>
-            <MaterialIcons name="visibility" size={20} color={COLORS.primary} />
+            <Icon name="visibility" size={20} color={COLORS.primary} />
             <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
           </TouchableOpacity>
         </View>

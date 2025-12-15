@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
 
 export default function Header({
@@ -22,7 +22,7 @@ export default function Header({
       <View style={styles.leftSection}>
         {showBack && (
           <TouchableOpacity style={styles.iconButton} onPress={onBackPress}>
-            <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
         )}
         {!centerTitle && title && (
@@ -42,13 +42,13 @@ export default function Header({
       <View style={styles.rightSection}>
         {rightIcon && (
           <TouchableOpacity style={styles.iconButton} onPress={onRightPress}>
-            <MaterialIcons name={rightIcon} size={24} color={COLORS.textPrimary} />
+            <Icon name={rightIcon} size={24} color={COLORS.textPrimary} />
             {rightIconBadge && <View style={styles.badge} />}
           </TouchableOpacity>
         )}
         {showClose && (
           <TouchableOpacity style={styles.iconButton} onPress={onClosePress}>
-            <MaterialIcons name="close" size={24} color={COLORS.textPrimary} />
+            <Icon name="close" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
         )}
       </View>

@@ -8,8 +8,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Input, Button } from '../components/ui';
+import { Icon, Input, Button } from '../components/ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 export default function LoginScreen({ navigation }) {
@@ -53,7 +52,7 @@ export default function LoginScreen({ navigation }) {
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <MaterialIcons name="spa" size={48} color={COLORS.surface} />
+            <Icon name="spa" size={48} color={COLORS.surface} />
           </View>
           <Text style={styles.title}>TrueSpeak</Text>
           <Text style={styles.subtitle}>
@@ -118,7 +117,7 @@ export default function LoginScreen({ navigation }) {
             onPress={() => handleSocialLogin('apple')}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="apple" size={22} color={COLORS.surface} />
+            <Icon name="apple" size={22} color={COLORS.surface} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -126,7 +125,7 @@ export default function LoginScreen({ navigation }) {
             onPress={() => handleSocialLogin('kakao')}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="chat-bubble" size={22} color="#3B1E1E" />
+            <Icon name="chat-bubble" size={22} color="#3B1E1E" />
           </TouchableOpacity>
         </View>
 

@@ -4,10 +4,9 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { BottomNav, HistoryCard } from '../components/common';
 import { HashTag } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -62,7 +61,7 @@ export default function HistoryScreen({ navigation }) {
           <View style={[styles.dateDot, item.isRecent && styles.dateDotRecent]} />
           <Text style={styles.dateText}>{item.date}</Text>
         </View>
-        <MaterialIcons name="chevron-right" size={20} color={COLORS.textMuted} />
+        <Icon name="chevron-right" size={20} color={COLORS.textMuted} />
       </View>
       <Text style={styles.historyContent} numberOfLines={2}>{item.content}</Text>
       <View style={styles.tagRow}>
@@ -82,7 +81,7 @@ export default function HistoryScreen({ navigation }) {
           <Text style={styles.headerTitle}>우리의 여정</Text>
         </View>
         <TouchableOpacity style={styles.searchButton}>
-          <MaterialIcons name="search" size={24} color={COLORS.textPrimary} />
+          <Icon name="search" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -101,7 +100,7 @@ export default function HistoryScreen({ navigation }) {
                 이번 달은 <Text style={styles.summaryHighlight}>이해</Text>에 집중하셨네요.
               </Text>
             </View>
-            <MaterialIcons name="spa" size={48} color={`${COLORS.primary}40`} />
+            <Icon name="spa" size={48} color={`${COLORS.primary}40`} />
           </View>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>

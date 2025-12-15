@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '../../constants/theme';
 
 export default function ProgressBar({
@@ -21,7 +21,7 @@ export default function ProgressBar({
       <View style={styles.labelRow}>
         <View style={styles.labelLeft}>
           {showIcon && icon && (
-            <MaterialIcons
+            <Icon
               name={icon}
               size={18}
               color={iconColor || color}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../../constants/theme';
 
 // 기본 텍스트 입력
@@ -45,7 +45,7 @@ export default function Input({
         ]}
       >
         {leftIcon && (
-          <MaterialIcons name={leftIcon} size={20} color={COLORS.textMuted} style={styles.leftIcon} />
+          <Icon name={leftIcon} size={20} color={COLORS.textMuted} style={styles.leftIcon} />
         )}
         <TextInput
           style={[
@@ -69,7 +69,7 @@ export default function Input({
         />
         {secureTextEntry && (
           <TouchableOpacity onPress={() => setIsSecure(!isSecure)} style={styles.rightIcon}>
-            <MaterialIcons
+            <Icon
               name={isSecure ? 'visibility-off' : 'visibility'}
               size={20}
               color={COLORS.textMuted}
@@ -78,7 +78,7 @@ export default function Input({
         )}
         {rightIcon && !secureTextEntry && (
           <TouchableOpacity onPress={onRightIconPress} style={styles.rightIcon}>
-            <MaterialIcons name={rightIcon} size={20} color={COLORS.textMuted} />
+            <Icon name={rightIcon} size={20} color={COLORS.textMuted} />
           </TouchableOpacity>
         )}
       </View>
@@ -107,7 +107,7 @@ export function Checkbox({ checked, onChange, label, disabled = false }) {
           disabled && styles.checkboxDisabled,
         ]}
       >
-        {checked && <MaterialIcons name="check" size={16} color={COLORS.surface} />}
+        {checked && <Icon name="check" size={16} color={COLORS.surface} />}
       </View>
       {label && (
         <Text style={[styles.checkboxLabel, disabled && styles.labelDisabled]}>{label}</Text>

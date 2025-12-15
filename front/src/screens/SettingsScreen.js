@@ -7,7 +7,7 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { BottomNav, MenuItem, MenuGroup } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -45,7 +45,7 @@ export default function SettingsScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>설정</Text>
         <View style={styles.headerSpacer} />
@@ -64,7 +64,7 @@ export default function SettingsScreen({ navigation }) {
               <Text style={styles.profileInitial}>김</Text>
             </View>
             <TouchableOpacity style={styles.editButton}>
-              <MaterialIcons name="edit" size={14} color={COLORS.surface} />
+              <Icon name="edit" size={14} color={COLORS.surface} />
             </TouchableOpacity>
           </View>
           <Text style={styles.profileName}>김지수</Text>

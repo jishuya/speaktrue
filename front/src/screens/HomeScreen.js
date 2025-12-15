@@ -5,9 +5,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { Header, TipCard, FeatureCard, BottomNav } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -51,7 +50,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
         <TouchableOpacity style={styles.notificationButton}>
-          <MaterialIcons name="notifications" size={24} color={COLORS.textPrimary} />
+          <Icon name="notifications" size={24} color={COLORS.textPrimary} />
           <View style={styles.notificationBadge} />
         </TouchableOpacity>
       </View>
@@ -78,7 +77,7 @@ export default function HomeScreen({ navigation }) {
         {/* Peace Streak */}
         <View style={styles.streakCard}>
           <View style={styles.streakIcon}>
-            <MaterialIcons name="spa" size={24} color={COLORS.primary} />
+            <Icon name="spa" size={24} color={COLORS.primary} />
           </View>
           <View style={styles.streakContent}>
             <Text style={styles.streakLabel}>평화 유지 기록</Text>
@@ -88,7 +87,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
           <View style={styles.streakDivider} />
-          <MaterialIcons name="sentiment-satisfied" size={32} color={`${COLORS.primary}40`} />
+          <Icon name="sentiment-satisfied" size={32} color={`${COLORS.primary}40`} />
         </View>
 
         {/* Feature Cards */}

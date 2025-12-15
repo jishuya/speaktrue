@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { BottomNav, InsightCard, ProgressBar } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -33,11 +33,11 @@ export default function PatternsScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back-ios" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back-ios" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>패턴 분석</Text>
         <TouchableOpacity style={styles.headerButton}>
-          <MaterialIcons name="more-horiz" size={24} color={COLORS.textPrimary} />
+          <Icon name="more-horiz" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -50,7 +50,7 @@ export default function PatternsScreen({ navigation }) {
         <View style={styles.periodSelector}>
           <TouchableOpacity style={styles.periodButton}>
             <Text style={styles.periodText}>지난 30일</Text>
-            <MaterialIcons name="expand-more" size={16} color={COLORS.textSecondary} />
+            <Icon name="expand-more" size={16} color={COLORS.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -64,12 +64,12 @@ export default function PatternsScreen({ navigation }) {
                 <Text style={styles.summaryValue}>12회</Text>
               </View>
               <View style={styles.summaryIcon}>
-                <MaterialIcons name="chat-bubble" size={28} color={COLORS.primary} />
+                <Icon name="chat-bubble" size={28} color={COLORS.primary} />
               </View>
             </View>
             <View style={styles.summaryFooter}>
               <View style={styles.trendBadge}>
-                <MaterialIcons name="trending-up" size={14} color={COLORS.primaryDark} />
+                <Icon name="trending-up" size={14} color={COLORS.primaryDark} />
                 <Text style={styles.trendText}> +3</Text>
               </View>
               <Text style={styles.summaryHint}>지난달보다 더 자주 소통했어요 🌱</Text>

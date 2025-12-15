@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 export default function Button({
@@ -59,7 +59,7 @@ export default function Button({
       ) : (
         <View style={styles.content}>
           {icon && iconPosition === 'left' && (
-            <MaterialIcons
+            <Icon
               name={icon}
               size={iconSize}
               color={disabled ? COLORS.textMuted : iconColor}
@@ -68,7 +68,7 @@ export default function Button({
           )}
           <Text style={textStyles}>{title}</Text>
           {icon && iconPosition === 'right' && (
-            <MaterialIcons
+            <Icon
               name={icon}
               size={iconSize}
               color={disabled ? COLORS.textMuted : iconColor}

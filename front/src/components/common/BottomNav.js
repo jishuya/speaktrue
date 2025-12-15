@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, SHADOWS, BORDER_RADIUS } from '../../constants/theme';
 
 const NAV_ITEMS = [
@@ -44,7 +44,7 @@ export default function BottomNav({ currentRoute, onNavigate, showCenterButton =
           onPress={() => onNavigate('Empathy')}
           activeOpacity={0.8}
         >
-          <MaterialIcons name="edit" size={28} color={COLORS.surface} />
+          <Icon name="edit" size={28} color={COLORS.surface} />
         </TouchableOpacity>
       )}
     </View>
@@ -54,8 +54,8 @@ export default function BottomNav({ currentRoute, onNavigate, showCenterButton =
 function NavItem({ item, isActive, onPress }) {
   return (
     <TouchableOpacity style={styles.navItem} onPress={onPress} activeOpacity={0.7}>
-      <MaterialIcons
-        name={isActive ? item.icon : `${item.icon}`}
+      <Icon
+        name={item.icon}
         size={26}
         color={isActive ? COLORS.primary : COLORS.textMuted}
       />

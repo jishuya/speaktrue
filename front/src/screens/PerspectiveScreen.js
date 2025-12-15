@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { Button } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -16,11 +16,11 @@ export default function PerspectiveScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>관점 전환</Text>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="close" size={24} color={COLORS.textPrimary} />
+          <Icon name="close" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -32,9 +32,9 @@ export default function PerspectiveScreen({ navigation }) {
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <View style={styles.heroIcon}>
-            <MaterialIcons name="diversity-1" size={48} color={COLORS.primary} />
+            <Icon name="diversity-1" size={48} color={COLORS.primary} />
             <View style={styles.heroIconBadge}>
-              <MaterialIcons name="favorite" size={16} color={COLORS.primary} />
+              <Icon name="favorite" size={16} color={COLORS.primary} />
             </View>
           </View>
           <Text style={styles.heroTitle}>알렉스의 마음 헤아리기</Text>
@@ -67,11 +67,11 @@ export default function PerspectiveScreen({ navigation }) {
             <Text style={styles.feedbackLabel}>도움이 되셨나요?</Text>
             <View style={styles.feedbackButtons}>
               <TouchableOpacity style={styles.feedbackButton}>
-                <MaterialIcons name="thumb-up" size={18} color={COLORS.primary} />
+                <Icon name="thumb-up" size={18} color={COLORS.primary} />
                 <Text style={styles.feedbackButtonText}>네, 공감돼요</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.feedbackButton, styles.feedbackButtonSecondary]}>
-                <MaterialIcons name="thumb-down" size={18} color={COLORS.textMuted} />
+                <Icon name="thumb-down" size={18} color={COLORS.textMuted} />
                 <Text style={[styles.feedbackButtonText, styles.feedbackTextSecondary]}>잘 모르겠어요</Text>
               </TouchableOpacity>
             </View>
@@ -83,7 +83,7 @@ export default function PerspectiveScreen({ navigation }) {
           <Text style={styles.sectionTitle}>공감 포인트</Text>
           <View style={styles.empathyCard}>
             <View style={[styles.empathyIcon, { backgroundColor: '#E3F2FD' }]}>
-              <MaterialIcons name="sentiment-dissatisfied" size={24} color="#1565C0" />
+              <Icon name="sentiment-dissatisfied" size={24} color="#1565C0" />
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>숨겨진 감정</Text>
@@ -92,7 +92,7 @@ export default function PerspectiveScreen({ navigation }) {
           </View>
           <View style={styles.empathyCard}>
             <View style={[styles.empathyIcon, { backgroundColor: '#E8F5E9' }]}>
-              <MaterialIcons name="spa" size={24} color="#2E7D32" />
+              <Icon name="spa" size={24} color="#2E7D32" />
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>핵심 욕구</Text>

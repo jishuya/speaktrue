@@ -9,7 +9,7 @@ import {
   Clipboard,
   Alert,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../components/ui';
 import { Button } from '../components/common';
 import { NvcResultBubble } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -56,11 +56,11 @@ export default function TransformScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>TrueSpeak</Text>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('History')}>
-          <MaterialIcons name="history" size={24} color={COLORS.textPrimary} />
+          <Icon name="history" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -99,7 +99,7 @@ export default function TransformScreen({ navigation }) {
           activeOpacity={0.9}
         >
           <View style={styles.buttonShine} />
-          <MaterialIcons name="auto-awesome" size={24} color={COLORS.surface} />
+          <Icon name="auto-awesome" size={24} color={COLORS.surface} />
           <Text style={styles.transformButtonText}>
             {isLoading ? '변환 중...' : '부드럽게 변환하기'}
           </Text>
@@ -110,7 +110,7 @@ export default function TransformScreen({ navigation }) {
           <View style={styles.resultSection}>
             <View style={styles.resultHeader}>
               <Text style={styles.resultLabel}>NVC 제안 (비폭력 대화)</Text>
-              <MaterialIcons name="psychology" size={18} color={`${COLORS.primary}60`} />
+              <Icon name="psychology" size={18} color={`${COLORS.primary}60`} />
             </View>
             <View style={styles.resultContent}>
               <Text style={styles.resultText}>
@@ -123,11 +123,11 @@ export default function TransformScreen({ navigation }) {
             <View style={styles.resultDivider} />
             <View style={styles.resultActions}>
               <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
-                <MaterialIcons name="content-copy" size={20} color={COLORS.textSecondary} />
+                <Icon name="content-copy" size={20} color={COLORS.textSecondary} />
                 <Text style={styles.actionButtonText}>복사</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.kakaoButton} onPress={handleKakaoShare}>
-                <MaterialIcons name="chat-bubble" size={20} color={COLORS.kakaoText} />
+                <Icon name="chat-bubble" size={20} color={COLORS.kakaoText} />
                 <Text style={styles.kakaoButtonText}>카카오톡 공유</Text>
               </TouchableOpacity>
             </View>
@@ -144,11 +144,11 @@ export default function TransformScreen({ navigation }) {
             <View style={styles.accordionHeader}>
               <View style={styles.accordionLeft}>
                 <View style={styles.accordionIcon}>
-                  <MaterialIcons name="lightbulb" size={20} color={COLORS.primary} />
+                  <Icon name="lightbulb" size={20} color={COLORS.primary} />
                 </View>
                 <Text style={styles.accordionTitle}>어떻게 바뀐 건가요?</Text>
               </View>
-              <MaterialIcons
+              <Icon
                 name={showExplanation ? 'expand-less' : 'expand-more'}
                 size={24}
                 color={COLORS.textMuted}

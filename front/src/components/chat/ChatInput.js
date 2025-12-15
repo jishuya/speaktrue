@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 export default function ChatInput({
@@ -36,7 +36,7 @@ export default function ChatInput({
       <View style={styles.inputWrapper}>
         {showAttach && (
           <TouchableOpacity style={styles.iconButton} onPress={onAttach}>
-            <MaterialIcons name="add-circle-outline" size={24} color={COLORS.textSecondary} />
+            <Icon name="add-circle-outline" size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
         )}
 
@@ -53,7 +53,7 @@ export default function ChatInput({
 
         {showVoice && !canSend && (
           <TouchableOpacity style={styles.iconButton} onPress={onVoice}>
-            <MaterialIcons name="mic" size={24} color={COLORS.textSecondary} />
+            <Icon name="mic" size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
         )}
 
@@ -62,7 +62,7 @@ export default function ChatInput({
           onPress={handleSend}
           disabled={!canSend}
         >
-          <MaterialIcons
+          <Icon
             name="send"
             size={20}
             color={canSend ? COLORS.surface : COLORS.textMuted}
@@ -77,11 +77,11 @@ export default function ChatInput({
 export function FloatingActionButton({ label, icon, onPress, style }) {
   return (
     <TouchableOpacity style={[styles.fab, style]} onPress={onPress} activeOpacity={0.9}>
-      <MaterialIcons name={icon} size={20} color={COLORS.primary} />
+      <Icon name={icon} size={20} color={COLORS.primary} />
       <View style={styles.fabTextContainer}>
-        <MaterialIcons name={icon} size={20} color={COLORS.primary} style={styles.fabIcon} />
+        <Icon name={icon} size={20} color={COLORS.primary} style={styles.fabIcon} />
         <View style={styles.fabLabel}>
-          <MaterialIcons name="visibility" size={18} color={COLORS.primary} />
+          <Icon name="visibility" size={18} color={COLORS.primary} />
         </View>
       </View>
     </TouchableOpacity>
@@ -92,9 +92,9 @@ export function FloatingActionButton({ label, icon, onPress, style }) {
 export function PerspectiveButton({ onPress }) {
   return (
     <TouchableOpacity style={styles.perspectiveButton} onPress={onPress} activeOpacity={0.9}>
-      <MaterialIcons name="visibility" size={20} color={COLORS.primary} />
+      <Icon name="visibility" size={20} color={COLORS.primary} />
       <View style={styles.perspectiveText}>
-        <MaterialIcons name="visibility" size={18} color={COLORS.primary} />
+        <Icon name="visibility" size={18} color={COLORS.primary} />
       </View>
     </TouchableOpacity>
   );

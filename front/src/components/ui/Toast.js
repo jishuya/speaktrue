@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS, Z_INDEX } from '../../constants/theme';
 
 // Toast Context
@@ -102,7 +102,7 @@ function ToastItem({ type, message, duration, onHide }) {
         { transform: [{ translateY }], opacity },
       ]}
     >
-      <MaterialIcons name={config.icon} size={20} color={config.color} />
+      <Icon name={config.icon} size={20} color={config.color} />
       <Text style={[styles.message, { color: config.color }]}>{message}</Text>
     </Animated.View>
   );

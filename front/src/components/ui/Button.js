@@ -1,5 +1,5 @@
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const VARIANTS = {
@@ -82,13 +82,13 @@ export default function Button({
       ) : (
         <>
           {icon && iconPosition === 'left' && (
-            <MaterialIcons name={icon} size={s.iconSize} color={v.text} style={styles.iconLeft} />
+            <Icon name={icon} size={s.iconSize} color={v.text} style={styles.iconLeft} />
           )}
           <Text style={[styles.text, { color: v.text, fontSize: s.fontSize }]}>
             {title}
           </Text>
           {icon && iconPosition === 'right' && (
-            <MaterialIcons name={icon} size={s.iconSize} color={v.text} style={styles.iconRight} />
+            <Icon name={icon} size={s.iconSize} color={v.text} style={styles.iconRight} />
           )}
         </>
       )}
@@ -118,7 +118,7 @@ export function IconButton({
       disabled={disabled}
       activeOpacity={0.7}
     >
-      <MaterialIcons name={icon} size={size * 0.5} color={color} />
+      <Icon name={icon} size={size * 0.5} color={color} />
     </TouchableOpacity>
   );
 }

@@ -1,5 +1,5 @@
 import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS, Z_INDEX } from '../../constants/theme';
 
 // 기본 모달
@@ -27,7 +27,7 @@ export default function Modal({
                   <Text style={styles.title}>{title}</Text>
                   {showCloseButton && (
                     <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                      <MaterialIcons name="close" size={24} color={COLORS.textSecondary} />
+                      <Icon name="close" size={24} color={COLORS.textSecondary} />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -63,7 +63,7 @@ export function AlertModal({
       <View style={styles.backdrop}>
         <View style={styles.alertContainer}>
           <View style={[styles.iconCircle, { backgroundColor: `${icon.color}15` }]}>
-            <MaterialIcons name={icon.name} size={32} color={icon.color} />
+            <Icon name={icon.name} size={32} color={icon.color} />
           </View>
           <Text style={styles.alertTitle}>{title}</Text>
           <Text style={styles.alertMessage}>{message}</Text>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '../../constants/theme';
 
 export default function MenuItem({
@@ -28,7 +28,7 @@ export default function MenuItem({
       <View style={styles.leftSection}>
         {icon && (
           <View style={[styles.iconContainer, { backgroundColor: iconBgColor || COLORS.primaryBg }]}>
-            <MaterialIcons
+            <Icon
               name={icon}
               size={22}
               color={danger ? COLORS.error : (iconColor || COLORS.primary)}
@@ -52,7 +52,7 @@ export default function MenuItem({
           />
         )}
         {showArrow && !showSwitch && (
-          <MaterialIcons name="chevron-right" size={24} color={COLORS.textMuted} />
+          <Icon name="chevron-right" size={24} color={COLORS.textMuted} />
         )}
       </View>
     </TouchableOpacity>

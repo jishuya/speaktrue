@@ -6,8 +6,7 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Badge } from '../components/ui';
+import { Icon, Badge } from '../components/ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 // 감정 태그 데이터
@@ -68,11 +67,11 @@ export default function RecordingDetailScreen({ navigation, route }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>기록 상세</Text>
         <TouchableOpacity style={styles.headerButton} onPress={handleMore}>
-          <MaterialIcons name="more-horiz" size={24} color={COLORS.textPrimary} />
+          <Icon name="more-horiz" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -88,7 +87,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
         <View style={styles.audioCard}>
           <View style={styles.audioHeader}>
             <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
-              <MaterialIcons
+              <Icon
                 name={isPlaying ? 'pause' : 'play-arrow'}
                 size={28}
                 color={COLORS.surface}
@@ -99,7 +98,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
               <Text style={styles.audioMeta}>주방 • 오후 2:02</Text>
             </View>
             <TouchableOpacity style={styles.volumeButton}>
-              <MaterialIcons name="volume-up" size={24} color={COLORS.textMuted} />
+              <Icon name="volume-up" size={24} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -130,7 +129,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
         {/* AI Insight Card */}
         <View style={styles.insightCard}>
           <View style={styles.insightHeader}>
-            <MaterialIcons name="auto-awesome" size={14} color={COLORS.primary} />
+            <Icon name="auto-awesome" size={14} color={COLORS.primary} />
             <Text style={styles.insightLabel}>AI 인사이트</Text>
           </View>
           <Text style={styles.insightTitle}>해결 요약</Text>
@@ -145,7 +144,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
           <View style={styles.emotionTags}>
             {EMOTION_TAGS.map((tag) => (
               <View key={tag.id} style={[styles.emotionTag, { backgroundColor: tag.bg }]}>
-                <MaterialIcons name={tag.icon} size={18} color={tag.color} />
+                <Icon name={tag.icon} size={18} color={tag.color} />
                 <Text style={styles.emotionTagText}>{tag.label}</Text>
               </View>
             ))}
@@ -194,7 +193,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
                       <View style={styles.nvcContainer}>
                         <View style={styles.nvcCard}>
                           <View style={styles.nvcHeader}>
-                            <MaterialIcons name="psychology" size={16} color={COLORS.primary} />
+                            <Icon name="psychology" size={16} color={COLORS.primary} />
                             <Text style={styles.nvcLabel}>NVC 제안 (비폭력 대화)</Text>
                           </View>
                           <Text style={styles.nvcText}>{item.nvcSuggestion}</Text>
@@ -211,7 +210,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
 
         {/* Delete Button */}
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <MaterialIcons name="delete" size={18} color={COLORS.textMuted} />
+          <Icon name="delete" size={18} color={COLORS.textMuted} />
           <Text style={styles.deleteText}>기록 삭제</Text>
         </TouchableOpacity>
 

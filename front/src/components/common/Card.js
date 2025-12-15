@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 export default function Card({
@@ -31,7 +31,7 @@ export function TipCard({ title, content, style }) {
         <Text style={styles.tipText}>{content}</Text>
       </View>
       <View style={styles.tipIcon}>
-        <MaterialIcons name="favorite" size={48} color={COLORS.primary} style={{ opacity: 0.2 }} />
+        <Icon name="favorite" size={48} color={COLORS.primary} style={{ opacity: 0.2 }} />
       </View>
     </View>
   );
@@ -46,7 +46,7 @@ export function FeatureCard({ icon, title, subtitle, color = COLORS.primaryBg, i
       activeOpacity={0.9}
     >
       <View style={[styles.featureIcon, { backgroundColor: COLORS.surface }]}>
-        <MaterialIcons name={icon} size={24} color={iconColor} />
+        <Icon name={icon} size={24} color={iconColor} />
       </View>
       <View style={styles.featureContent}>
         <Text style={styles.featureTitle}>{title}</Text>
@@ -62,7 +62,7 @@ export function StatCard({ label, value, subValue, icon }) {
     <View style={styles.statCard}>
       {icon && (
         <View style={styles.statIcon}>
-          <MaterialIcons name={icon} size={20} color={COLORS.primary} />
+          <Icon name={icon} size={20} color={COLORS.primary} />
         </View>
       )}
       <View style={styles.statContent}>
@@ -85,7 +85,7 @@ export function HistoryCard({ date, content, tags = [], onPress }) {
           <View style={styles.dateDot} />
           <Text style={styles.dateText}>{date}</Text>
         </View>
-        <MaterialIcons name="chevron-right" size={20} color={COLORS.textMuted} />
+        <Icon name="chevron-right" size={20} color={COLORS.textMuted} />
       </View>
       <Text style={styles.historyContent} numberOfLines={2}>
         {content}
@@ -109,7 +109,7 @@ export function InsightCard({ title, content, buttonText, onButtonPress }) {
     <View style={styles.insightCard}>
       <View style={styles.insightHeader}>
         <View style={styles.insightBadge}>
-          <MaterialIcons name="auto-awesome" size={14} color={COLORS.surface} />
+          <Icon name="auto-awesome" size={14} color={COLORS.surface} />
         </View>
         <Text style={styles.insightLabel}>AI 인사이트</Text>
       </View>
@@ -118,7 +118,7 @@ export function InsightCard({ title, content, buttonText, onButtonPress }) {
       {buttonText && (
         <TouchableOpacity style={styles.insightButton} onPress={onButtonPress}>
           <Text style={styles.insightButtonText}>{buttonText}</Text>
-          <MaterialIcons name="arrow-forward" size={16} color={COLORS.surface} />
+          <Icon name="arrow-forward" size={16} color={COLORS.surface} />
         </TouchableOpacity>
       )}
     </View>
