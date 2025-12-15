@@ -72,6 +72,11 @@
       min-height: max(884px, 100dvh);
     }
   </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
   </head>
 <body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-white transition-colors duration-200">
 <div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
@@ -94,59 +99,43 @@
 <div class="px-6 pb-2 pt-2">
 <h1 class="text-3xl font-extrabold text-text-dark dark:text-white leading-tight tracking-tight mb-4">
             안녕하세요, 알렉스님. <br/>
-<span class="text-text-soft dark:text-gray-400 font-medium text-2xl">대화할 준비 되셨나요?</span>
+<span class="text-text-soft dark:text-gray-400 font-medium text-2xl">오늘은 어떤 마음인가요?</span>
 </h1>
-<div class="relative w-full rounded-3xl overflow-hidden bg-gradient-to-br from-primary-light to-white dark:from-background-dark dark:to-background-dark border border-primary/10 dark:border-white/10 p-6 flex items-center justify-between shadow-soft">
-<div class="flex-1 z-10">
-<p class="text-sm font-semibold text-primary mb-1 uppercase tracking-wide">오늘의 팁</p>
-<p class="text-lg font-bold text-text-dark dark:text-white leading-snug mb-2 word-keep-all">대답하기 위해서가 아니라,<br/>이해하기 위해 경청하세요.</p>
+<button class="group relative w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#6A8D73] to-[#5A7565] dark:from-primary dark:to-background-dark p-7 mb-4 shadow-lg shadow-primary/20 transition-all active:scale-95 hover:shadow-xl">
+<div class="relative z-10 flex flex-col items-start text-left h-full justify-between min-h-[160px]">
+<div class="bg-white/20 backdrop-blur-sm size-14 rounded-full flex items-center justify-center text-white mb-4">
+<span class="material-symbols-outlined filled text-3xl">favorite</span>
 </div>
-<div class="w-28 h-24 bg-contain bg-right bg-no-repeat opacity-90" data-alt="Illustration of a cute couple sitting back to back holding hands with a heart floating above" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzCY1BRMODiJY6ZiaEmmS39bxniMBpiKlU2jH3gd1FfsjCeZ95OZkBdgydGhIYcElZwQnWv9HAJFtmgCEM7DYTfFHPBLbnrx7A4FFfkH4SAlCIYXjawOJEMFFeQ9Uhybj7UHrtesTAyT6oMkZpDzXLr4XcDKKNSqFEPw9r9UuR1t-vaKp98usA5rQOZ8lMC0ysAzAAoXWh65H5JW68ymUPQgp65L24UY_xw3d37mvrMT6KoHJUpOafXxUv6Dz11_IoCnXOA5I9BsvB"); background-blend-mode: multiply;'>
-<div class="w-full h-full flex items-center justify-center text-primary/20">
-<span class="material-symbols-outlined text-6xl">favorite</span>
-</div>
-</div>
+<div>
+<h2 class="text-2xl font-bold text-white mb-2 leading-tight">내 편에게<br/>털어놓기</h2>
+<p class="text-white/90 text-sm font-medium">지금 느끼는 감정을 솔직하게 표현해보세요.</p>
 </div>
 </div>
-<div class="px-6 py-4">
-<div class="flex items-center gap-3 bg-[#F2F7F5] dark:bg-white/5 p-4 rounded-2xl border border-primary/10">
-<div class="size-10 rounded-full bg-white dark:bg-white/10 flex items-center justify-center shadow-sm text-primary">
-<span class="material-symbols-outlined filled">spa</span>
-</div>
-<div class="flex-1">
-<p class="text-sm text-text-soft dark:text-gray-400 font-medium">평화 유지 기록</p>
-<div class="flex items-baseline gap-1">
-<span class="text-xl font-bold text-text-dark dark:text-white">12일째</span>
-<span class="text-xs text-primary font-medium">잘하고 있어요!</span>
-</div>
-</div>
-<div class="h-10 w-px bg-primary/10"></div>
-<div class="pl-2">
-<span class="material-symbols-outlined text-primary/40 text-3xl">sentiment_satisfied</span>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-2 gap-4 px-6 mb-2">
-<button class="group relative flex flex-col items-start justify-between h-48 p-5 bg-[#F1F8F6] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20">
-<div class="bg-white dark:bg-white/10 size-12 rounded-full flex items-center justify-center text-primary shadow-sm mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-<span class="material-symbols-outlined text-2xl">favorite</span>
+<div class="absolute top-0 right-0 w-48 h-full bg-contain bg-right-bottom bg-no-repeat opacity-20 pointer-events-none" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzCY1BRMODiJY6ZiaEmmS39bxniMBpiKlU2jH3gd1FfsjCeZ95OZkBdgydGhIYcElZwQnWv9HAJFtmgCEM7DYTfFHPBLbnrx7A4FFfkH4SAlCIYXjawOJEMFFeQ9Uhybj7UHrtesTAyT6oMkZpDzXLr4XcDKKNSqFEPw9r9UuR1t-vaKp98usA5rQOZ8lMC0ysAzAAoXWh65H5JW68ymUPQgp65L24UY_xw3d37mvrMT6KoHJUpOafXxUv6Dz11_IoCnXOA5I9BsvB"); background-blend-mode: overlay;'></div>
+<div class="absolute -bottom-10 -right-10 size-40 bg-white/10 rounded-full blur-2xl"></div>
+</button>
+<div class="grid grid-cols-2 gap-4 mb-2">
+<button class="group relative flex flex-col items-start justify-between h-44 p-5 bg-[#FAF7F0] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-secondary/20 border border-transparent hover:border-secondary">
+<div class="bg-white dark:bg-white/10 size-10 rounded-full flex items-center justify-center text-[#9C7C58] shadow-sm mb-3 group-hover:bg-[#9C7C58] group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-xl">psychology</span>
 </div>
 <div class="text-left z-10">
-<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight">마음<br/>표현하기</h3>
-<p class="text-xs text-[#5A7565] dark:text-gray-400 font-medium">솔직한 대화가 필요해...</p>
+<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight word-keep-all">내가 진짜<br/>하고 싶은 말은</h3>
+<p class="text-xs text-text-soft dark:text-gray-400 font-medium mt-1">마음 속 깊은 진심 찾기</p>
 </div>
-<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
+<div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
 </button>
-<button class="group relative flex flex-col items-start justify-between h-48 p-5 bg-[#FAF7F0] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-yellow-500/10 border border-transparent hover:border-secondary">
-<div class="bg-white dark:bg-white/10 size-12 rounded-full flex items-center justify-center text-accent-warm shadow-sm mb-4 group-hover:bg-accent-warm group-hover:text-white transition-colors">
-<span class="material-symbols-outlined text-2xl">tips_and_updates</span>
+<button class="group relative flex flex-col items-start justify-between h-44 p-5 bg-[#F1F8F6] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20">
+<div class="bg-white dark:bg-white/10 size-10 rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-xl">history_edu</span>
 </div>
 <div class="text-left z-10">
-<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight">따뜻하게<br/>말하기</h3>
-<p class="text-xs text-[#9C7C58] dark:text-gray-400 font-medium">상처주지 않으려면?</p>
+<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight word-keep-all">그때 이렇게<br/>말했다면</h3>
+<p class="text-xs text-text-soft dark:text-gray-400 font-medium mt-1">더 나은 대화 연습하기</p>
 </div>
-<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
+<div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
 </button>
+</div>
 </div>
 <div class="flex flex-col gap-4 py-6">
 <div class="flex items-center justify-between px-6">
@@ -189,31 +178,31 @@
 <div class="h-24"></div>
 <div class="fixed bottom-6 left-0 right-0 px-6 z-50 pointer-events-none">
 <div class="max-w-md mx-auto pointer-events-auto">
-<nav class="bg-white dark:bg-[#2A1D18] rounded-full shadow-nav border border-gray-100 dark:border-white/5 p-2 flex justify-between items-center relative">
-<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-primary">
-<span class="material-symbols-outlined filled">home</span>
-<span class="text-[10px] font-bold">홈</span>
+<nav class="bg-white dark:bg-[#2A1D18] rounded-full shadow-nav border border-gray-100 dark:border-white/5 px-2 py-3 flex justify-between items-end relative h-[72px]">
+<button class="flex-1 flex flex-col items-center justify-end pb-2 gap-1 h-full rounded-full text-primary">
+<span class="material-symbols-outlined filled text-2xl">home</span>
+<span class="text-[9px] font-bold">홈</span>
 </button>
-<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">menu_book</span>
-<span class="text-[10px] font-medium">배움</span>
+<button class="flex-1 flex flex-col items-center justify-end pb-2 gap-1 h-full rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+<span class="text-[9px] font-medium">패턴 분석</span>
 </button>
-<div class="relative -top-6 mx-2">
-<button class="size-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center transform transition hover:scale-105 active:scale-95">
-<span class="material-symbols-outlined text-[28px]">edit_note</span>
+<div class="relative w-16 flex justify-center">
+<button class="absolute -top-12 size-16 bg-primary text-white rounded-full shadow-xl shadow-primary/30 flex items-center justify-center transform transition hover:scale-105 active:scale-95 ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined filled text-[32px]">favorite</span>
 </button>
+<span class="absolute bottom-2 text-[9px] font-medium text-primary w-20 text-center leading-tight">내 편에게<br/>털어놓기</span>
 </div>
-<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">history</span>
-<span class="text-[10px] font-medium">기록</span>
+<button class="flex-1 flex flex-col items-center justify-end pb-2 gap-1 h-full rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">psychology</span>
+<span class="text-[9px] font-medium text-center">진심 찾기</span>
 </button>
-<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">person</span>
-<span class="text-[10px] font-medium">프로필</span>
+<button class="flex-1 flex flex-col items-center justify-end pb-2 gap-1 h-full rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">history_edu</span>
+<span class="text-[9px] font-medium text-center">대화 연습</span>
 </button>
 </nav>
 </div>
 </div>
 </div>
-
 </body></html>
