@@ -1,75 +1,187 @@
-// TrueSpeak 테마 - 커플 소통 앱 디자인 시스템
-export const COLORS = {
-  // Primary - 세이지 그린 (차분하고 신뢰감 있는 녹색)
-  primary: '#6A8D73',
-  primaryLight: '#8FA996',
-  primaryDark: '#5D7A69',
-  primarySoft: '#CDE0D5',
-  primaryBg: '#F2F7F5',
+// ============================================
+// TrueSpeak Design System
+// ============================================
 
-  // Secondary - 따뜻한 베이지/샌드
-  secondary: '#EAE0D5',
-  secondaryBg: '#E8F0EB',
-
-  // Accent - 따뜻한 강조색
-  accentWarm: '#D9A066',
-  accentOrange: '#F5A623',
-
-  // Background - 배경색
-  backgroundLight: '#FAF9F6',
-  backgroundDark: '#1A211D',
-
-  // Surface - 표면색
-  surface: '#FFFFFF',
-  surfaceDark: '#252E28',
-
-  // Text - 텍스트 색상
-  textPrimary: '#2C3E33',
-  textSecondary: '#687D70',
-  textSoft: '#788580',
-  textMuted: '#9CAEA6',
-
-  // Semantic Colors - 의미 기반 색상
-  success: '#28A745',
-  warning: '#FFC107',
-  error: '#DC3545',
-  info: '#17A2B8',
-
-  // Emotion Colors - 감정 색상
-  emotion: {
-    frustrated: '#F5A623',      // 답답함 - 오렌지
-    anxious: '#5B8DEF',         // 불안함 - 파랑
-    sad: '#9B59B6',             // 슬픔 - 보라
-    happy: '#2ECC71',           // 기쁨 - 초록
-    angry: '#E74C3C',           // 화남 - 빨강
-    peaceful: '#1ABC9C',        // 평온함 - 청록
-    worried: '#F39C12',         // 걱정 - 호박색
-    understood: '#6A8D73',      // 이해받음 - 프라이머리
+// --------------------------------------------
+// 1. 색상 팔레트 (고정값)
+// --------------------------------------------
+const palette = {
+  // Primary - 세이지 그린
+  green: {
+    50: '#F2F7F5',
+    100: '#E8F0EB',
+    200: '#CDE0D5',
+    300: '#8FA996',
+    400: '#6A8D73',  // 메인
+    500: '#5D7A69',
+    600: '#4A6254',
+    900: '#2C3E33',
   },
-
-  // Chat Bubble Colors - 채팅 말풍선 색상
-  bubbleAi: '#EBF2EE',
-  bubbleAiDark: '#2F3B36',
-  bubbleUser: '#6A8D73',
-
-  // Border & Divider - 테두리 및 구분선
-  border: '#DEE2E6',
-  borderLight: '#E8EBE8',
-  divider: '#E6EBE8',
-
-  // Status - 상태 색상
-  online: '#28A745',
-  offline: '#6C757D',
-
-  // Kakao - 카카오 로그인
+  // Neutral
+  gray: {
+    50: '#FAFAFA',
+    100: '#F5F5F5',
+    200: '#EEEEEE',
+    300: '#E0E0E0',
+    400: '#BDBDBD',
+    500: '#9E9E9E',
+    600: '#757575',
+    700: '#616161',
+    800: '#424242',
+    900: '#212121',
+  },
+  // Warm (배경용)
+  warm: {
+    50: '#FDFCFA',
+    100: '#FAF9F6',
+    200: '#EAE0D5',
+  },
+  // Semantic
+  red: '#DC3545',
+  orange: '#F5A623',
+  yellow: '#FFC107',
+  blue: '#5B8DEF',
+  teal: '#1ABC9C',
+  purple: '#9B59B6',
+  // Special
+  white: '#FFFFFF',
+  black: '#000000',
   kakao: '#FEE500',
   kakaoText: '#371D1E',
-
-  // Transparent - 투명 오버레이
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayLight: 'rgba(0, 0, 0, 0.1)',
 };
 
+// --------------------------------------------
+// 2. 시맨틱 테마 (라이트/다크)
+// --------------------------------------------
+export const lightTheme = {
+  // 배경
+  bg: {
+    primary: palette.warm[100],      // 메인 배경
+    secondary: palette.white,         // 카드/서피스
+    tertiary: palette.green[50],      // 강조 배경
+    inverse: palette.green[900],      // 반전 배경
+  },
+  // 텍스트
+  text: {
+    primary: palette.green[900],      // 주요 텍스트
+    secondary: palette.gray[600],     // 보조 텍스트
+    muted: palette.gray[400],         // 비활성/힌트
+    inverse: palette.white,           // 반전 텍스트
+    brand: palette.green[400],        // 브랜드 컬러
+  },
+  // 보더
+  border: {
+    light: palette.gray[200],
+    default: palette.gray[300],
+    focus: palette.green[400],
+  },
+  // 채팅 버블
+  bubble: {
+    user: palette.green[400],
+    userText: palette.white,
+    ai: palette.green[50],
+    aiText: palette.green[900],
+  },
+  // 네비게이션
+  nav: {
+    bg: palette.white,
+    active: palette.green[400],
+    inactive: palette.gray[400],
+  },
+  // 오버레이
+  overlay: 'rgba(0, 0, 0, 0.5)',
+};
+
+export const darkTheme = {
+  bg: {
+    primary: palette.green[900],
+    secondary: palette.gray[800],
+    tertiary: palette.gray[700],
+    inverse: palette.warm[100],
+  },
+  text: {
+    primary: palette.gray[100],
+    secondary: palette.gray[400],
+    muted: palette.gray[500],
+    inverse: palette.green[900],
+    brand: palette.green[300],
+  },
+  border: {
+    light: palette.gray[700],
+    default: palette.gray[600],
+    focus: palette.green[300],
+  },
+  bubble: {
+    user: palette.green[400],
+    userText: palette.white,
+    ai: palette.gray[800],
+    aiText: palette.gray[100],
+  },
+  nav: {
+    bg: palette.gray[800],
+    active: palette.green[300],
+    inactive: palette.gray[500],
+  },
+  overlay: 'rgba(0, 0, 0, 0.7)',
+};
+
+// --------------------------------------------
+// 3. 공통 토큰 (테마 무관)
+// --------------------------------------------
+
+// 색상 - 기존 컴포넌트 호환 + 의미 기반
+export const COLORS = {
+  // Primary
+  primary: palette.green[400],
+  primaryLight: palette.green[300],
+  primaryDark: palette.green[500],
+  primarySoft: palette.green[200],
+  primaryBg: palette.green[50],
+
+  // Background & Surface
+  backgroundLight: palette.warm[100],
+  backgroundDark: palette.green[900],
+  surface: palette.white,
+  surfaceDark: palette.gray[800],
+
+  // Text
+  textPrimary: palette.green[900],
+  textSecondary: palette.gray[600],
+  textMuted: palette.gray[400],
+
+  // Semantic
+  success: '#28A745',
+  warning: palette.yellow,
+  error: palette.red,
+  info: '#17A2B8',
+
+  // Emotion (앱 특화)
+  emotion: {
+    frustrated: palette.orange,
+    anxious: palette.blue,
+    sad: palette.purple,
+    happy: '#2ECC71',
+    angry: '#E74C3C',
+    peaceful: palette.teal,
+    worried: '#F39C12',
+    understood: palette.green[400],
+  },
+
+  // Chat
+  bubbleUser: palette.green[400],
+  bubbleAi: palette.green[50],
+
+  // Border
+  border: palette.gray[300],
+  borderLight: palette.gray[200],
+
+  // Etc
+  kakao: palette.kakao,
+  kakaoText: palette.kakaoText,
+  overlay: 'rgba(0, 0, 0, 0.5)',
+};
+
+// 간격
 export const SPACING = {
   xs: 4,
   sm: 8,
@@ -79,6 +191,7 @@ export const SPACING = {
   xxl: 48,
 };
 
+// 폰트 크기
 export const FONT_SIZE = {
   xs: 10,
   sm: 12,
@@ -87,28 +200,33 @@ export const FONT_SIZE = {
   lg: 18,
   xl: 20,
   xxl: 24,
-  xxxl: 32,
+  xxxl: 30,
 };
 
+// 폰트 패밀리
+export const FONT_FAMILY = {
+  base: 'NotoSansKR',
+};
+
+// 폰트 두께
 export const FONT_WEIGHT = {
-  light: '300',
   regular: '400',
   medium: '500',
   semiBold: '600',
   bold: '700',
-  extraBold: '800',
 };
 
+// 둥글기
 export const BORDER_RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
   xxl: 24,
-  xxxl: 32,
   full: 9999,
 };
 
+// 그림자
 export const SHADOWS = {
   sm: {
     shadowColor: '#000',
@@ -125,40 +243,58 @@ export const SHADOWS = {
     elevation: 2,
   },
   lg: {
-    shadowColor: '#6A8D73',
+    shadowColor: palette.green[400],
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 4,
   },
-  soft: {
-    shadowColor: '#6A8D73',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 40,
-    elevation: 8,
-  },
-  nav: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 10,
-  },
 };
 
-// 화면 기본 패딩
+// Z-Index
+export const Z_INDEX = {
+  dropdown: 10,
+  sticky: 20,
+  modal: 50,
+  toast: 80,
+};
+
+// 애니메이션
+export const ANIMATION = {
+  fast: 150,
+  normal: 300,
+  slow: 500,
+};
+
+// 레이아웃
+export const LAYOUT = {
+  screenPaddingH: SPACING.lg,
+  screenPaddingV: SPACING.md,
+  headerHeight: 56,
+  bottomNavHeight: 80,
+};
+
+// 화면 기본 패딩 (기존 호환)
 export const SCREEN_PADDING = {
   horizontal: SPACING.lg,
   vertical: SPACING.md,
 };
 
+// --------------------------------------------
+// 기본 내보내기
+// --------------------------------------------
 export default {
+  palette,
+  light: lightTheme,
+  dark: darkTheme,
   COLORS,
   SPACING,
+  FONT_FAMILY,
   FONT_SIZE,
   FONT_WEIGHT,
   BORDER_RADIUS,
   SHADOWS,
-  SCREEN_PADDING,
+  Z_INDEX,
+  ANIMATION,
+  LAYOUT,
 };
