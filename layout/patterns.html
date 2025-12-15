@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrueSpeak 패턴 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7FB06F", // More muted, calm sage green accent
+                        "primary-dark": "#5D8C50",
+                        "sage": {
+                            50: "#f6f9f6",
+                            100: "#eaf2ea", 
+                            200: "#d3e2d3", 
+                            300: "#afcdaf",
+                            400: "#85b085",
+                            500: "#639363", // Base sage
+                            600: "#4b754b",
+                            700: "#3d5e3d",
+                            800: "#344b34",
+                            900: "#2a3d2a", 
+                        },
+                        "background-light": "#fcfdfc",
+                        "background-dark": "#1a1f1a",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans KR", "sans-serif"],
+                        "body": ["Noto Sans KR", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .font-display {
+            font-family: 'Lexend', 'Noto Sans KR', sans-serif;
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-sage-900 dark:text-white transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto overflow-hidden bg-background-light dark:bg-background-dark shadow-xl">
+<div class="flex items-center px-4 py-3 pb-2 justify-between sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-sage-100 dark:hover:bg-sage-800 transition-colors">
+<span class="material-symbols-outlined text-sage-900 dark:text-white" style="font-size: 24px;">arrow_back_ios_new</span>
+</button>
+<h2 class="text-sage-900 dark:text-white text-lg font-bold leading-tight flex-1 text-center font-display">패턴 분석</h2>
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-sage-100 dark:hover:bg-sage-800 transition-colors">
+<span class="material-symbols-outlined text-sage-900 dark:text-white" style="font-size: 24px;">more_horiz</span>
+</button>
+</div>
+<div class="flex-1 flex flex-col overflow-y-auto pb-24">
+<div class="px-4 py-2 flex items-center justify-center mb-2">
+<button class="flex items-center gap-2 px-4 py-1.5 bg-sage-100 dark:bg-sage-800 rounded-full text-sage-600 dark:text-sage-200 text-sm font-medium hover:bg-sage-200 dark:hover:bg-sage-700 transition-colors">
+<span>지난 30일</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">expand_more</span>
+</button>
+</div>
+<div class="px-4 py-2">
+<div class="flex flex-col gap-1 rounded-2xl bg-gradient-to-br from-sage-50 to-[#ebf5ea] dark:from-sage-800 dark:to-background-dark p-6 border border-sage-200 dark:border-sage-700 shadow-sm relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-500"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sage-600 dark:text-sage-300 text-sm font-medium mb-1">총 대화 세션</p>
+<h3 class="text-sage-900 dark:text-white text-4xl font-bold font-display tracking-tight">12회</h3>
+</div>
+<div class="size-12 bg-white dark:bg-sage-700/50 rounded-2xl flex items-center justify-center shadow-sm border border-sage-100 dark:border-sage-600">
+<span class="material-symbols-outlined text-primary" style="font-size: 28px;">chat_bubble</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="flex items-center justify-center bg-primary/10 text-primary-dark dark:text-primary px-2 py-0.5 rounded text-xs font-bold">
+<span class="material-symbols-outlined mr-0.5" style="font-size: 14px;">trending_up</span> +3
+                            </span>
+<p class="text-sage-500 dark:text-sage-400 text-sm">지난달보다 더 자주 소통했어요 🌱</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 px-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sage-900 dark:text-white text-[20px] font-bold font-display">빈번한 갈등 주제</h2>
+<button class="text-sage-500 text-sm hover:text-primary transition-colors">전체보기</button>
+</div>
+<div class="bg-white dark:bg-sage-900/40 rounded-2xl p-5 border border-sage-100 dark:border-sage-800 shadow-sm">
+<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-sage-600"></span>
+                                    육아 방식
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">42%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-sage-500 rounded-full" style="width: 42%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-sage-400"></span>
+                                    가사 분담
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">28%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-sage-400/80 rounded-full" style="width: 28%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-sage-300"></span>
+                                    재정 관리
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">15%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-sage-300 rounded-full" style="width: 15%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 px-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sage-900 dark:text-white text-[20px] font-bold font-display">주요 감정 분포</h2>
+</div>
+<div class="bg-white dark:bg-sage-900/40 rounded-2xl p-5 border border-sage-100 dark:border-sage-800 shadow-sm">
+<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-400" style="font-size: 18px;">sentiment_dissatisfied</span>
+                                    답답함
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">35%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-orange-300 rounded-full" style="width: 35%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sage-500" style="font-size: 18px;">sentiment_content</span>
+                                    이해받음
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">25%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 25%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-400" style="font-size: 18px;">sentiment_neutral</span>
+                                    걱정
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">20%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-amber-200 rounded-full" style="width: 20%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-sage-800 dark:text-sage-100 font-medium text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400" style="font-size: 18px;">sentiment_satisfied</span>
+                                    편안함
+                                </span>
+<span class="text-sage-500 dark:text-sage-400 text-xs font-display">15%</span>
+</div>
+<div class="h-2.5 w-full bg-sage-50 dark:bg-sage-800 rounded-full overflow-hidden">
+<div class="h-full bg-blue-200 rounded-full" style="width: 15%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 px-4 mb-6">
+<div class="relative overflow-hidden rounded-2xl bg-sage-800 dark:bg-black p-6 shadow-lg border border-sage-700">
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-primary opacity-20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500 opacity-20 rounded-full blur-3xl"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center gap-2 mb-1">
+<div class="flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
+</div>
+<span class="text-primary-100 font-bold text-xs tracking-wider uppercase">AI 인사이트</span>
+</div>
+<h3 class="text-white text-lg font-bold leading-snug font-display">
+                            육아 대화에서 <br/><span class="text-primary">‘답답함’</span>을 자주 느끼셨군요
+                        </h3>
+<p class="text-sage-100/90 text-sm leading-relaxed font-light">
+                            다음 대화에서는 상대방의 행동을 비난하기보다, 내가 관찰한 사실과 그때 느낀 감정을 먼저 이야기해보세요. 더 부드러운 소통이 될 거예요.
+                        </p>
+<button class="mt-3 w-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white border border-white/20 rounded-xl py-3 text-sm font-medium transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+                            맞춤형 조언 더보기
+                            <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 dark:bg-background-dark/95 border-t border-sage-200 dark:border-sage-800 px-8 py-3 pb-6 grid grid-cols-3 items-center z-50 backdrop-blur-md">
+<a class="flex flex-col items-center gap-1.5 group" href="#">
+<span class="material-symbols-outlined text-sage-400 group-hover:text-sage-600 dark:text-sage-500 dark:group-hover:text-sage-300 transition-colors" style="font-size: 26px;">home</span>
+<span class="text-[11px] font-medium text-sage-400 group-hover:text-sage-600 dark:text-sage-500 dark:group-hover:text-sage-300 transition-colors">홈</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 group" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-sage-700 dark:text-primary transition-colors" style="font-size: 26px; font-variation-settings: 'FILL' 1;">description</span>
+<span class="absolute -top-0.5 -right-1 size-2 bg-primary rounded-full ring-2 ring-white dark:ring-background-dark"></span>
+</div>
+<span class="text-[11px] font-bold text-sage-800 dark:text-primary transition-colors">기록</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 group" href="#">
+<span class="material-symbols-outlined text-sage-400 group-hover:text-sage-600 dark:text-sage-500 dark:group-hover:text-sage-300 transition-colors" style="font-size: 26px;">settings</span>
+<span class="text-[11px] font-medium text-sage-400 group-hover:text-sage-600 dark:text-sage-500 dark:group-hover:text-sage-300 transition-colors">설정</span>
+</a>
+</div>
+</div>
+
+</body></html>

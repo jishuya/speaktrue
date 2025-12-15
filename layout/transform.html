@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrueSpeak NVC 변환</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6A8D73","primary-soft": "#8FA996","background-light": "#F5F7F5","background-dark": "#1C2420","surface-light": "#ffffff",
+                        "surface-dark": "#2A332E","kakao": "#FEE500",
+                        "kakao-text": "#371D1E",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: rgba(106, 141, 115, 0.2); 
+            border-radius: 20px;
+        }
+        .glass-effect {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark min-h-screen text-slate-800 dark:text-slate-100 antialiased selection:bg-primary/20">
+<div class="relative mx-auto flex h-full w-full max-w-md flex-col overflow-hidden min-h-screen pb-6">
+<header class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-background-light/90 dark:bg-background-dark/90 glass-effect">
+<button class="flex size-10 items-center justify-center rounded-full text-slate-800 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">TrueSpeak</h1>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full text-slate-800 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">history</span>
+</button>
+</header>
+<main class="flex-1 px-5 pt-2 pb-24 flex flex-col gap-6">
+<div class="text-center space-y-2 mt-2">
+<h2 class="text-[26px] font-bold leading-tight text-slate-900 dark:text-white break-keep">
+                    지금 마음이 어떠신가요?
+                </h2>
+<p class="text-primary/90 dark:text-primary-soft font-medium text-sm">
+                    갈등을 따뜻한 연결로 변화시켜 드려요
+                </p>
+</div>
+<div class="relative group">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-emerald-400/30 rounded-xl blur opacity-30 group-focus-within:opacity-75 transition duration-500"></div>
+<div class="relative">
+<textarea class="w-full min-h-[160px] resize-none rounded-xl border-0 bg-surface-light dark:bg-surface-dark p-5 text-base leading-relaxed text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary shadow-sm" placeholder="여기에 하고 싶은 말을 자유롭게 적어보세요. 아직 예의를 갖추지 않아도 괜찮습니다. 그저 솔직한 감정을 털어놓으세요."></textarea>
+<div class="absolute bottom-3 right-3 text-xs font-medium text-slate-400">0/500</div>
+</div>
+</div>
+<button class="group relative w-full overflow-hidden rounded-full bg-primary p-4 shadow-lg shadow-primary/25 transition-all active:scale-[0.98] hover:shadow-primary/40">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+<div class="flex items-center justify-center gap-2 text-white font-bold text-lg tracking-wide">
+<span class="material-symbols-outlined filled" style="font-size: 24px; font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span>부드럽게 변환하기</span>
+</div>
+</button>
+<div class="relative overflow-hidden rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-md transition-all">
+<div class="bg-primary/10 dark:bg-primary/20 px-5 py-3 flex items-center justify-between">
+<span class="text-xs font-bold uppercase tracking-wider text-primary dark:text-primary-soft">NVC 제안 (비폭력 대화)</span>
+<span class="material-symbols-outlined text-primary/60" style="font-size: 18px;">psychology</span>
+</div>
+<div class="p-6 space-y-4">
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-100 break-keep">
+<span class="text-blue-600 dark:text-blue-400 font-medium">제가 보기에</span> 설거지가 아직 싱크대에 남아있는 것을 보면,
+                        <span class="text-purple-600 dark:text-purple-400 font-medium">마음이 좀 답답해요.</span> 왜냐하면
+                        <span class="text-emerald-600 dark:text-emerald-400 font-medium">저는 우리가 함께 쓰는 공간이</span> 잘 정돈되길 바라거든요.
+                        <span class="text-primary font-medium">혹시 잠자리에 들기 전에</span> 설거지를 정리해 주실 수 있을까요?
+                    </p>
+<div class="h-px w-full bg-slate-100 dark:bg-white/10 my-4"></div>
+<div class="flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 rounded-full bg-slate-100 dark:bg-white/10 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">content_copy</span>
+                            복사
+                        </button>
+<button class="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#FEE500] py-3 text-sm font-bold text-[#371D1E] hover:bg-[#FDD800] transition-colors">
+<span class="material-symbols-outlined filled" style="font-size: 20px; font-variation-settings: 'FILL' 1;">chat_bubble</span>
+                            카카오톡 공유
+                        </button>
+</div>
+</div>
+</div>
+<details class="group rounded-xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/5 open:bg-surface-light dark:open:bg-surface-dark overflow-hidden transition-all">
+<summary class="flex cursor-pointer items-center justify-between p-4 font-semibold text-slate-700 dark:text-slate-200 select-none list-none">
+<div class="flex items-center gap-3">
+<div class="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">lightbulb</span>
+</div>
+<span>어떻게 바뀐 건가요?</span>
+</div>
+<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180 text-slate-400" style="font-size: 24px;">keyboard_arrow_down</span>
+</summary>
+<div class="px-4 pb-5 pt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400 space-y-3">
+<p>
+                        작성하신 메시지에 <strong>NVC(비폭력 대화) 모델</strong>을 적용했습니다:
+                    </p>
+<ul class="space-y-2 pl-2">
+<li class="flex gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></span>
+<span><strong>관찰 (Observation):</strong> 판단 없이 사실 그대로 말하기</span>
+</li>
+<li class="flex gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0"></span>
+<span><strong>느낌 (Feeling):</strong> 비난이 아닌 내 감정을 표현하기</span>
+</li>
+<li class="flex gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
+<span><strong>욕구 (Need):</strong> 내가 진정으로 원하는 가치를 찾기</span>
+</li>
+</ul>
+</div>
+</details>
+</main>
+</div>
+
+</body></html>

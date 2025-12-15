@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrueSpeak 감정 대화</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6B8E76","background-light": "#F7F9F8",
+                        "background-dark": "#1A2320",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#252F2B",
+                        "bubble-ai-light": "#EBF2EE",
+                        "bubble-ai-dark": "#2F3B36",
+                        "text-primary-light": "#1F2925",
+                        "text-primary-dark": "#F0F4F2",
+                        "text-secondary-light": "#5D7066",
+                        "text-secondary-dark": "#9CAEA6",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans KR", "Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(107, 142, 118, 0.15)",
+                        "floating": "0 8px 30px -4px rgba(0, 0, 0, 0.1)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+        }html {
+            scroll-behavior: smooth;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark antialiased selection:bg-primary/20">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<header class="flex items-center justify-between p-4 pt-6 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm z-20 border-b border-primary/5 dark:border-white/5 sticky top-0">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-text-primary-light dark:text-text-primary-dark">arrow_back</span>
+</button>
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="Friendly AI avatar with warm smile" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0uFiH884dDSB7VC4SOr54KcG0OrcTLbTmwB_78sTgwjh8gBhmMY33BjE3zC4fWl1q2sl9r8YJprwDgeVkdmzKQbGa_SggIMSQrQriQCIQjmhl38XNJwtQvm9CvgsbkGiern8Xq3qAb4SX0nQsgVw_T4-IzDb4IrstbD8CJPiVIoHA_v7UO-4H2fye9r-gpGc9jcoa2YR5dE4Dhn63Bkrm24aEdz_3E5UPgkCCNJ2EgWqJ9HlDdjLuoqdNvKZ0u33bx6In0Yaezu8s");'>
+</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background-light dark:border-background-dark rounded-full"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-lg font-bold leading-tight">TrueSpeak AI</h2>
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-medium">항상 경청 중</span>
+</div>
+</div>
+<button aria-label="Get crisis help" class="flex items-center justify-center rounded-full w-10 h-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_florist</span>
+</button>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-6 scroll-smooth pb-32">
+<div class="flex justify-center">
+<span class="text-xs font-medium text-text-secondary-light/60 dark:text-text-secondary-dark/40 bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full">오늘, 오후 8:42</span>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-end gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-8 h-8 shrink-0 mb-1" data-alt="Friendly AI avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCez5Mw8DODijP9K-Vby7JezzXt155cx9rd1gJTPygHtrhSVsb24vV9NHPHWM7AQeb7T5N9P3QMbyv9Jdj6_9ACRr_GLqomSruOWfUw40zDwtbh_gOrSXs8eyMq7zzGNdB-3QsOCkgiaR_NLjOiyeCy9l7-jRZ3Qt0ntAh-5jVPbxHZ7b1KBFomxRy8uqvov6PM2LVCvOQztFwitviiEr18MGZaPh3FOCtocOKBuxjew9WVOjsOnvJKAhKTuMcrGVCYaUMwT3zV-htm");'>
+</div>
+<div class="flex flex-col gap-1 max-w-[85%]">
+<div class="p-4 rounded-2xl rounded-bl-none bg-bubble-ai-light dark:bg-bubble-ai-dark text-text-primary-light dark:text-text-primary-dark shadow-sm">
+<p class="leading-relaxed">부엌이 엉망이라 답답함을 느끼고 계시군요. 질서와 책임을 함께 나누고 싶은 마음이신 것 같은데, 맞나요?</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 pl-11">
+<button class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-200 text-xs font-semibold hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                        답답함
+                    </button>
+<button class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 text-xs font-semibold hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        질서의 욕구
+                    </button>
+<button class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-200 text-xs font-semibold hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                        책임 분담
+                    </button>
+</div>
+</div>
+<div class="flex items-end justify-end gap-3">
+<div class="flex flex-col items-end gap-1 max-w-[80%]">
+<div class="p-4 rounded-2xl rounded-br-none bg-primary text-white shadow-md shadow-primary/20">
+<p class="leading-relaxed">네, 맞아요. 저만 신경 쓰는 것 같아서 너무 속상해요.</p>
+</div>
+<span class="text-[11px] text-text-secondary-light dark:text-text-secondary-dark/60 pr-1">읽음 오후 8:45</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-end gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-8 h-8 shrink-0 mb-1" data-alt="Friendly AI avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcWUwrVa1qXwKjgfHZeg4F2_rAkpf_YeGv1y-Qh2-zF3pMTTlcYoaugFOvO2Mn570-rWOX7WQjifeJAYj5aXrhYmi6q3VMTLVvS8j8-jdnqE3mdQa8FX9kvA2lC0XMiKuYYWPJ2sN2wClKOR4d5g79LvYKon_IyAfGZGYKxXmPkXACCK06KK1iBCYeiEJ-r6Tw8begzQvJnl4XvkiYmhY1lifsKFjH6My_SDeHADbEf-5PYj5U_QnBuKqJVG52j0pFhqOiZTJHpHce");'>
+</div>
+<div class="flex flex-col gap-1 max-w-[85%]">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold text-primary">NVC 코치</span>
+</div>
+<div class="p-4 rounded-2xl rounded-bl-none bg-bubble-ai-light dark:bg-bubble-ai-dark text-text-primary-light dark:text-text-primary-dark shadow-sm">
+<p class="leading-relaxed">마음이 많이 무거우시겠어요. 혼자만 노력하는 것 같아 외로움도 느끼시는 것 같아요. <br/><br/>상대방이 내 마음을 더 잘 들을 수 있도록, 비난하는 말 대신 다르게 표현해 볼까요?</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="absolute bottom-0 w-full bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-primary/5 dark:border-white/5 pb-6 pt-2 z-30">
+<div class="absolute -top-12 left-0 right-0 flex justify-center px-4">
+<button class="group flex items-center justify-center gap-2 bg-white dark:bg-surface-dark border border-primary/20 shadow-floating text-text-primary-light dark:text-text-primary-dark px-6 py-2.5 rounded-full hover:scale-105 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-[20px]">visibility</span>
+<span class="text-sm font-bold">상대방 관점 보기</span>
+</button>
+</div>
+<div class="px-4 mt-2">
+<div class="flex items-end gap-2 bg-white dark:bg-surface-dark p-2 rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5">
+<button class="flex items-center justify-center w-10 h-10 rounded-full text-text-secondary-light dark:text-text-secondary-dark hover:bg-black/5 dark:hover:bg-white/5 shrink-0 transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<textarea class="w-full bg-transparent border-none text-text-primary-light dark:text-text-primary-dark placeholder-text-secondary-light/60 dark:placeholder-text-secondary-dark/40 focus:ring-0 py-2.5 max-h-32 resize-none leading-normal" placeholder="감정을 입력해 주세요..." rows="1" style="min-height: 44px;"></textarea>
+<button class="flex items-center justify-center w-10 h-10 rounded-full text-text-secondary-light dark:text-text-secondary-dark hover:bg-black/5 dark:hover:bg-white/5 shrink-0 transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-primary/90 shrink-0 shadow-md shadow-primary/30 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 pointer-events-none -z-10 opacity-40 dark:opacity-10 mix-blend-multiply dark:mix-blend-overlay" style="background-image: radial-gradient(#6B8E76 0.5px, transparent 0.5px); background-size: 24px 24px;">
+</div>
+</div>
+</body></html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrueSpeak 홈 화면</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6A8D73", // Sage Green - calm and healing
+                        "primary-light": "#F2F7F5", // Very light sage background
+                        "primary-soft": "#CDE0D5", // Soft sage accent
+                        "secondary": "#EAE0D5", // Warm beige/sand for accents
+                        "background-light": "#FAF9F6", // Warm off-white (Alabaster)
+                        "background-dark": "#1F2926", // Deep green-grey
+                        "text-dark": "#2C3633", // Dark slate green
+                        "text-soft": "#788580", // Muted sage-grey
+                        "accent-warm": "#D9A066", // Muted apricot for warm highlights
+                    },
+                    fontFamily: {
+                        "display": ["'Noto Sans KR'", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2rem", 
+                        "2xl": "2.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(106, 141, 115, 0.15)',
+                        'nav': '0 -4px 20px rgba(0,0,0,0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-white transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<header class="flex items-center justify-between p-6 pt-8 pb-2">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 ring-2 ring-primary/30 p-0.5" data-alt="User profile picture of a smiling young woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuALGg4RghdltOox3ir7GSZ7t_iAwg6jzE1CXCAFsxTFncjZsR41Q8a6b6JQQpZFoTopU_tI0WHGAlqtyHMSgQonB0hMjb4X_9kr-IXUp2qVZlBAXB2HBjwkOZvRk5GDr9tLlyKgwvZ_v8-Iy_4oa8SyL43ga3vgCQLTDYW6VMonXLD8MCvNHDuTjNwdL-kjAnmmV3hZ_Q76cg7aud-8SYXI8lfg_FGFj0GaTMEgIx2-3MsXK3298_x4hymvHiPzLX2RdouZC9HWqY34");'></div>
+<div class="absolute bottom-0 right-0 size-3 bg-primary border-2 border-white rounded-full"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-primary tracking-wider uppercase">함께하기</span>
+<span class="text-lg font-bold text-text-dark dark:text-white leading-none">TrueSpeak</span>
+</div>
+</div>
+<button class="relative flex items-center justify-center size-10 rounded-full bg-white dark:bg-white/10 shadow-sm border border-gray-100 dark:border-white/5 text-text-dark dark:text-white hover:bg-gray-50 transition-colors">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="absolute top-2 right-2.5 size-2 bg-accent-warm rounded-full"></span>
+</button>
+</header>
+<div class="px-6 pb-2 pt-2">
+<h1 class="text-3xl font-extrabold text-text-dark dark:text-white leading-tight tracking-tight mb-4">
+            안녕하세요, 알렉스님. <br/>
+<span class="text-text-soft dark:text-gray-400 font-medium text-2xl">대화할 준비 되셨나요?</span>
+</h1>
+<div class="relative w-full rounded-3xl overflow-hidden bg-gradient-to-br from-primary-light to-white dark:from-background-dark dark:to-background-dark border border-primary/10 dark:border-white/10 p-6 flex items-center justify-between shadow-soft">
+<div class="flex-1 z-10">
+<p class="text-sm font-semibold text-primary mb-1 uppercase tracking-wide">오늘의 팁</p>
+<p class="text-lg font-bold text-text-dark dark:text-white leading-snug mb-2 word-keep-all">대답하기 위해서가 아니라,<br/>이해하기 위해 경청하세요.</p>
+</div>
+<div class="w-28 h-24 bg-contain bg-right bg-no-repeat opacity-90" data-alt="Illustration of a cute couple sitting back to back holding hands with a heart floating above" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzCY1BRMODiJY6ZiaEmmS39bxniMBpiKlU2jH3gd1FfsjCeZ95OZkBdgydGhIYcElZwQnWv9HAJFtmgCEM7DYTfFHPBLbnrx7A4FFfkH4SAlCIYXjawOJEMFFeQ9Uhybj7UHrtesTAyT6oMkZpDzXLr4XcDKKNSqFEPw9r9UuR1t-vaKp98usA5rQOZ8lMC0ysAzAAoXWh65H5JW68ymUPQgp65L24UY_xw3d37mvrMT6KoHJUpOafXxUv6Dz11_IoCnXOA5I9BsvB"); background-blend-mode: multiply;'>
+<div class="w-full h-full flex items-center justify-center text-primary/20">
+<span class="material-symbols-outlined text-6xl">favorite</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 py-4">
+<div class="flex items-center gap-3 bg-[#F2F7F5] dark:bg-white/5 p-4 rounded-2xl border border-primary/10">
+<div class="size-10 rounded-full bg-white dark:bg-white/10 flex items-center justify-center shadow-sm text-primary">
+<span class="material-symbols-outlined filled">spa</span>
+</div>
+<div class="flex-1">
+<p class="text-sm text-text-soft dark:text-gray-400 font-medium">평화 유지 기록</p>
+<div class="flex items-baseline gap-1">
+<span class="text-xl font-bold text-text-dark dark:text-white">12일째</span>
+<span class="text-xs text-primary font-medium">잘하고 있어요!</span>
+</div>
+</div>
+<div class="h-10 w-px bg-primary/10"></div>
+<div class="pl-2">
+<span class="material-symbols-outlined text-primary/40 text-3xl">sentiment_satisfied</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 px-6 mb-2">
+<button class="group relative flex flex-col items-start justify-between h-48 p-5 bg-[#F1F8F6] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20">
+<div class="bg-white dark:bg-white/10 size-12 rounded-full flex items-center justify-center text-primary shadow-sm mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">favorite</span>
+</div>
+<div class="text-left z-10">
+<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight">마음<br/>표현하기</h3>
+<p class="text-xs text-[#5A7565] dark:text-gray-400 font-medium">솔직한 대화가 필요해...</p>
+</div>
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
+</button>
+<button class="group relative flex flex-col items-start justify-between h-48 p-5 bg-[#FAF7F0] dark:bg-gray-800 rounded-[2rem] transition-all active:scale-95 hover:shadow-lg hover:shadow-yellow-500/10 border border-transparent hover:border-secondary">
+<div class="bg-white dark:bg-white/10 size-12 rounded-full flex items-center justify-center text-accent-warm shadow-sm mb-4 group-hover:bg-accent-warm group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">tips_and_updates</span>
+</div>
+<div class="text-left z-10">
+<h3 class="text-lg font-bold text-text-dark dark:text-white mb-1 leading-tight tracking-tight">따뜻하게<br/>말하기</h3>
+<p class="text-xs text-[#9C7C58] dark:text-gray-400 font-medium">상처주지 않으려면?</p>
+</div>
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/60 to-transparent rounded-bl-full opacity-60 pointer-events-none"></div>
+</button>
+</div>
+<div class="flex flex-col gap-4 py-6">
+<div class="flex items-center justify-between px-6">
+<h3 class="text-lg font-bold text-text-dark dark:text-white">우리의 여정</h3>
+<button class="text-sm font-semibold text-primary">더보기</button>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 px-6 pb-4 snap-x">
+<div class="min-w-[240px] snap-center bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-4 rounded-2xl shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-gray-400 uppercase tracking-wide">어제</span>
+<div class="flex text-yellow-400 text-xs">★★★★★</div>
+</div>
+<div>
+<p class="font-bold text-text-dark dark:text-white text-base">일요일의 대화</p>
+<p class="text-sm text-text-soft dark:text-gray-400 line-clamp-1 mt-1">집안일 분담에 대해 이야기를 나누고...</p>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full bg-cover ring-2 ring-white dark:ring-gray-800" data-alt="User avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDLFIJQHY78xArDdrq1ZHS4hAcUPs7lBDin7aAauZMhFi4DUhNYC12D4AOHeLdIFcNU9MQxaaKTIXLgQhSsyx2jQQPfEawRQYPU0SONu143Q2DW83Mf8rh6bqLz3bg_TjtJwkBr7lxeM2ice-jGPU1WIsQFUOCob5FBKzYERXcEu8CB94oYXQ7grz43nI_QuE_NSzE1ojohzaUpL3zGPGHp5GMUIM_duZgIOZSoumjsNQbTcssxmy932WEe807_x7O-c8aK2QcBJC-Q");'></div>
+<div class="size-6 rounded-full bg-cover ring-2 ring-white dark:ring-gray-800" data-alt="Partner avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAscrjTbUjc_rYbE44Tz8YBFGp9N6kUsmlcAmZynwGC_Q5ehPDjmBdqEqo-3Thjg3HkkyoH_cPHYI5pltYMS_oJBHOdUK88LJsG7NXF7u7lsPpEE872E0ocnBiX-xo5r9V2wwEJorgoQqhNqOJ2bYq5foyhZjOfYlGwyVfubnnC7_1-de_8Ww315IMK1DTWmzMSAIXF5wYfWP0i22cLvU2UO25LbnN-2LwOBtima_VjeIddY0G2_ZpgISlsU3CQE7FNDHXfTmf3HqDH");'></div>
+</div>
+<span class="text-xs text-primary font-medium bg-primary/10 px-2 py-0.5 rounded-full">해결됨</span>
+</div>
+</div>
+<div class="min-w-[240px] snap-center bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-4 rounded-2xl shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-gray-400 uppercase tracking-wide">10월 24일 (금)</span>
+</div>
+<div>
+<p class="font-bold text-text-dark dark:text-white text-base">고마움의 쪽지</p>
+<p class="text-sm text-text-soft dark:text-gray-400 line-clamp-1 mt-1">내 이야기를 끝까지 들어줘서 고마...</p>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<div class="size-6 rounded-full bg-cover ring-2 ring-white dark:ring-gray-800" data-alt="Partner avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCV17mh6L-Qwb4a4bC7N4fKlc4OwkgynL928fZe08yjgypIgMG285T9SXx0nRp24OjQ6q866OSSnSPFjYx4U5xhPgxqSuxBjWO4hoBrEzNg46vEg3ow2zN-UkWMYridh3F9NSIzGBbVLqU7_y9gYjhpsXEWfAgSKu_ey8fNsPgT6mlVmQ9O2bcxrwIqw3H1veVGlNJ4X2XbpSiK9m6mmxslZugcpZsLi7vmTVdB_DVhJIt8EDzELbfDbiZI8Lzh8ljgyEPCQfNtGb6c");'></div>
+<span class="text-xs text-primary font-medium bg-primary/10 px-2 py-0.5 rounded-full">감사함</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-24"></div>
+<div class="fixed bottom-6 left-0 right-0 px-6 z-50 pointer-events-none">
+<div class="max-w-md mx-auto pointer-events-auto">
+<nav class="bg-white dark:bg-[#2A1D18] rounded-full shadow-nav border border-gray-100 dark:border-white/5 p-2 flex justify-between items-center relative">
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-primary">
+<span class="material-symbols-outlined filled">home</span>
+<span class="text-[10px] font-bold">홈</span>
+</button>
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] font-medium">배움</span>
+</button>
+<div class="relative -top-6 mx-2">
+<button class="size-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center transform transition hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-[28px]">edit_note</span>
+</button>
+</div>
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium">기록</span>
+</button>
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-12 rounded-full text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">프로필</span>
+</button>
+</nav>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrueSpeak Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8DA399", 
+                        "primary-dark": "#6B8278",
+                        "secondary": "#B5C9BE",
+                        "background-light": "#F5F7F5",
+                        "background-dark": "#1A1C1A",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#242624",
+                        "text-main": "#2C3E34",
+                        "text-sub": "#5C6E64",
+                        "sage-100": "#E6EBE8",
+                        "sage-200": "#CCD7D1",
+                        "sage-600": "#6B8278",
+                        "sage-800": "#3E4F46",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"],
+                        "body": ["Noto Sans KR", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 min-h-screen pb-24">
+<div class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-3 flex items-center justify-between transition-colors">
+<button class="flex items-center justify-center w-10 h-10 rounded-full active:bg-sage-100 dark:active:bg-gray-700 transition-colors text-text-main dark:text-white">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-text-main dark:text-white flex-1 text-center pr-10">설정</h1>
+</div>
+<div class="flex flex-col w-full max-w-md mx-auto">
+<div class="px-4 py-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-sage-100 dark:border-gray-800 flex flex-col items-center gap-4 relative overflow-hidden group">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all"></div>
+<div class="relative">
+<div class="w-24 h-24 rounded-full bg-sage-100 dark:bg-gray-700 bg-cover bg-center border-4 border-white dark:border-gray-800 shadow-md ring-1 ring-sage-100 dark:ring-gray-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBsXJheijPcPtnrH9aBQ3M-yGjsobunJD3X7XPvfNBPoysNkqzlMcY49uLsykMh9e055bcBu9gM5z93Bb30OURT_dWsWwMSGV9FFKz3JZxeIcrVWUOLLQ8JoRvmu3GLvOc8-6nqQgAi1ZZfPaRtJggi7bVwVw5ZAEnljlLD524I6vIgla1jS2qDJyDIb-gFohrPemREMZMsef5TLpVBO2Ci1BktfHJO6EDuMiCMRLHc4EeveYqG_GSp6UGLMX5MeWNOWsx7cpWezhcp');"></div>
+<button class="absolute bottom-0 right-0 bg-primary hover:bg-primary-dark text-white p-1.5 rounded-full shadow-md transition-colors flex items-center justify-center border-2 border-white dark:border-surface-dark">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<div class="text-center">
+<h2 class="text-xl font-bold text-text-main dark:text-white">김지수</h2>
+<p class="text-text-sub dark:text-gray-400 text-sm mt-1">jisoo.kim@truespeak.com</p>
+</div>
+<button class="w-full mt-2 py-2.5 px-4 bg-sage-100 hover:bg-sage-200 dark:bg-primary/20 dark:hover:bg-primary/30 text-sage-800 dark:text-primary rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
+<span>프로필 수정</span>
+</button>
+</div>
+</div>
+<div class="px-4 mb-2">
+<h3 class="text-xs font-bold text-sage-600 dark:text-gray-500 uppercase tracking-wider mb-3 ml-2">앱 설정</h3>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm border border-sage-100 dark:border-gray-800">
+<div class="flex items-center justify-between p-4 border-b border-sage-100 dark:border-gray-700/50 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<div>
+<p class="font-medium text-text-main dark:text-gray-100">알림 설정</p>
+<p class="text-xs text-text-sub dark:text-gray-400">파트너 메시지 및 코칭 알림</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 dark:peer-focus:ring-primary/80 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">language</span>
+</div>
+<p class="font-medium text-text-main dark:text-gray-100">언어 설정</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-text-sub dark:text-gray-400">한국어</span>
+<span class="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 mb-2 mt-6">
+<h3 class="text-xs font-bold text-sage-600 dark:text-gray-500 uppercase tracking-wider mb-3 ml-2">인사이트 및 지원</h3>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm border border-sage-100 dark:border-gray-800">
+<div class="flex items-center justify-between p-4 border-b border-sage-100 dark:border-gray-700/50 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 dark:bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<p class="font-medium text-text-main dark:text-gray-100">대화 패턴 분석</p>
+<p class="text-xs text-text-sub dark:text-gray-400">나의 NVC 실천 기록 확인하기</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 border-b border-sage-100 dark:border-gray-700/50 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<p class="font-medium text-text-main dark:text-gray-100">사용자 가이드</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<p class="font-medium text-text-main dark:text-gray-100">의견 보내기</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="px-4 mb-8 mt-6">
+<h3 class="text-xs font-bold text-sage-600 dark:text-gray-500 uppercase tracking-wider mb-3 ml-2">계정 및 정보</h3>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm border border-sage-100 dark:border-gray-800">
+<div class="flex items-center justify-between p-4 border-b border-sage-100 dark:border-gray-700/50 hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined">description</span>
+</div>
+<p class="font-medium text-text-main dark:text-gray-100">이용 약관</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 border-b border-sage-100 dark:border-gray-700/50 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover:text-red-500 group-hover:bg-red-100 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<p class="font-medium text-text-main dark:text-gray-100 group-hover:text-red-600 transition-colors">로그아웃</p>
+</div>
+</div>
+<div class="p-4 flex items-center justify-center hover:bg-sage-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+<p class="text-xs font-medium text-gray-400 hover:text-red-500 hover:underline transition-all">계정 삭제</p>
+</div>
+</div>
+<div class="text-center mt-6">
+<p class="text-xs text-gray-400 dark:text-gray-600 font-display">TrueSpeak v1.0.2</p>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 w-full bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-sage-200 dark:border-gray-800 px-6 py-3 flex justify-between items-center z-40 max-w-md left-1/2 -translate-x-1/2 pb-8 pt-4 rounded-t-3xl">
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">홈</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium">기록</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined icon-filled">settings</span>
+<span class="text-[10px] font-bold">설정</span>
+</button>
+</div>
+
+</body></html>
