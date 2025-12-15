@@ -5,3 +5,5 @@ export { default as TransformScreen } from './TransformScreen';
 export { default as HistoryScreen } from './HistoryScreen';
 export { default as PatternsScreen } from './PatternsScreen';
 export { default as SettingsScreen } from './SettingsScreen';
+export { default as LoginScreen } from './LoginScreen';
+export { default as RecordingDetailScreen } from './RecordingDetailScreen';

@@ -9,6 +9,8 @@ import {
   HistoryScreen,
   PatternsScreen,
   SettingsScreen,
+  LoginScreen,
+  RecordingDetailScreen,
 } from '../screens';
 import { COLORS } from '../constants/theme';
 
@@ -52,6 +54,16 @@ export default function AppNavigator() {
 
         {/* Patterns Screen */}
         <Stack.Screen name="Patterns" component={PatternsScreen} />
+
+        {/* Auth Screens */}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ animation: 'fade' }}
+        />
+
+        {/* Recording Detail Screen */}
+        <Stack.Screen name="RecordingDetail" component={RecordingDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
