@@ -1,71 +1,71 @@
-// TrueSpeak Theme - �� �� qD \ 0;X� (�\ �� �
+// TrueSpeak 테마 - 커플 소통 앱 디자인 시스템
 export const COLORS = {
-  // Primary - Sage Green ((�X� X x ��)
+  // Primary - 세이지 그린 (차분하고 신뢰감 있는 녹색)
   primary: '#6A8D73',
   primaryLight: '#8FA996',
   primaryDark: '#5D7A69',
   primarySoft: '#CDE0D5',
   primaryBg: '#F2F7F5',
 
-  // Secondary - Warm Beige/Sand
+  // Secondary - 따뜻한 베이지/샌드
   secondary: '#EAE0D5',
   secondaryBg: '#E8F0EB',
 
-  // Accent - Warm highlights
+  // Accent - 따뜻한 강조색
   accentWarm: '#D9A066',
   accentOrange: '#F5A623',
 
-  // Background
+  // Background - 배경색
   backgroundLight: '#FAF9F6',
   backgroundDark: '#1A211D',
 
-  // Surface
+  // Surface - 표면색
   surface: '#FFFFFF',
   surfaceDark: '#252E28',
 
-  // Text
+  // Text - 텍스트 색상
   textPrimary: '#2C3E33',
   textSecondary: '#687D70',
   textSoft: '#788580',
   textMuted: '#9CAEA6',
 
-  // Semantic Colors
+  // Semantic Colors - 의미 기반 색상
   success: '#28A745',
   warning: '#FFC107',
   error: '#DC3545',
   info: '#17A2B8',
 
-  // Emotion Colors ( ���)
+  // Emotion Colors - 감정 색상
   emotion: {
-    frustrated: '#F5A623',      // ��h - Orange
-    anxious: '#5B8DEF',         // �H - Blue
-    sad: '#9B59B6',             // � - Purple
-    happy: '#2ECC71',           // �� - Green
-    angry: '#E74C3C',           // T� - Red
-    peaceful: '#1ABC9C',        // �H - Teal
-    worried: '#F39C12',         // q - Amber
-    understood: '#6A8D73',      // ttL - Primary
+    frustrated: '#F5A623',      // 답답함 - 오렌지
+    anxious: '#5B8DEF',         // 불안함 - 파랑
+    sad: '#9B59B6',             // 슬픔 - 보라
+    happy: '#2ECC71',           // 기쁨 - 초록
+    angry: '#E74C3C',           // 화남 - 빨강
+    peaceful: '#1ABC9C',        // 평온함 - 청록
+    worried: '#F39C12',         // 걱정 - 호박색
+    understood: '#6A8D73',      // 이해받음 - 프라이머리
   },
 
-  // Chat Bubble Colors
+  // Chat Bubble Colors - 채팅 말풍선 색상
   bubbleAi: '#EBF2EE',
   bubbleAiDark: '#2F3B36',
   bubbleUser: '#6A8D73',
 
-  // Border & Divider
+  // Border & Divider - 테두리 및 구분선
   border: '#DEE2E6',
   borderLight: '#E8EBE8',
   divider: '#E6EBE8',
 
-  // Status
+  // Status - 상태 색상
   online: '#28A745',
   offline: '#6C757D',
 
-  // Kakao (�  0��)
+  // Kakao - 카카오 로그인
   kakao: '#FEE500',
   kakaoText: '#371D1E',
 
-  // Transparent
+  // Transparent - 투명 오버레이
   overlay: 'rgba(0, 0, 0, 0.5)',
   overlayLight: 'rgba(0, 0, 0, 0.1)',
 };
@@ -147,7 +147,7 @@ export const SHADOWS = {
   },
 };
 
-// Tt� 0� ��|
+// 화면 기본 패딩
 export const SCREEN_PADDING = {
   horizontal: SPACING.lg,
   vertical: SPACING.md,
