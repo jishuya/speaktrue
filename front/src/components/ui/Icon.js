@@ -1,115 +1,116 @@
-import { Iconify } from 'react-native-iconify';
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/theme';
 
-// MaterialIcons name -> Iconify icon name mapping (outline style)
+// Icon mapping: name -> { set, iconName }
+// set: 'ion' (Ionicons), 'mat' (MaterialIcons), 'mci' (MaterialCommunityIcons)
 const ICON_MAP = {
   // Navigation
-  'arrow-back': 'solar:arrow-left-linear',
-  'arrow-back-ios': 'solar:arrow-left-linear',
-  'arrow-forward': 'solar:arrow-right-linear',
-  'chevron-right': 'solar:alt-arrow-right-linear',
-  'chevron-left': 'solar:alt-arrow-left-linear',
-  'close': 'solar:close-circle-linear',
-  'menu': 'solar:hamburger-menu-linear',
-  'more-horiz': 'solar:menu-dots-linear',
-  'more-vert': 'solar:menu-dots-bold',
-  'expand-more': 'solar:alt-arrow-down-linear',
-  'expand-less': 'solar:alt-arrow-up-linear',
+  'arrow-back': { set: 'ion', iconName: 'arrow-back' },
+  'arrow-back-ios': { set: 'ion', iconName: 'chevron-back' },
+  'arrow-forward': { set: 'ion', iconName: 'arrow-forward' },
+  'chevron-right': { set: 'ion', iconName: 'chevron-forward' },
+  'chevron-left': { set: 'ion', iconName: 'chevron-back' },
+  'close': { set: 'ion', iconName: 'close' },
+  'menu': { set: 'ion', iconName: 'menu' },
+  'more-horiz': { set: 'mat', iconName: 'more-horiz' },
+  'more-vert': { set: 'mat', iconName: 'more-vert' },
+  'expand-more': { set: 'mat', iconName: 'expand-more' },
+  'expand-less': { set: 'mat', iconName: 'expand-less' },
 
   // Actions
-  'edit': 'solar:pen-linear',
-  'delete': 'solar:trash-bin-minimalistic-linear',
-  'content-copy': 'solar:copy-linear',
-  'send': 'solar:plain-linear',
-  'search': 'solar:magnifer-linear',
-  'search-off': 'solar:magnifer-zoom-out-linear',
-  'add': 'solar:add-circle-linear',
-  'add-circle-outline': 'solar:add-circle-linear',
-  'remove': 'solar:minus-circle-linear',
-  'refresh': 'solar:refresh-linear',
-  'share': 'solar:share-linear',
-  'download': 'solar:download-linear',
-  'upload': 'solar:upload-linear',
-  'logout': 'solar:logout-2-linear',
-  'login': 'solar:login-2-linear',
+  'edit': { set: 'mat', iconName: 'edit' },
+  'delete': { set: 'mat', iconName: 'delete-outline' },
+  'content-copy': { set: 'mat', iconName: 'content-copy' },
+  'send': { set: 'ion', iconName: 'send' },
+  'search': { set: 'ion', iconName: 'search' },
+  'search-off': { set: 'mat', iconName: 'search-off' },
+  'add': { set: 'ion', iconName: 'add' },
+  'add-circle-outline': { set: 'ion', iconName: 'add-circle-outline' },
+  'remove': { set: 'ion', iconName: 'remove-circle-outline' },
+  'refresh': { set: 'ion', iconName: 'refresh' },
+  'share': { set: 'ion', iconName: 'share-outline' },
+  'download': { set: 'mat', iconName: 'file-download' },
+  'upload': { set: 'mat', iconName: 'file-upload' },
+  'logout': { set: 'mat', iconName: 'logout' },
+  'login': { set: 'mat', iconName: 'login' },
 
   // Media
-  'play-arrow': 'solar:play-linear',
-  'pause': 'solar:pause-linear',
-  'stop': 'solar:stop-linear',
-  'mic': 'solar:microphone-linear',
-  'mic-off': 'solar:microphone-large-linear',
-  'volume-up': 'solar:volume-loud-linear',
-  'volume-off': 'solar:volume-cross-linear',
-  'camera': 'solar:camera-linear',
-  'image': 'solar:gallery-linear',
+  'play-arrow': { set: 'ion', iconName: 'play' },
+  'pause': { set: 'ion', iconName: 'pause' },
+  'stop': { set: 'ion', iconName: 'stop' },
+  'mic': { set: 'ion', iconName: 'mic' },
+  'mic-off': { set: 'ion', iconName: 'mic-off' },
+  'volume-up': { set: 'ion', iconName: 'volume-high' },
+  'volume-off': { set: 'ion', iconName: 'volume-mute' },
+  'camera': { set: 'ion', iconName: 'camera' },
+  'image': { set: 'ion', iconName: 'image' },
 
   // Status & Feedback
-  'check': 'solar:check-read-linear',
-  'check-circle': 'solar:check-circle-linear',
-  'error': 'solar:close-circle-linear',
-  'error-outline': 'solar:danger-circle-linear',
-  'warning': 'solar:danger-triangle-linear',
-  'info': 'solar:info-circle-linear',
-  'help': 'solar:question-circle-linear',
+  'check': { set: 'ion', iconName: 'checkmark' },
+  'check-circle': { set: 'ion', iconName: 'checkmark-circle' },
+  'error': { set: 'mat', iconName: 'error' },
+  'error-outline': { set: 'mat', iconName: 'error-outline' },
+  'warning': { set: 'ion', iconName: 'warning' },
+  'info': { set: 'ion', iconName: 'information-circle' },
+  'help': { set: 'ion', iconName: 'help-circle' },
 
   // Communication
-  'chat-bubble': 'solar:chat-round-linear',
-  'chat': 'solar:chat-line-linear',
-  'mail': 'solar:letter-linear',
-  'notifications': 'solar:bell-linear',
-  'notifications-off': 'solar:bell-off-linear',
+  'chat-bubble': { set: 'ion', iconName: 'chatbubble' },
+  'chat': { set: 'ion', iconName: 'chatbubbles-outline' },
+  'mail': { set: 'ion', iconName: 'mail' },
+  'notifications': { set: 'ion', iconName: 'notifications' },
+  'notifications-off': { set: 'ion', iconName: 'notifications-off' },
 
   // User & People
-  'person': 'solar:user-linear',
-  'people': 'solar:users-group-rounded-linear',
-  'diversity-1': 'solar:users-group-two-rounded-linear',
-  'account-circle': 'solar:user-circle-linear',
+  'person': { set: 'ion', iconName: 'person' },
+  'people': { set: 'ion', iconName: 'people' },
+  'diversity-1': { set: 'mci', iconName: 'account-group' },
+  'account-circle': { set: 'mat', iconName: 'account-circle' },
 
   // Emotion & Sentiment
-  'favorite': 'solar:heart-linear',
-  'favorite-border': 'solar:heart-linear',
-  'thumb-up': 'solar:like-linear',
-  'thumb-down': 'solar:dislike-linear',
-  'sentiment-satisfied': 'solar:emoji-funny-circle-linear',
-  'sentiment-dissatisfied': 'solar:sad-circle-linear',
-  'sentiment-neutral': 'solar:face-scan-circle-linear',
-  'sentiment-very-satisfied': 'solar:emoji-funny-circle-linear',
+  'favorite': { set: 'ion', iconName: 'heart' },
+  'favorite-border': { set: 'ion', iconName: 'heart-outline' },
+  'thumb-up': { set: 'ion', iconName: 'thumbs-up' },
+  'thumb-down': { set: 'ion', iconName: 'thumbs-down' },
+  'sentiment-satisfied': { set: 'mat', iconName: 'sentiment-satisfied' },
+  'sentiment-dissatisfied': { set: 'mat', iconName: 'sentiment-dissatisfied' },
+  'sentiment-neutral': { set: 'mat', iconName: 'sentiment-neutral' },
+  'sentiment-very-satisfied': { set: 'mat', iconName: 'sentiment-very-satisfied' },
 
   // Nature & Wellness
-  'spa': 'solar:leaf-linear',
-  'local-florist': 'solar:flower-linear',
-  'eco': 'solar:leaf-linear',
+  'spa': { set: 'mat', iconName: 'spa' },
+  'local-florist': { set: 'mat', iconName: 'local-florist' },
+  'eco': { set: 'mat', iconName: 'eco' },
 
   // Objects
-  'lightbulb': 'solar:lightbulb-linear',
-  'lock': 'solar:lock-linear',
-  'lock-open': 'solar:lock-unlocked-linear',
-  'visibility': 'solar:eye-linear',
-  'visibility-off': 'solar:eye-closed-linear',
-  'settings': 'solar:settings-linear',
-  'history': 'solar:history-linear',
-  'home': 'solar:home-smile-linear',
-  'inbox': 'solar:inbox-linear',
-  'description': 'solar:document-text-linear',
-  'menu-book': 'solar:book-linear',
-  'analytics': 'solar:chart-linear',
-  'trending-up': 'solar:graph-up-linear',
-  'language': 'solar:global-linear',
+  'lightbulb': { set: 'ion', iconName: 'bulb' },
+  'lock': { set: 'ion', iconName: 'lock-closed' },
+  'lock-open': { set: 'ion', iconName: 'lock-open' },
+  'visibility': { set: 'ion', iconName: 'eye' },
+  'visibility-off': { set: 'ion', iconName: 'eye-off' },
+  'settings': { set: 'ion', iconName: 'settings' },
+  'history': { set: 'mat', iconName: 'history' },
+  'home': { set: 'ion', iconName: 'home' },
+  'inbox': { set: 'mat', iconName: 'inbox' },
+  'description': { set: 'mat', iconName: 'description' },
+  'menu-book': { set: 'mat', iconName: 'menu-book' },
+  'analytics': { set: 'ion', iconName: 'analytics' },
+  'trending-up': { set: 'ion', iconName: 'trending-up' },
+  'language': { set: 'ion', iconName: 'globe' },
 
   // AI & Tech
-  'auto-awesome': 'solar:magic-stick-3-linear',
-  'psychology': 'solar:brain-linear',
-  'smart-toy': 'solar:ghost-smile-linear',
+  'auto-awesome': { set: 'mat', iconName: 'auto-awesome' },
+  'psychology': { set: 'mat', iconName: 'psychology' },
+  'smart-toy': { set: 'mat', iconName: 'smart-toy' },
 
   // Misc
-  'apple': 'solar:apple-linear',
-  'bolt': 'solar:bolt-linear',
-  'handshake': 'solar:hand-shake-linear',
-  'wifi-off': 'solar:wifi-router-linear',
+  'apple': { set: 'ion', iconName: 'logo-apple' },
+  'bolt': { set: 'ion', iconName: 'flash' },
+  'handshake': { set: 'mci', iconName: 'handshake' },
+  'wifi-off': { set: 'ion', iconName: 'wifi' },
 
   // Default fallback
-  'default': 'solar:question-circle-linear',
+  'default': { set: 'ion', iconName: 'help-circle' },
 };
 
 export default function Icon({
@@ -118,16 +119,25 @@ export default function Icon({
   color = COLORS.textPrimary,
   style,
 }) {
-  const iconName = ICON_MAP[name] || ICON_MAP['default'];
+  const iconConfig = ICON_MAP[name] || ICON_MAP['default'];
+  const { set, iconName } = iconConfig;
 
-  return (
-    <Iconify
-      icon={iconName}
-      size={size}
-      color={color}
-      style={style}
-    />
-  );
+  const iconProps = {
+    name: iconName,
+    size,
+    color,
+    style,
+  };
+
+  switch (set) {
+    case 'mat':
+      return <MaterialIcons {...iconProps} />;
+    case 'mci':
+      return <MaterialCommunityIcons {...iconProps} />;
+    case 'ion':
+    default:
+      return <Ionicons {...iconProps} />;
+  }
 }
 
 // Export mapping for reference

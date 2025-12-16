@@ -72,8 +72,12 @@ export default function HomeScreen({ navigation }) {
       >
         {/* Greeting */}
         <View style={styles.greetingSection}>
+
+
+
+          
           <Text style={styles.greetingTitle}>
-            안녕하세요, 알렉스님.
+            안녕하세요, 지수님.
           </Text>
           <Text style={styles.greetingSubtitle}>
             오늘은 어떤 마음인가요?
