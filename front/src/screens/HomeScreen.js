@@ -47,21 +47,15 @@ export default function HomeScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.profileContainer}>
-            <Image
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALGg4RghdltOox3ir7GSZ7t_iAwg6jzE1CXCAFsxTFncjZsR41Q8a6b6JQQpZFoTopU_tI0WHGAlqtyHMSgQonB0hMjb4X_9kr-IXUp2qVZlBAXB2HBjwkOZvRk5GDr9tLlyKgwvZ_v8-Iy_4oa8SyL43ga3vgCQLTDYW6VMonXLD8MCvNHDuTjNwdL-kjAnmmV3hZ_Q76cg7aud-8SYXI8lfg_FGFj0GaTMEgIx2-3MsXK3298_x4hymvHiPzLX2RdouZC9HWqY34' }}
-              style={styles.profileImage}
-            />
-            <View style={styles.onlineDot} />
-          </View>
           <View style={styles.headerText}>
-            <Text style={styles.headerLabel}>함께하기</Text>
-            <Text style={styles.headerTitle}>TrueSpeak</Text>
+            <Text style={styles.headerTitle}>SpeakTrue</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.notificationButton}>
-          <Icon name="notifications" size={24} color={COLORS.textPrimary} />
-          <View style={styles.notificationBadge} />
+        <TouchableOpacity style={styles.profileButton}>
+          <Image
+            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALGg4RghdltOox3ir7GSZ7t_iAwg6jzE1CXCAFsxTFncjZsR41Q8a6b6JQQpZFoTopU_tI0WHGAlqtyHMSgQonB0hMjb4X_9kr-IXUp2qVZlBAXB2HBjwkOZvRk5GDr9tLlyKgwvZ_v8-Iy_4oa8SyL43ga3vgCQLTDYW6VMonXLD8MCvNHDuTjNwdL-kjAnmmV3hZ_Q76cg7aud-8SYXI8lfg_FGFj0GaTMEgIx2-3MsXK3298_x4hymvHiPzLX2RdouZC9HWqY34' }}
+            style={styles.profileImageSmall}
+          />
         </TouchableOpacity>
       </View>
 
@@ -95,8 +89,8 @@ export default function HomeScreen({ navigation }) {
               <Icon name="favorite" size={28} color={COLORS.surface} />
             </View>
             <View style={styles.mainCtaTextContainer}>
-              <Text style={styles.mainCtaTitle}>내 편에게{'\n'}털어놓기</Text>
-              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직하게 표현해보세요.</Text>
+              <Text style={styles.mainCtaTitle}>내 편에게 털어놓기</Text>
+              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직한 심정은..</Text>
             </View>
           </View>
           <View style={styles.mainCtaGlow} />
@@ -115,7 +109,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>내가 진짜{'\n'}하고 싶은 말은</Text>
-              <Text style={styles.featureSubtitle}>마음 속 깊은 진심 찾기</Text>
+              <Text style={styles.featureSubtitle}>진심 전달하기</Text>
             </View>
             <View style={styles.featureCardGlow} />
           </TouchableOpacity>
@@ -131,7 +125,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>그때 이렇게{'\n'}말했다면</Text>
-              <Text style={styles.featureSubtitle}>더 나은 대화 연습하기</Text>
+              <Text style={styles.featureSubtitle}>대화 연습하기</Text>
             </View>
             <View style={styles.featureCardGlow} />
           </TouchableOpacity>
@@ -256,28 +250,6 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.md,
-  },
-  profileContainer: {
-    position: 'relative',
-  },
-  profileImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: `${COLORS.primary}30`,
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: COLORS.primary,
-    borderWidth: 2,
-    borderColor: COLORS.surface,
   },
   headerText: {
     gap: 2,
@@ -290,30 +262,22 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   headerTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
-  notificationButton: {
-    position: 'relative',
+  profileButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.sm,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
+    overflow: 'hidden',
   },
-  notificationBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.accentWarm,
+  profileImageSmall: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
 
   // ScrollView
@@ -331,7 +295,7 @@ const styles = StyleSheet.create({
   },
   greetingTitle: {
     fontSize: 28,
-    fontWeight: FONT_WEIGHT.extraBold,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     lineHeight: 36,
     letterSpacing: -0.5,
@@ -346,10 +310,9 @@ const styles = StyleSheet.create({
   // Main CTA Button
   mainCtaButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 40,
-    padding: SPACING.xl,
+    borderRadius: 32,
+    padding: SPACING.lg,
     marginBottom: SPACING.md,
-    minHeight: 200,
     overflow: 'hidden',
     position: 'relative',
     ...SHADOWS.lg,
@@ -379,7 +342,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   mainCtaSubtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.medium,
     color: 'rgba(255,255,255,0.9)',
   },
@@ -409,10 +372,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   featureCardWarm: {
-    backgroundColor: '#FAF7F0',
+    backgroundColor: '#F0EBE0',
   },
   featureCardGreen: {
-    backgroundColor: '#F1F8F6',
+    backgroundColor: '#E0EDE8',
   },
   featureIconContainer: {
     width: 40,
@@ -439,7 +402,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   featureSubtitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,

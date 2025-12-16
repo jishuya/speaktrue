@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   featureSubtitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     marginTop: 4,
   },
