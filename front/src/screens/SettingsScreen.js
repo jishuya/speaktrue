@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   profileEmail: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
   },
   editProfileText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
@@ -277,11 +277,11 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
   },
   deleteText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textMuted,
   },
   version: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
     textAlign: 'center',
     marginTop: SPACING.lg,

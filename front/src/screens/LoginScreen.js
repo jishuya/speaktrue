@@ -201,11 +201,11 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textMuted,
     textAlign: 'center',
     marginTop: SPACING.sm,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 
   // Form
@@ -220,13 +220,13 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   forgotPassword: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.primary,
   },
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textMuted,
     paddingHorizontal: SPACING.md,
   },
@@ -297,12 +297,12 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textMuted,
   },
   signUpLink: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     marginLeft: SPACING.xs,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.borderLight,
   },
 });

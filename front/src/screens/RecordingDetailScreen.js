@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   // Date
   dateText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textAlign: 'center',
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   audioMeta: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textMuted,
     marginTop: 2,
   },
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
   },
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   },
   insightLabel: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   insightContent: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     lineHeight: 22,
   },
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   },
   fullRecordText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
   },
 
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
   },
   emotionTagText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textPrimary,
   },
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 아바타 내 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
   },
@@ -465,13 +465,13 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     lineHeight: 22,
   },
   messageTime: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 10,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
     marginLeft: SPACING.xs,
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   },
   myMessageText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
     lineHeight: 22,
@@ -516,13 +516,13 @@ const styles = StyleSheet.create({
   },
   myAvatarText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 아바타 내 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
   myMessageTime: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 10,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
     marginRight: 44,
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   },
   nvcLabel: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
   },
   nvcText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontStyle: 'italic',
     color: COLORS.textSecondary,
     lineHeight: 22,
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
   },
   deleteText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
   },

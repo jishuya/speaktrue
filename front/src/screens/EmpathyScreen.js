@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   aiAvatarText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 아바타 내 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   headerSubtitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textSecondary,
   },
   helpButton: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.md,
   },
   dateText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션/보조 텍스트
     color: COLORS.textMuted,
     backgroundColor: `${COLORS.textPrimary}08`,
     paddingHorizontal: SPACING.md,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     borderColor: `${COLORS.primary}20`,
   },
   perspectiveButtonText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.base,  // 16px - 터치 가능 텍스트 권장 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,

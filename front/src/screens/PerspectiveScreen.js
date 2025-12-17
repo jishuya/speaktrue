@@ -184,11 +184,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   heroSubtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     textAlign: 'center',
     maxWidth: 280,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   mainCard: {
     backgroundColor: COLORS.surface,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   aiLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   feedbackLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textMuted,
   },
   feedbackButtons: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.borderLight,
   },
   feedbackButtonText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 터치 가능한 작은 버튼
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     marginLeft: 6,
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
   },
   sectionTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,  // 12px - 섹션 라벨
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     textTransform: 'uppercase',
@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   empathyLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textMuted,
   },
   empathyValue: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginTop: 2,

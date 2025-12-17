@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   timestamp: {
-    fontSize: FONT_SIZE.xs - 1,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
     marginTop: 4,
     marginRight: 4,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   coachLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
   },
   nvcLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
   },
   analysisText: {
     flex: 1,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 });

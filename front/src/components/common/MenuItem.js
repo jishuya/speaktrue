@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   subtitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textSecondary,
     marginTop: 2,
   },
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   value: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     marginRight: SPACING.sm,
   },
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   groupTitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',

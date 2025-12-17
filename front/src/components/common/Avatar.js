@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     borderColor: `${COLORS.primary}30`,
   },
   aiAvatarText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 아바타 내 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },

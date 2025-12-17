@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.primary,
     marginTop: SPACING.xs,
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: SPACING.sm,
     right: SPACING.md,
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textMuted,
   },
   transformButton: {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
   },
   resultLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   actionButtonText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
     marginLeft: SPACING.sm,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   kakaoButtonText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.kakaoText,
     marginLeft: SPACING.sm,
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.lg,
   },
   explanationText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     lineHeight: 22,
     marginBottom: SPACING.md,
@@ -436,8 +436,8 @@ const styles = StyleSheet.create({
   },
   explanationItemText: {
     flex: 1,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 });

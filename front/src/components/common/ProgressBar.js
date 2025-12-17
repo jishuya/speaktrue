@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   label: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
   },
   percentage: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.textSecondary,
   },
   track: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   verticalLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },

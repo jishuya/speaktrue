@@ -196,7 +196,7 @@ export default function HomeScreen({ navigation }) {
             onPress={() => handleNavigate('Patterns')}
           >
             <Icon name="analytics" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>패턴 분석</Text>
+            <Text style={styles.navLabel}>패턴분석</Text>
           </TouchableOpacity>
 
           {/* Center FAB */}
@@ -208,7 +208,7 @@ export default function HomeScreen({ navigation }) {
             >
               <Icon name="favorite" size={32} color={COLORS.surface} />
             </TouchableOpacity>
-            <Text style={styles.fabLabel}>내 편에게{'\n'}털어놓기</Text>
+            <Text style={styles.fabLabel}>털어놓기</Text>
           </View>
 
           <TouchableOpacity
@@ -216,7 +216,7 @@ export default function HomeScreen({ navigation }) {
             onPress={() => handleNavigate('Transform')}
           >
             <Icon name="psychology" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>진심 찾기</Text>
+            <Text style={styles.navLabel}>진심전달</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -224,7 +224,7 @@ export default function HomeScreen({ navigation }) {
             onPress={() => handleNavigate('History')}
           >
             <Icon name="history" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>대화 연습</Text>
+            <Text style={styles.navLabel}>대화연습</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -244,8 +244,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl + SPACING.sm,
-    paddingBottom: SPACING.sm,
+    paddingVertical: SPACING.md,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -267,15 +266,15 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     overflow: 'hidden',
   },
   profileImageSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: COLORS.primary,
   },
@@ -301,7 +300,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   greetingSubtitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
@@ -457,7 +456,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   journeyDate: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 12,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     textTransform: 'uppercase',
@@ -517,9 +516,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.full,
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
-    alignItems: 'flex-end',
+    alignItems: 'center',
     height: 72,
     ...SHADOWS.nav,
     borderWidth: 1,
@@ -528,12 +527,11 @@ const styles = StyleSheet.create({
   navItem: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: SPACING.sm,
+    justifyContent: 'center',
     gap: 4,
   },
   navLabel: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
     textAlign: 'center',
@@ -545,6 +543,8 @@ const styles = StyleSheet.create({
   navItemCenter: {
     width: 64,
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 6,
   },
   fabButton: {
     position: 'absolute',
@@ -558,11 +558,11 @@ const styles = StyleSheet.create({
     ...SHADOWS.xl,
   },
   fabLabel: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textAlign: 'center',
-    lineHeight: 12,
-    marginTop: SPACING.xs,
+    lineHeight: 14,
+    marginTop: 24,
   },
 });

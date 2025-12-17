@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   numberBadgeText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 10,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
   },

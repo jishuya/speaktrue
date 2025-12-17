@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tipLabel: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션/라벨
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   featureSubtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
   },
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   statSubValue: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     color: COLORS.primary,
     marginLeft: SPACING.xs,
   },
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   dateText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   tagText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.bold,
   },
 
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   insightLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primaryLight,
     textTransform: 'uppercase',
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   insightContent: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: '#E8ECE9',
     lineHeight: 22,
     opacity: 0.9,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.2)',
   },
   insightButtonText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.surface,
     marginRight: SPACING.sm,

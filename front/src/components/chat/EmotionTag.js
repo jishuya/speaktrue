@@ -179,11 +179,11 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs,
   },
   label: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.semiBold,
   },
   smallLabel: {
-    fontSize: FONT_SIZE.xs - 1,
+    fontSize: 11,  // 최소 라벨 크기
   },
 
   // Tag List
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   hashTagText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.bold,
   },
 });

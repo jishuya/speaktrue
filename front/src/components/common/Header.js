@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.sm,
   },
   subtitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',

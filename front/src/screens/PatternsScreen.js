@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   periodText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     color: COLORS.textSecondary,
     marginRight: 4,
   },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   summaryLabel: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     marginBottom: 4,
   },
@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   trendText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primaryDark,
   },
   summaryHint: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
   },
   section: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   sectionLink: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     color: COLORS.textSecondary,
   },
   chartCard: {

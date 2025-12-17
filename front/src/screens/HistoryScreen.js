@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   summarySubtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 라벨 크기
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
     marginBottom: 4,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.md,
   },
   filterText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
   },
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentOrange,
   },
   dateText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,  // 12px - 캡션
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',

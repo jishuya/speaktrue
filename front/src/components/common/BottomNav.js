@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   navLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,  // 최소 네비게이션 라벨 크기
     color: COLORS.textMuted,
     marginTop: 2,
   },
