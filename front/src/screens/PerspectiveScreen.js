@@ -7,22 +7,21 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Button } from '../components/common';
+import { Header, Button } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 export default function PerspectiveScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>관점 전환</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <Icon name="close" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="관점 전환"
+        showBack
+        showClose
+        centerTitle
+        onBackPress={() => navigation.goBack()}
+        onClosePress={() => navigation.goBack()}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -121,27 +120,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.md,
-    backgroundColor: COLORS.backgroundLight,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
   },
   scrollView: {
     flex: 1,

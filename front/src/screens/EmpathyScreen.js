@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
+import { Header } from '../components/common';
 import { ChatBubble, EmotionTagList, ChatInput } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -93,24 +94,24 @@ export default function EmpathyScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <View style={styles.aiAvatarSmall}>
-            <Text style={styles.aiAvatarText}>AI</Text>
-            <View style={styles.onlineDot} />
+      <Header
+        showBack
+        showProfile
+        borderBottom
+        onBackPress={() => navigation.goBack()}
+        leftComponent={
+          <View style={styles.headerCenter}>
+            <View style={styles.aiAvatarSmall}>
+              <Text style={styles.aiAvatarText}>AI</Text>
+              <View style={styles.onlineDot} />
+            </View>
+            <View style={styles.headerInfo}>
+              <Text style={styles.headerTitle}>TrueSpeak AI</Text>
+              <Text style={styles.headerSubtitle}>항상 경청 중</Text>
+            </View>
           </View>
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>TrueSpeak AI</Text>
-            <Text style={styles.headerSubtitle}>항상 경청 중</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.helpButton}>
-          <Icon name="local-florist" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
-      </View>
+        }
+      />
 
       {/* Chat Area */}
       <KeyboardAvoidingView
@@ -157,23 +158,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.md,
-    backgroundColor: COLORS.backgroundLight,
-    borderBottomWidth: 1,
-    borderBottomColor: `${COLORS.primary}05`,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   headerCenter: {
     flex: 1,
     flexDirection: 'row',
@@ -216,16 +200,9 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   headerSubtitle: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.sm,  // 12px
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
-  },
-  helpButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${COLORS.primary}15`,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   chatContainer: {
     flex: 1,
@@ -240,6 +217,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: FONT_SIZE.sm,  // 12px - 캡션/보조 텍스트
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     backgroundColor: `${COLORS.textPrimary}08`,
     paddingHorizontal: SPACING.md,

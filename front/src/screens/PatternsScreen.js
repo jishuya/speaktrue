@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { BottomNav, InsightCard, ProgressBar } from '../components/common';
+import { Header, BottomNav, InsightCard, ProgressBar } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 const CONFLICT_DATA = [
@@ -31,15 +31,14 @@ export default function PatternsScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back-ios" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>패턴 분석</Text>
-        <TouchableOpacity style={styles.headerButton}>
-          <Icon name="more-horiz" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="패턴 분석"
+        showBack
+        centerTitle
+        rightIcon="more-horiz"
+        onBackPress={() => navigation.goBack()}
+        onRightPress={() => {}}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -151,27 +150,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.sm,
-    backgroundColor: COLORS.backgroundLight,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
   },
   scrollView: {
     flex: 1,

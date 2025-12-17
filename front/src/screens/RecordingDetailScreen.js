@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon, Badge } from '../components/ui';
+import { Header } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 // 감정 태그 데이터
@@ -65,15 +66,14 @@ export default function RecordingDetailScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>기록 상세</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={handleMore}>
-          <Icon name="more-horiz" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="기록 상세"
+        showBack
+        centerTitle
+        rightIcon="more-horiz"
+        onBackPress={handleBack}
+        onRightPress={handleMore}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -224,30 +224,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl + SPACING.md,
-    paddingBottom: SPACING.md,
-    backgroundColor: COLORS.backgroundLight,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
   },
 
   scrollView: {

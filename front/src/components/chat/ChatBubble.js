@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   timestamp: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.sm,  // 12px - 가독성 개선
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     marginTop: 4,
     marginRight: 4,

@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { BottomNav, HistoryCard } from '../components/common';
+import { Header, BottomNav, HistoryCard } from '../components/common';
 import { HashTag } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -75,15 +75,12 @@ export default function HistoryScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerLabel}>기록</Text>
-          <Text style={styles.headerTitle}>우리의 여정</Text>
-        </View>
-        <TouchableOpacity style={styles.searchButton}>
-          <Icon name="search" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-      </View>
+      <Header
+        label="기록"
+        title="우리의 여정"
+        rightIcon="search"
+        onRightPress={() => {}}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -169,39 +166,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + SPACING.md,
-    paddingBottom: SPACING.md,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerLabel: {
-    fontSize: 11,  // 최소 라벨 크기
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 2,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  searchButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.sm,
   },
   scrollView: {
     flex: 1,
