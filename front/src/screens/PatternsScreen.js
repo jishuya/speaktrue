@@ -35,6 +35,7 @@ export default function PatternsScreen({ navigation }) {
         title="패턴 분석"
         showBack
         centerTitle
+        darkBackground
         rightIcon="more-horiz"
         onBackPress={() => navigation.goBack()}
         onRightPress={() => {}}

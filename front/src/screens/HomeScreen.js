@@ -48,6 +48,7 @@ export default function HomeScreen({ navigation }) {
       {/* Header */}
       <Header
         title="SpeakTrue"
+        showLogo
         showProfile
         onProfilePress={() => handleNavigate('Settings')}
       />
@@ -77,13 +78,13 @@ export default function HomeScreen({ navigation }) {
           onPress={() => handleNavigate('Empathy')}
           activeOpacity={0.9}
         >
-          <View style={styles.mainCtaContent}>
+          <View style={styles.mainCtaContentRow}>
             <View style={styles.mainCtaIconContainer}>
-              <Icon name="favorite" size={28} color={COLORS.surface} />
+              <Icon name="hearing" size={24} color={COLORS.surface} />
             </View>
             <View style={styles.mainCtaTextContainer}>
               <Text style={styles.mainCtaTitle}>내 편에게 털어놓기</Text>
-              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직한 심정은..</Text>
+              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직하게</Text>
             </View>
           </View>
           <View style={styles.mainCtaGlow} />
@@ -261,49 +262,49 @@ const styles = StyleSheet.create({
   // Main CTA Button
   mainCtaButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 32,
-    padding: SPACING.lg,
+    borderRadius: 24,
+    padding: SPACING.md,
     marginBottom: SPACING.md,
     overflow: 'hidden',
     position: 'relative',
     ...SHADOWS.lg,
   },
-  mainCtaContent: {
-    flex: 1,
-    justifyContent: 'space-between',
+  mainCtaContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     zIndex: 1,
   },
   mainCtaIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
+    marginRight: SPACING.md,
   },
   mainCtaTextContainer: {
-    marginTop: 'auto',
+    flex: 1,
   },
   mainCtaTitle: {
-    fontSize: 24,
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
-    lineHeight: 32,
-    marginBottom: SPACING.sm,
+    lineHeight: 24,
   },
   mainCtaSubtitle: {
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.medium,
-    color: 'rgba(255,255,255,0.9)',
+    color: 'rgba(255,255,255,0.85)',
+    marginTop: 2,
   },
   mainCtaGlow: {
     position: 'absolute',
-    bottom: -40,
-    right: -40,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    bottom: -30,
+    right: -30,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { Icon } from '../ui';
+import { Icon, Logo } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
 
 const PROFILE_IMAGE_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuALGg4RghdltOox3ir7GSZ7t_iAwg6jzE1CXCAFsxTFncjZsR41Q8a6b6JQQpZFoTopU_tI0WHGAlqtyHMSgQonB0hMjb4X_9kr-IXUp2qVZlBAXB2HBjwkOZvRk5GDr9tLlyKgwvZ_v8-Iy_4oa8SyL43ga3vgCQLTDYW6VMonXLD8MCvNHDuTjNwdL-kjAnmmV3hZ_Q76cg7aud-8SYXI8lfg_FGFj0GaTMEgIx2-3MsXK3298_x4hymvHiPzLX2RdouZC9HWqY34';
@@ -12,6 +12,7 @@ export default function Header({
   showBack = false,
   showClose = false,
   showProfile = false,
+  showLogo = false,
   rightIcon,
   rightIconBadge = false,
   onBackPress,
@@ -21,6 +22,8 @@ export default function Header({
   transparent = false,
   centerTitle = false,
   borderBottom = false,
+  // HomeScreen 외의 화면에서 진한 배경색 사용
+  darkBackground = false,
   // 커스텀 좌측 컴포넌트 (AI 아바타 등)
   leftComponent,
   style,
@@ -47,8 +50,13 @@ export default function Header({
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
         )}
+        {showLogo && (
+          <View style={styles.logoContainer}>
+            <Logo size={36} color={COLORS.primary} />
+          </View>
+        )}
         {!centerTitle && title && (
-          <View style={[styles.titleContainer, showBack && styles.titleWithBack]}>
+          <View style={[styles.titleContainer, (showBack || showLogo) && styles.titleWithBack]}>
             {label && <Text style={styles.label}>{label}</Text>}
             <Text style={styles.title}>{title}</Text>
             {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -84,6 +92,7 @@ export default function Header({
       style={[
         styles.container,
         transparent && styles.transparent,
+        darkBackground && styles.darkBackground,
         borderBottom && styles.borderBottom,
         style,
       ]}
@@ -113,6 +122,9 @@ const styles = StyleSheet.create({
   transparent: {
     backgroundColor: 'transparent',
   },
+  darkBackground: {
+    backgroundColor: '#F5F2ED',
+  },
   borderBottom: {
     borderBottomWidth: 1,
     borderBottomColor: `${COLORS.primary}05`,
@@ -133,6 +145,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  logoContainer: {
+    marginRight: SPACING.xs,
   },
   titleContainer: {
     gap: 2,

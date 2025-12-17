@@ -70,6 +70,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
         title="기록 상세"
         showBack
         centerTitle
+        darkBackground
         rightIcon="more-horiz"
         onBackPress={handleBack}
         onRightPress={handleMore}

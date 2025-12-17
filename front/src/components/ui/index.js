@@ -1,6 +1,9 @@
 // Icon
 export { default as Icon } from './Icon';
 
+// Logo
+export { default as Logo } from './Logo';
+
 // Modal
 export { default as Modal, AlertModal, ConfirmModal } from './Modal';
 

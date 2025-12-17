@@ -58,6 +58,7 @@ export default function TransformScreen({ navigation }) {
         title="TrueSpeak"
         showBack
         centerTitle
+        darkBackground
         rightIcon="history"
         onBackPress={() => navigation.goBack()}
         onRightPress={() => navigation.navigate('History')}

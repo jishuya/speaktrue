@@ -98,6 +98,7 @@ export default function EmpathyScreen({ navigation }) {
         showBack
         showProfile
         borderBottom
+        darkBackground
         onBackPress={() => navigation.goBack()}
         leftComponent={
           <View style={styles.headerCenter}>

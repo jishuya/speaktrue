@@ -4,6 +4,7 @@ export { default as Button } from './Button';
 export { default as Avatar, AIAvatar } from './Avatar';
 export { default as ProgressBar, VerticalBarChart } from './ProgressBar';
 export { default as MenuItem, MenuGroup } from './MenuItem';
+export { default as PageScrollView } from './PageScrollView';
 export {
   default as Card,
   TipCard,

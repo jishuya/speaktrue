@@ -78,6 +78,7 @@ export default function HistoryScreen({ navigation }) {
       <Header
         label="기록"
         title="우리의 여정"
+        darkBackground
         rightIcon="search"
         onRightPress={() => {}}
       />

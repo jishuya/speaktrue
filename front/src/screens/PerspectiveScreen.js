@@ -19,6 +19,7 @@ export default function PerspectiveScreen({ navigation }) {
         showBack
         showClose
         centerTitle
+        darkBackground
         onBackPress={() => navigation.goBack()}
         onClosePress={() => navigation.goBack()}
       />

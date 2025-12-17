@@ -47,6 +47,7 @@ export default function SettingsScreen({ navigation }) {
         title="설정"
         showBack
         centerTitle
+        darkBackground
         onBackPress={() => navigation.goBack()}
       />
 
