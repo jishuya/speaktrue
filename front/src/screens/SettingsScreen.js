@@ -54,7 +54,7 @@ export default function SettingsScreen({ navigation }) {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Profile Card */}
         <View style={styles.profileCard}>

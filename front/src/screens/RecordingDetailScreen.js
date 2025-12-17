@@ -79,7 +79,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Date */}
         <Text style={styles.dateText}>2023년 10월 24일 • 14분</Text>

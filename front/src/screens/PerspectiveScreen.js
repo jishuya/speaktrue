@@ -27,7 +27,7 @@ export default function PerspectiveScreen({ navigation }) {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Hero Section */}
         <View style={styles.heroSection}>

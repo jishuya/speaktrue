@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }) {
     >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         keyboardShouldPersistTaps="handled"
       >
         {/* Background decorations */}

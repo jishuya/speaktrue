@@ -86,7 +86,7 @@ export default function HistoryScreen({ navigation }) {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Summary Card */}
         <View style={styles.summaryCard}>

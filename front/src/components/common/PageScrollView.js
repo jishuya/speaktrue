@@ -8,7 +8,7 @@ export default function PageScrollView({
   contentContainerStyle,
   refreshing = false,
   onRefresh,
-  showsVerticalScrollIndicator = false,
+  showsVerticalScrollIndicator = true,
   keyboardShouldPersistTaps = 'handled',
   bottomPadding = 100,
   horizontalPadding = true,

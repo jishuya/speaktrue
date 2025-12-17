@@ -44,7 +44,7 @@ export default function PatternsScreen({ navigation }) {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Period Selector */}
         <View style={styles.periodSelector}>
