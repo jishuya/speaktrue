@@ -121,9 +121,9 @@ const styles = StyleSheet.create({
     minHeight: 36,
   },
   size_md: {
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.md + 2,
     paddingHorizontal: SPACING.lg,
-    minHeight: 48,
+    minHeight: 52,
   },
   size_lg: {
     paddingVertical: SPACING.lg,

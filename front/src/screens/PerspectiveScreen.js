@@ -29,17 +29,11 @@ export default function PerspectiveScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={true}
       >
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <View style={styles.heroIcon}>
-            <Icon name="diversity-1" size={48} color={COLORS.primary} />
-            <View style={styles.heroIconBadge}>
-              <Icon name="favorite" size={16} color={COLORS.primary} />
-            </View>
-          </View>
-          <Text style={styles.heroTitle}>알렉스의 마음 헤아리기</Text>
-          <Text style={styles.heroSubtitle}>
-            잠시 멈춰 상대방의 입장이 되어보면, 대화의 온도가 달라집니다.
+        {/* Motivation Hint */}
+        <View style={styles.motivationHint}>
+          <Icon name="ear-hearing" size={20} color={COLORS.textSecondary} style={styles.hintIcon} />
+          <Text style={styles.hintText}>
+            상대방도 나름의 이유가 있었을 거예요
           </Text>
         </View>
 
@@ -48,7 +42,7 @@ export default function PerspectiveScreen({ navigation }) {
           <View style={styles.cardGlow} />
           <View style={styles.cardHeader}>
             <View style={styles.partnerAvatar}>
-              <Text style={styles.avatarText}>상</Text>
+              <Text style={styles.avatarText}>상대</Text>
             </View>
             <View style={styles.cardHeaderText}>
               <Text style={styles.partnerName}>알렉스의 입장</Text>
@@ -60,11 +54,22 @@ export default function PerspectiveScreen({ navigation }) {
             <Text style={styles.highlight}>압도감</Text>을 느끼고 당황스러우신 것 같아요.
             관계를 소중히 여기기 때문에, 상처 주지 않고 생각을 정리할{' '}
             <Text style={styles.highlight}>자신만의 공간</Text>을 찾고 계신 듯합니다.
+            {'\n\n'}
+            알렉스님이 대화를 피하는 것처럼 보일 수 있지만, 사실은 감정이 격해진 상태에서{' '}
+            <Text style={styles.highlight}>후회할 말</Text>을 하고 싶지 않은 마음이 큰 것 같아요.
+            침묵은 무관심이 아니라, 오히려 관계를 지키려는{' '}
+            <Text style={styles.highlight}>나름의 노력</Text>일 수 있습니다.
+            {'\n\n'}
+            또한 알렉스님은 자신의 감정을 말로 표현하는 것이 익숙하지 않을 수 있어요.
+            어릴 때부터 감정을 드러내면 안 된다고 배웠거나,{' '}
+            <Text style={styles.highlight}>취약함을 보이는 것</Text>이 불편하게 느껴질 수 있습니다.
+            그래서 혼자 정리할 시간이 필요한 거예요. 이건 당신을 밀어내는 게 아니라,{' '}
+            <Text style={styles.highlight}>더 나은 대화</Text>를 위한 준비 시간입니다.
           </Text>
 
           {/* Feedback */}
           <View style={styles.feedbackSection}>
-            <Text style={styles.feedbackLabel}>도움이 되셨나요?</Text>
+            {/* <Text style={styles.feedbackLabel}>도움이 되셨나요?</Text> */}
             <View style={styles.feedbackButtons}>
               <TouchableOpacity style={styles.feedbackButton}>
                 <Icon name="thumb-up" size={18} color={COLORS.primary} />
@@ -108,7 +113,7 @@ export default function PerspectiveScreen({ navigation }) {
           title="소통할 준비가 되었어요"
           icon="arrow-forward"
           iconPosition="right"
-          size="lg"
+          size="md"
           fullWidth
           onPress={() => navigation.goBack()}
         />
@@ -129,45 +134,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingBottom: 100,
   },
-  heroSection: {
-    alignItems: 'center',
-    paddingVertical: SPACING.xl,
-  },
-  heroIcon: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: COLORS.secondaryBg,
+  motivationHint: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
-    position: 'relative',
+    paddingVertical: SPACING.lg,
+    gap: SPACING.xs,
   },
-  heroIconBadge: {
-    position: 'absolute',
-    bottom: -4,
-    right: -4,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.sm,
+  hintIcon: {
+    marginRight: 4,
   },
-  heroTitle: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: FONT_WEIGHT.extraBold,
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-  },
-  heroSubtitle: {
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
+  hintText: {
+    fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    maxWidth: 280,
-    lineHeight: 22,
   },
   mainCard: {
     backgroundColor: COLORS.surface,
@@ -218,7 +198,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   aiLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: 12,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -272,14 +252,13 @@ const styles = StyleSheet.create({
   },
   empathySection: {
     marginTop: SPACING.xl,
+    marginBottom: SPACING.xxl,
   },
   sectionTitle: {
-    fontSize: FONT_SIZE.sm,  // 12px - 섹션 라벨
-    fontWeight: FONT_WEIGHT.bold,
+    fontSize: 13,
+    fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     marginLeft: SPACING.xs,
   },
   empathyCard: {
@@ -303,22 +282,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   empathyLabel: {
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
-    color: COLORS.textMuted,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
   },
   empathyValue: {
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-    marginTop: 2,
+    marginTop: 4,
   },
   bottomCta: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: SPACING.lg,
-    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     backgroundColor: COLORS.backgroundLight,
   },
 });

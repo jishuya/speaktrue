@@ -108,6 +108,7 @@ const ICON_MAP = {
   'bolt': { set: 'ion', iconName: 'flash' },
   'handshake': { set: 'mci', iconName: 'handshake' },
   'wifi-off': { set: 'ion', iconName: 'wifi' },
+  'ear-hearing': { set: 'mci', iconName: 'ear-hearing' },
 
   // Default fallback
   'default': { set: 'ion', iconName: 'help-circle' },
