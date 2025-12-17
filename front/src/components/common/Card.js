@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
   },
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   insightLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primaryLight,
     textTransform: 'uppercase',

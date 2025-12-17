@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   title: {
-    fontSize: 26,
+    fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: SPACING.sm,
     right: SPACING.md,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
   },
   transformButton: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
   },
   resultLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',

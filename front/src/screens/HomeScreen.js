@@ -246,14 +246,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   greetingTitle: {
-    fontSize: 28,
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: '700',
     color: COLORS.textPrimary,
     lineHeight: 36,
     letterSpacing: -0.5,
   },
   greetingSubtitle: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   journeyDate: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     textTransform: 'uppercase',
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   navLabel: {
-    fontSize: 11,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
     textAlign: 'center',
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.xl,
   },
   fabLabel: {
-    fontSize: 11,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textAlign: 'center',

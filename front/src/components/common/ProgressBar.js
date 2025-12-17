@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   verticalLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },

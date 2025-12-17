@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
     marginBottom: 4,

@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   groupTitle: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',

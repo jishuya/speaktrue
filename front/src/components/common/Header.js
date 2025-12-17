@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.sm,
   },
   label: {
-    fontSize: 11,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',

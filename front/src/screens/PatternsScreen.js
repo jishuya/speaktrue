@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   summaryValue: {
-    fontSize: 40,
+    fontSize: FONT_SIZE.giant,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   trendText: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primaryDark,
   },

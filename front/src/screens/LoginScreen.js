@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 30,
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.extraBold,
     color: COLORS.textPrimary,
     letterSpacing: -0.5,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.borderLight,
   },
 });

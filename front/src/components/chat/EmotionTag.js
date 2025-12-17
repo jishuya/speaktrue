@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.semiBold,
   },
   smallLabel: {
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
   },
 
   // Tag List

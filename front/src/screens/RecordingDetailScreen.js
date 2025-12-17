@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
   },
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   insightLabel: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   },
   fullRecordText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
   },
 
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
   },
   messageTime: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
     marginLeft: SPACING.xs,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   },
   myMessageTime: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
     marginRight: 44,
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   },
   nvcLabel: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 11,  // 최소 라벨 크기
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',

@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   aiLabel: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textTransform: 'uppercase',
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxl,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
     marginBottom: SPACING.sm,
