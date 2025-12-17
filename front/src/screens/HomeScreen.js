@@ -173,55 +173,9 @@ export default function HomeScreen({ navigation }) {
           </ScrollView>
         </View>
 
-        {/* Bottom spacing for nav */}
+        {/* Bottom spacing for tab bar */}
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavContainer}>
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <Icon name="home" size={24} color={COLORS.primary} />
-            <Text style={[styles.navLabel, styles.navLabelActive]}>홈</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleNavigate('Patterns')}
-          >
-            <Icon name="analytics" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>패턴분석</Text>
-          </TouchableOpacity>
-
-          {/* Center FAB */}
-          <View style={styles.navItemCenter}>
-            <TouchableOpacity
-              style={styles.fabButton}
-              onPress={() => handleNavigate('Empathy')}
-              activeOpacity={0.9}
-            >
-              <Icon name="favorite" size={32} color={COLORS.surface} />
-            </TouchableOpacity>
-            <Text style={styles.fabLabel}>털어놓기</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleNavigate('Transform')}
-          >
-            <Icon name="psychology" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>진심전달</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleNavigate('History')}
-          >
-            <Icon name="history" size={24} color={COLORS.textMuted} />
-            <Text style={styles.navLabel}>대화연습</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
     </View>
   );
 }
@@ -456,66 +410,5 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
-  },
-
-  // Bottom Navigation
-  bottomNavContainer: {
-    position: 'absolute',
-    bottom: SPACING.lg,
-    left: SPACING.lg,
-    right: SPACING.lg,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.full,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
-    alignItems: 'center',
-    height: 72,
-    ...SHADOWS.nav,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  navLabel: {
-    fontSize: FONT_SIZE.xs,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-  },
-  navLabelActive: {
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary,
-  },
-  navItemCenter: {
-    width: 64,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 6,
-  },
-  fabButton: {
-    position: 'absolute',
-    top: -48,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.xl,
-  },
-  fabLabel: {
-    fontSize: FONT_SIZE.xs,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.primary,
-    textAlign: 'center',
-    lineHeight: 14,
-    marginTop: 24,
   },
 });
