@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
@@ -18,23 +17,16 @@ const JOURNEY_DATA = [
     date: '어제',
     title: '일요일의 대화',
     content: '집안일 분담에 대해 이야기를 나누고...',
-    tag: '해결됨',
-    hasRating: true,
-    avatars: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDLFIJQHY78xArDdrq1ZHS4hAcUPs7lBDin7aAauZMhFi4DUhNYC12D4AOHeLdIFcNU9MQxaaKTIXLgQhSsyx2jQQPfEawRQYPU0SONu143Q2DW83Mf8rh6bqLz3bg_TjtJwkBr7lxeM2ice-jGPU1WIsQFUOCob5FBKzYERXcEu8CB94oYXQ7grz43nI_QuE_NSzE1ojohzaUpL3zGPGHp5GMUIM_duZgIOZSoumjsNQbTcssxmy932WEe807_x7O-c8aK2QcBJC-Q',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAscrjTbUjc_rYbE44Tz8YBFGp9N6kUsmlcAmZynwGC_Q5ehPDjmBdqEqo-3Thjg3HkkyoH_cPHYI5pltYMS_oJBHOdUK88LJsG7NXF7u7lsPpEE872E0ocnBiX-xo5r9V2wwEJorgoQqhNqOJ2bYq5foyhZjOfYlGwyVfubnnC7_1-de_8Ww315IMK1DTWmzMSAIXF5wYfWP0i22cLvU2UO25LbnN-2LwOBtima_VjeIddY0G2_ZpgISlsU3CQE7FNDHXfTmf3HqDH',
-    ],
+    tags: ['집안일', '답답함'],
+    resolved: true,
   },
   {
     id: '2',
     date: '10월 24일 (금)',
     title: '고마움의 쪽지',
     content: '내 이야기를 끝까지 들어줘서 고마...',
-    tag: '감사함',
-    hasRating: false,
-    avatars: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCV17mh6L-Qwb4a4bC7N4fKlc4OwkgynL928fZe08yjgypIgMG285T9SXx0nRp24OjQ6q866OSSnSPFjYx4U5xhPgxqSuxBjWO4hoBrEzNg46vEg3ow2zN-UkWMYridh3F9NSIzGBbVLqU7_y9gYjhpsXEWfAgSKu_ey8fNsPgT6mlVmQ9O2bcxrwIqw3H1veVGlNJ4X2XbpSiK9m6mmxslZugcpZsLi7vmTVdB_DVhJIt8EDzELbfDbiZI8Lzh8ljgyEPCQfNtGb6c',
-    ],
+    tags: ['소통', '감사함'],
+    resolved: false,
   },
 ];
 
@@ -49,6 +41,8 @@ export default function HomeScreen({ navigation }) {
       <Header
         title="SpeakTrue"
         showLogo
+        // rightIcon="settings"
+        // onRightPress={() => handleNavigate('Settings')}
         showProfile
         onProfilePress={() => handleNavigate('Settings')}
       />
@@ -80,11 +74,11 @@ export default function HomeScreen({ navigation }) {
         >
           <View style={styles.mainCtaContentRow}>
             <View style={styles.mainCtaIconContainer}>
-              <Icon name="hearing" size={24} color={COLORS.surface} />
+              <Icon name="ear-hearing" size={28} color={COLORS.surface} />
             </View>
             <View style={styles.mainCtaTextContainer}>
-              <Text style={styles.mainCtaTitle}>내 편에게 털어놓기</Text>
-              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직하게</Text>
+              <Text style={styles.mainCtaTitle}>내 마음 털어놓기</Text>
+              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직하게 말해줘</Text>
             </View>
           </View>
           <View style={styles.mainCtaGlow} />
@@ -111,17 +105,50 @@ export default function HomeScreen({ navigation }) {
           {/* 그때 이렇게 말했다면 */}
           <TouchableOpacity
             style={[styles.featureCard, styles.featureCardGreen]}
-            onPress={() => handleNavigate('History')}
+            onPress={() => handleNavigate('Perspective')}
             activeOpacity={0.9}
           >
             <View style={[styles.featureIconContainer, styles.featureIconGreen]}>
               <Icon name="history" size={20} color={COLORS.primary} />
             </View>
             <View style={styles.featureTextContainer}>
-              <Text style={styles.featureTitle}>그때 이렇게{'\n'}말했다면</Text>
-              <Text style={styles.featureSubtitle}>대화 연습하기</Text>
+              <Text style={styles.featureTitle}>상대방 마음은{'\n'}어땠을까</Text>
+              <Text style={styles.featureSubtitle}>상대방 이해하기</Text>
             </View>
             <View style={styles.featureCardGlow} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Secondary Feature Grid */}
+        <View style={styles.featureGrid}>
+          {/* 패턴분석 */}
+          <TouchableOpacity
+            style={[styles.featureCardSmall, styles.featureCardBlue]}
+            onPress={() => handleNavigate('Patterns')}
+            activeOpacity={0.9}
+          >
+            <View style={[styles.featureIconContainer, styles.featureIconBlue]}>
+              <Icon name="analytics" size={20} color="#5B7BA3" />
+            </View>
+            <View style={styles.featureTextContainer}>
+              <Text style={styles.featureTitle}>패턴분석</Text>
+              <Text style={styles.featureSubtitle}>대화 패턴 알아보기</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* 레코딩분석 */}
+          <TouchableOpacity
+            style={[styles.featureCardSmall, styles.featureCardPurple]}
+            onPress={() => handleNavigate('RecordingDetail')}
+            activeOpacity={0.9}
+          >
+            <View style={[styles.featureIconContainer, styles.featureIconPurple]}>
+              <Icon name="mic" size={20} color="#8B7BA3" />
+            </View>
+            <View style={styles.featureTextContainer}>
+              <Text style={styles.featureTitle}>레코딩분석</Text>
+              <Text style={styles.featureSubtitle}>녹음 대화 분석하기</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -143,30 +170,22 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95}>
                 <View style={styles.journeyCardHeader}>
                   <Text style={styles.journeyDate}>{item.date}</Text>
-                  {item.hasRating && (
-                    <Text style={styles.journeyRating}>★★★★★</Text>
-                  )}
+                  <View style={[styles.statusBadge, item.resolved ? styles.resolvedBadge : styles.unresolvedBadge]}>
+                    <Text style={[styles.statusText, item.resolved ? styles.resolvedText : styles.unresolvedText]}>
+                      {item.resolved ? '해결' : '미해결'}
+                    </Text>
+                  </View>
                 </View>
                 <View style={styles.journeyCardContent}>
                   <Text style={styles.journeyTitle}>{item.title}</Text>
                   <Text style={styles.journeyContent} numberOfLines={1}>{item.content}</Text>
                 </View>
                 <View style={styles.journeyCardFooter}>
-                  <View style={styles.avatarStack}>
-                    {item.avatars.map((avatar, index) => (
-                      <Image
-                        key={index}
-                        source={{ uri: avatar }}
-                        style={[
-                          styles.avatarSmall,
-                          index > 0 && { marginLeft: -8 },
-                        ]}
-                      />
-                    ))}
-                  </View>
-                  <View style={styles.journeyTag}>
-                    <Text style={styles.journeyTagText}>{item.tag}</Text>
-                  </View>
+                  {item.tags.map((tag, index) => (
+                    <View key={index} style={styles.journeyTag}>
+                      <Text style={styles.journeyTagText}>{tag}</Text>
+                    </View>
+                  ))}
                 </View>
               </TouchableOpacity>
             ))}
@@ -217,7 +236,8 @@ const styles = StyleSheet.create({
   mainCtaButton: {
     backgroundColor: COLORS.primary,
     borderRadius: 24,
-    padding: SPACING.md,
+    padding: SPACING.lg,
+    paddingVertical: SPACING.xl,
     marginBottom: SPACING.md,
     overflow: 'hidden',
     position: 'relative',
@@ -241,10 +261,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainCtaTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
-    lineHeight: 24,
+    lineHeight: 28,
   },
   mainCtaSubtitle: {
     fontSize: FONT_SIZE.sm,
@@ -283,6 +303,21 @@ const styles = StyleSheet.create({
   featureCardGreen: {
     backgroundColor: '#E0EDE8',
   },
+  featureCardSmall: {
+    flex: 1,
+    height: 120,
+    padding: SPACING.lg,
+    borderRadius: 24,
+    justifyContent: 'space-between',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  featureCardBlue: {
+    backgroundColor: '#E0E8ED',
+  },
+  featureCardPurple: {
+    backgroundColor: '#EBE0ED',
+  },
   featureIconContainer: {
     width: 40,
     height: 40,
@@ -295,6 +330,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
   },
   featureIconGreen: {
+    backgroundColor: COLORS.surface,
+  },
+  featureIconBlue: {
+    backgroundColor: COLORS.surface,
+  },
+  featureIconPurple: {
     backgroundColor: COLORS.surface,
   },
   featureTextContainer: {
@@ -366,12 +407,27 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
-  journeyRating: {
+  statusBadge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  resolvedBadge: {
+    backgroundColor: '#E8F5E9',
+  },
+  unresolvedBadge: {
+    backgroundColor: '#FFF3E0',
+  },
+  statusText: {
     fontSize: FONT_SIZE.xs,
-    color: '#FBBF24',
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  resolvedText: {
+    color: '#2E7D32',
+  },
+  unresolvedText: {
+    color: '#E65100',
   },
   journeyCardContent: {
     gap: SPACING.xs,
@@ -387,18 +443,8 @@ const styles = StyleSheet.create({
   },
   journeyCardFooter: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  avatarStack: {
-    flexDirection: 'row',
-  },
-  avatarSmall: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: COLORS.surface,
+    flexWrap: 'wrap',
+    gap: SPACING.xs,
   },
   journeyTag: {
     backgroundColor: `${COLORS.primary}15`,

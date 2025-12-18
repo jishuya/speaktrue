@@ -96,7 +96,7 @@ export default function EmpathyScreen({ navigation }) {
       {/* Header */}
       <Header
         showBack
-        showProfile
+        // showProfile
         borderBottom
         darkBackground
         onBackPress={() => navigation.goBack()}
@@ -107,7 +107,7 @@ export default function EmpathyScreen({ navigation }) {
               <View style={styles.onlineDot} />
             </View>
             <View style={styles.headerInfo}>
-              <Text style={styles.headerTitle}>TrueSpeak AI</Text>
+              <Text style={styles.headerTitle}>SpeakTrue AI</Text>
               <Text style={styles.headerSubtitle}>항상 경청 중</Text>
             </View>
           </View>

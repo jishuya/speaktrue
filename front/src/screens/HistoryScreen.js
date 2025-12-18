@@ -5,82 +5,90 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header, BottomNav, HistoryCard } from '../components/common';
-import { HashTag } from '../components/chat';
+import { Header } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
-const FILTERS = ['전체', '주제별', '감정별', '미해결'];
-
-const HISTORY_DATA = [
+const INITIAL_HISTORY_DATA = [
   {
     id: '1',
     date: '오늘, 오후 2:30',
     content: '"싱크대에 설거지가 쌓여 있는 걸 보면 마음이 답답해요. 공용 공간이 정돈되어 있으면 좋겠거든요..."',
-    tags: [
-      { label: '집안일', color: COLORS.primary, bgColor: COLORS.primaryBg },
-      { label: '답답함', color: '#E53E3E', bgColor: '#FFF5F5' },
-    ],
-    isRecent: true,
+    tags: ['집안일', '답답함'],
+    resolved: false,
   },
   {
     id: '2',
     date: '어제',
     content: '"여행 계획을 같이 세울 때 정말 연결된 느낌이었어요. 함께하는 모험과 즐거움이 충족되었거든요..."',
-    tags: [
-      { label: '데이트', color: COLORS.primary, bgColor: COLORS.primaryBg },
-      { label: '행복', color: '#2E7D32', bgColor: '#E8F5E9' },
-      { label: '연결감', color: '#2E7D32', bgColor: '#E8F5E9' },
-    ],
-    isRecent: false,
+    tags: ['데이트', '행복'],
+    resolved: true,
   },
   {
     id: '3',
     date: '10월 10일',
     content: '"예산 검토 때문에 불안해요. 우리 미래 저축에 대한 안정과 명확성이 중요하거든요..."',
-    tags: [
-      { label: '재정', color: COLORS.primary, bgColor: COLORS.primaryBg },
-      { label: '불안', color: '#1565C0', bgColor: '#E3F2FD' },
-    ],
-    isRecent: false,
+    tags: ['재정', '불안'],
+    resolved: true,
   },
 ];
 
 export default function HistoryScreen({ navigation }) {
-  const [selectedFilter, setSelectedFilter] = useState('전체');
+  const [historyData, setHistoryData] = useState(INITIAL_HISTORY_DATA);
 
-  const handleNavigate = (screen) => {
-    navigation.navigate(screen);
+  const handleDelete = (id) => {
+    Alert.alert(
+      '기록 삭제',
+      '이 상담 기록을 삭제하시겠어요?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: () => {
+            setHistoryData(prev => prev.filter(item => item.id !== id));
+          },
+        },
+      ]
+    );
   };
 
-  const renderHistoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.historyItem} activeOpacity={0.95}>
+  const renderHistoryItem = (item) => (
+    <View key={item.id} style={styles.historyItem}>
       <View style={styles.historyHeader}>
-        <View style={styles.dateRow}>
-          <View style={[styles.dateDot, item.isRecent && styles.dateDotRecent]} />
+        <View style={styles.dateStatusRow}>
           <Text style={styles.dateText}>{item.date}</Text>
+          <View style={[styles.statusBadge, item.resolved ? styles.resolvedBadge : styles.unresolvedBadge]}>
+            <Text style={[styles.statusText, item.resolved ? styles.resolvedText : styles.unresolvedText]}>
+              {item.resolved ? '해결' : '미해결'}
+            </Text>
+          </View>
         </View>
-        <Icon name="chevron-right" size={20} color={COLORS.textMuted} />
+        <TouchableOpacity onPress={() => handleDelete(item.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Icon name="close" size={18} color={COLORS.textMuted} />
+        </TouchableOpacity>
       </View>
       <Text style={styles.historyContent} numberOfLines={2}>{item.content}</Text>
       <View style={styles.tagRow}>
         {item.tags.map((tag, index) => (
-          <HashTag key={index} label={tag.label} color={tag.color} bgColor={tag.bgColor} />
+          <View key={index} style={styles.tag}>
+            <Text style={styles.tagText}>{tag}</Text>
+          </View>
         ))}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <Header
-        label="기록"
-        title="우리의 여정"
+        title="상담 기록"
+        showBack
+        centerTitle
         darkBackground
-        rightIcon="search"
-        onRightPress={() => {}}
+        onBackPress={() => navigation.goBack()}
       />
 
       <ScrollView
@@ -90,75 +98,65 @@ export default function HistoryScreen({ navigation }) {
       >
         {/* Summary Card */}
         <View style={styles.summaryCard}>
-          <View style={styles.summaryGlow} />
-          <View style={styles.summaryHeader}>
-            <View>
-              <Text style={styles.summaryTitle}>10월 요약</Text>
-              <Text style={styles.summarySubtitle}>
-                이번 달은 <Text style={styles.summaryHighlight}>이해</Text>에 집중하셨네요.
-              </Text>
-            </View>
-            <Icon name="spa" size={48} color={`${COLORS.primary}40`} />
-          </View>
+          {/* Stats Row */}
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>해결된 대화</Text>
-              <Text style={styles.statValue}>5</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>핵심 욕구</Text>
-              <Text style={styles.statValueText}>연결</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>활동 일수</Text>
               <Text style={styles.statValue}>12</Text>
+              <Text style={styles.statLabel}>총 상담</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>9</Text>
+              <Text style={styles.statLabel}>해결</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>3</Text>
+              <Text style={styles.statLabel}>미해결</Text>
+            </View>
+          </View>
+
+          <View style={styles.tagSectionRow}>
+            <View style={styles.tagSection}>
+              <View style={styles.tagSectionHeader}>
+                <Icon name="label" size={14} color={COLORS.primary} />
+                <Text style={styles.tagSectionLabel}>자주 나온 주제</Text>
+              </View>
+              <View style={styles.tagList}>
+                {['집안일', '재정', '소통'].map((tag, index) => (
+                  <View key={index} style={styles.summaryTag}>
+                    <Text style={styles.summaryTagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.tagSectionDivider} />
+
+            <View style={styles.tagSection}>
+              <View style={styles.tagSectionHeader}>
+                <Icon name="favorite" size={14} color="#E53E3E" />
+                <Text style={styles.tagSectionLabel}>자주 나온 감정</Text>
+              </View>
+              <View style={styles.tagList}>
+                {['답답함', '불안', '서운함'].map((tag, index) => (
+                  <View key={index} style={[styles.summaryTag, styles.emotionTag]}>
+                    <Text style={[styles.summaryTagText, styles.emotionTagText]}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
             </View>
           </View>
         </View>
-
-        {/* Filter Tabs */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterScroll}
-        >
-          {FILTERS.map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              style={[
-                styles.filterButton,
-                selectedFilter === filter && styles.filterButtonActive,
-              ]}
-              onPress={() => setSelectedFilter(filter)}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  selectedFilter === filter && styles.filterTextActive,
-                ]}
-              >
-                {filter}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
 
         {/* History List */}
         <View style={styles.historyList}>
-          {HISTORY_DATA.map((item) => renderHistoryItem({ item }))}
+          {historyData.map(renderHistoryItem)}
         </View>
 
-        {/* Bottom spacing */}
+        {/* Bottom spacing for tab bar */}
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <BottomNav
-        currentRoute="History"
-        onNavigate={handleNavigate}
-      />
     </View>
   );
 }
@@ -173,6 +171,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
   },
   summaryCard: {
     backgroundColor: COLORS.primaryBg,
@@ -180,94 +179,78 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: `${COLORS.primary}15`,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  summaryGlow: {
-    position: 'absolute',
-    top: -32,
-    right: -32,
-    width: 128,
-    height: 128,
-    borderRadius: 64,
-    backgroundColor: `${COLORS.primary}15`,
-  },
-  summaryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.lg,
-  },
-  summaryTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  summarySubtitle: {
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  summaryHighlight: {
-    color: COLORS.primary,
-    fontWeight: FONT_WEIGHT.bold,
+    borderColor: `${COLORS.primary}20`,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: SPACING.lg,
   },
   statItem: {
     flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
   },
   statLabel: {
     fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  statValueText: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
+    marginTop: 4,
   },
   statDivider: {
     width: 1,
-    height: 40,
-    backgroundColor: `${COLORS.primary}20`,
+    height: 32,
+    backgroundColor: `${COLORS.primary}30`,
+  },
+  tagSectionRow: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+  },
+  tagSection: {
+    flex: 1,
+  },
+  tagSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: SPACING.xs,
+  },
+  tagSectionLabel: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textSecondary,
+  },
+  tagSectionDivider: {
+    width: 1,
+    backgroundColor: COLORS.borderLight,
     marginHorizontal: SPACING.md,
   },
-  filterScroll: {
-    paddingBottom: SPACING.md,
-    gap: SPACING.sm,
+  tagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.xs,
   },
-  filterButton: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
+  summaryTag: {
     backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-    marginRight: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: BORDER_RADIUS.full,
   },
-  filterButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-    ...SHADOWS.md,
-  },
-  filterText: {
-    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
+  summaryTagText: {
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
   },
-  filterTextActive: {
-    color: COLORS.surface,
-    fontWeight: FONT_WEIGHT.semiBold,
+  emotionTag: {
+    backgroundColor: '#FFF5F5',
+  },
+  emotionTagText: {
+    color: '#E53E3E',
   },
   historyList: {
     gap: SPACING.md,
@@ -284,36 +267,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.sm,
   },
-  dateRow: {
+  dateStatusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  dateDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: `${COLORS.primary}70`,
-    marginRight: SPACING.sm,
-  },
-  dateDotRecent: {
-    backgroundColor: COLORS.accentOrange,
+    gap: SPACING.sm,
   },
   dateText: {
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textSecondary,
-    textTransform: 'uppercase',
+  },
+  statusBadge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  resolvedBadge: {
+    backgroundColor: '#E8F5E9',
+  },
+  unresolvedBadge: {
+    backgroundColor: '#FFF3E0',
+  },
+  statusText: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  resolvedText: {
+    color: '#2E7D32',
+  },
+  unresolvedText: {
+    color: '#E65100',
   },
   historyContent: {
     fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
     lineHeight: 22,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: SPACING.sm,
+    gap: SPACING.xs,
+  },
+  tag: {
+    backgroundColor: COLORS.primaryBg,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  tagText: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.medium,
   },
 });

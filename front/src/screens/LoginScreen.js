@@ -54,7 +54,7 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.logoContainer}>
             <Icon name="spa" size={48} color={COLORS.surface} />
           </View>
-          <Text style={styles.title}>TrueSpeak</Text>
+          <Text style={styles.title}>SpeakTrue</Text>
           <Text style={styles.subtitle}>
             서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
           </Text>
@@ -139,7 +139,7 @@ export default function LoginScreen({ navigation }) {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>© TrueSpeak. All rights reserved.</Text>
+          <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

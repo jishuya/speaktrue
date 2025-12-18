@@ -145,7 +145,7 @@ export default function SettingsScreen({ navigation }) {
         </MenuGroup>
 
         {/* Version */}
-        <Text style={styles.version}>TrueSpeak v1.0.2</Text>
+        <Text style={styles.version}>SpeakTrue v1.0.2</Text>
 
         {/* Bottom spacing */}
         <View style={{ height: 100 }} />

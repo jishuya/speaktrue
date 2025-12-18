@@ -167,6 +167,12 @@ export default function AppNavigator() {
 
         {/* Recording Detail Screen */}
         <Stack.Screen name="RecordingDetail" component={RecordingDetailScreen} />
+
+        {/* Transform Screen (NVC 변환) */}
+        <Stack.Screen name="Transform" component={TransformScreen} />
+
+        {/* History Screen */}
+        <Stack.Screen name="History" component={HistoryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
