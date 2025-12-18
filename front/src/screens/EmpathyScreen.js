@@ -35,7 +35,7 @@ const INITIAL_MESSAGES = [
     id: '3',
     text: '마음이 많이 무거우시겠어요. 혼자만 노력하는 것 같아 외로움도 느끼시는 것 같아요.\n\n상대방이 내 마음을 더 잘 들을 수 있도록, 비난하는 말 대신 다르게 표현해 볼까요?',
     isUser: false,
-    coachLabel: 'NVC 코치',
+    coachLabel: '부부코칭 전문가',
   },
 ];
 

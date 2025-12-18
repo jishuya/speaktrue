@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
+
+const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai_female.png');
 
 // 아이콘이 있는 헤더 콘텐츠
 export function HeaderWithIcon({ icon, title, subtitle, iconColor = COLORS.primary }) {
@@ -17,12 +19,12 @@ export function HeaderWithIcon({ icon, title, subtitle, iconColor = COLORS.prima
   );
 }
 
-// AI 아바타가 있는 헤더 콘텐츠 (텍스트 아바타)
-export function HeaderWithAvatar({ avatarText = 'AI', title, subtitle, showOnlineDot = false }) {
+// AI 아바타가 있는 헤더 콘텐츠 (이미지 아바타)
+export function HeaderWithAvatar({ title, subtitle, showOnlineDot = false }) {
   return (
     <View style={styles.container}>
-      <View style={styles.avatarContainer}>
-        <Text style={styles.avatarText}>{avatarText}</Text>
+      <View style={styles.avatarWrapper}>
+        <Image source={AI_PROFILE_IMAGE} style={styles.avatarImage} />
         {showOnlineDot && <View style={styles.onlineDot} />}
       </View>
       <View style={styles.textContainer}>
@@ -50,19 +52,16 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: `${COLORS.primary}20`,
   },
-  avatarContainer: {
+  avatarWrapper: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
     position: 'relative',
   },
-  avatarText: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.surface,
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   onlineDot: {
     position: 'absolute',

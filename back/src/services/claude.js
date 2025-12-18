@@ -3,7 +3,7 @@ const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 class ClaudeService {
   constructor() {
     this.apiKey = process.env.CLAUDE_API_KEY;
-    this.model = process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514';
+    this.model = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20241022';
   }
 
   async sendMessage(messages, systemPrompt) {
@@ -36,10 +36,39 @@ class ClaudeService {
   }
 
   async getEmpathyResponse(userMessage) {
-    const systemPrompt = `당신은 공감 능력이 뛰어난 상담사입니다.
-사용자가 부부 갈등 상황에서 느끼는 감정을 공감하고,
-감정을 정리할 수 있도록 도와주세요.
-판단하지 않고, 따뜻하게 경청하며 응답해 주세요.`;
+    const systemPrompt = `당신은 부부관계 코칭 전문 상담사입니다.
+따뜻하고 친근한 말투로, 존댓말을 사용해 응답하세요.
+
+역할:
+1. 먼저 사용자의 감정을 공감하고 수용합니다 (1-2문장)
+2. 객관적 시각에서 상황을 분석합니다 (2-3문장)
+3. 구체적이고 실천 가능한 조언을 제안합니다 (1-2문장)
+
+원칙:
+- 상대방의 입장도 균형있게 고려합니다
+- 편들기나 비난 없이 건설적으로 접근합니다
+- 전체 응답은 200자 내외로 간결하게 작성합니다`;
+
+    return this.sendMessage(
+      [{ role: 'user', content: userMessage }],
+      systemPrompt
+    );
+  }
+
+  async getPerspectiveResponse(userMessage, partnerName = '상대방') {
+    const systemPrompt = `당신은 부부관계 코칭 전문 상담사입니다.
+${partnerName}의 입장에서 상황을 해석해주세요.
+따뜻하고 친근한 말투로, 존댓말을 사용해 응답하세요.
+
+역할:
+1. ${partnerName}이 느꼈을 감정과 생각을 설명합니다 (2-3문장)
+2. 그 행동의 숨겨진 욕구나 의도를 분석합니다 (2-3문장)
+3. 서로 이해할 수 있는 소통 방법을 제안합니다 (1-2문장)
+
+원칙:
+- 양쪽 모두의 입장을 균형있게 이해합니다
+- 비난 없이 서로를 이해할 수 있도록 돕습니다
+- 전체 응답은 250자 내외로 간결하게 작성합니다`;
 
     return this.sendMessage(
       [{ role: 'user', content: userMessage }],
@@ -50,7 +79,16 @@ class ClaudeService {
   async convertToNvc(message) {
     const systemPrompt = `당신은 비폭력대화(NVC) 전문가입니다.
 사용자가 입력한 메시지를 NVC 4단계(관찰, 감정, 욕구, 부탁)에 맞게 변환해 주세요.
-변환된 메시지는 상대방을 비난하지 않으면서도 자신의 감정과 욕구를 명확히 전달할 수 있어야 합니다.
+## 변환 원칙
+- 관찰: 구체적 상황만 ("맨날", "항상" 금지)
+- 감정: 나의 느낌 표현
+- 욕구: 내가 원하는 것
+- 부탁: 구체적이고 실행 가능한 요청
+
+## 주의사항
+- 비난, 비꼼, 과거 끄집어내기 금지
+- 카카오톡답게 자연스럽게
+- 이모지 적절히 사용 가능
 
 JSON 형식으로 응답해 주세요:
 {
