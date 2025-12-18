@@ -7,62 +7,64 @@ import {
   Platform,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
-import { ChatBubble, EmotionTagList, ChatInput } from '../components/chat';
+import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { api } from '../services';
+import { getCurrentTime, shouldShowDateSeparator } from '../utils';
 
 const INITIAL_MESSAGES = [
   {
     id: '1',
-    text: '부엌이 엉망이라 답답함을 느끼고 계시군요. 질서와 책임을 함께 나누고 싶은 마음이신 것 같은데, 맞나요?',
+    text: '안녕하세요.\n오늘 어떤 일이 있으셨나요? 마음속에 있는 이야기, 편하게 털어놓으셔도 괜찮아요. 저는 언제나 경청하고 있을게요.',
     isUser: false,
-    emotions: [
-      { type: 'frustrated', label: '답답함' },
-      { type: 'order', label: '질서의 욕구' },
-      { type: 'responsibility', label: '책임 분담' },
-    ],
-  },
-  {
-    id: '2',
-    text: '네, 맞아요. 저만 신경 쓰는 것 같아서 너무 속상해요.',
-    isUser: true,
-    timestamp: '오후 8:45',
-    isRead: true,
-  },
-  {
-    id: '3',
-    text: '마음이 많이 무거우시겠어요. 혼자만 노력하는 것 같아 외로움도 느끼시는 것 같아요.\n\n상대방이 내 마음을 더 잘 들을 수 있도록, 비난하는 말 대신 다르게 표현해 볼까요?',
-    isUser: false,
-    coachLabel: '부부코칭 전문가',
+    createdAt: new Date(),
   },
 ];
 
 export default function EmpathyScreen({ navigation }) {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef(null);
 
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
+    const now = new Date();
     const newMessage = {
       id: Date.now().toString(),
       text,
       isUser: true,
-      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: getCurrentTime(),
+      createdAt: now,
     };
-    setMessages([...messages, newMessage]);
+    setMessages(prev => [...prev, newMessage]);
     setInputText('');
+    setIsLoading(true);
 
-    // AI 응답 시뮬레이션
-    setTimeout(() => {
+    try {
+      const response = await api.sendChatMessage(text, 'empathy');
       const aiResponse = {
         id: (Date.now() + 1).toString(),
-        text: '그 감정을 느끼시는 게 당연해요. 더 이야기해 주시겠어요?',
+        text: response.reply,
         isUser: false,
+        createdAt: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorResponse = {
+        id: (Date.now() + 1).toString(),
+        text: '죄송합니다. 잠시 문제가 발생했어요. 다시 말씀해 주시겠어요?',
+        isUser: false,
+        createdAt: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePerspectivePress = () => {
@@ -71,9 +73,12 @@ export default function EmpathyScreen({ navigation }) {
 
   const renderMessage = ({ item, index }) => {
     const showAvatar = !item.isUser && (index === 0 || messages[index - 1]?.isUser);
+    const prevMessage = messages[index - 1];
+    const showDateSeparator = shouldShowDateSeparator(item.createdAt, prevMessage?.createdAt);
 
     return (
       <View>
+        {showDateSeparator && <DateSeparator date={item.createdAt} />}
         <ChatBubble
           message={item.text}
           isUser={item.isUser}
@@ -102,7 +107,7 @@ export default function EmpathyScreen({ navigation }) {
         leftComponent={
           <HeaderWithAvatar
             avatarText="AI"
-            title="SpeakTrue AI"
+            title="부부코칭 전문가"
             subtitle="항상 경청 중"
             showOnlineDot
           />
@@ -122,10 +127,13 @@ export default function EmpathyScreen({ navigation }) {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.messageList}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-          ListHeaderComponent={
-            <View style={styles.dateHeader}>
-              <Text style={styles.dateText}>오늘, 오후 8:42</Text>
-            </View>
+          ListFooterComponent={
+            isLoading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+                <Text style={styles.loadingText}>응답 작성 중...</Text>
+              </View>
+            )
           }
         />
 
@@ -161,19 +169,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingBottom: 120,
   },
-  dateHeader: {
-    alignItems: 'center',
-    marginVertical: SPACING.md,
-  },
-  dateText: {
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션/보조 텍스트
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textMuted,
-    backgroundColor: `${COLORS.textPrimary}08`,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: 4,
-    borderRadius: BORDER_RADIUS.full,
-  },
   emotionContainer: {
     marginLeft: 48,
     marginTop: -SPACING.xs,
@@ -201,6 +196,17 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.base,  // 16px - 터치 가능 텍스트 권장 크기
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
+    marginLeft: SPACING.sm,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 48,
+    marginBottom: SPACING.md,
+  },
+  loadingText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
     marginLeft: SPACING.sm,
   },
 });

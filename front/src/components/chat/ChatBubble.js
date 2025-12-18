@@ -35,9 +35,9 @@ export default function ChatBubble({
         </View>
       )}
       <View style={[styles.aiBubbleWrapper, !showAvatar && styles.noAvatarOffset]}>
-        {coachLabel && (
+        {showAvatar && (
           <View style={styles.coachLabelContainer}>
-            <Text style={styles.coachLabel}>{coachLabel}</Text>
+            <Text style={styles.coachLabel}>{coachLabel || '부부코칭 전문가'}</Text>
           </View>
         )}
         <View style={styles.aiBubble}>
@@ -142,12 +142,12 @@ const styles = StyleSheet.create({
   // AI Bubble
   aiContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     marginBottom: SPACING.md,
   },
   avatarWrapper: {
     marginRight: SPACING.sm,
-    marginBottom: 4,
+    marginTop: 4,
   },
   aiBubbleWrapper: {
     maxWidth: '85%',
