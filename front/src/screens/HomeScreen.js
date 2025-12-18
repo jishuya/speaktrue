@@ -54,10 +54,6 @@ export default function HomeScreen({ navigation }) {
       >
         {/* Greeting */}
         <View style={styles.greetingSection}>
-
-
-
-          
           <Text style={styles.greetingTitle}>
             안녕하세요, 지수님.
           </Text>
@@ -66,26 +62,24 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* Main CTA Button - 내 편에게 털어놓기 */}
-        <TouchableOpacity
-          style={styles.mainCtaButton}
-          onPress={() => handleNavigate('Empathy')}
-          activeOpacity={0.9}
-        >
-          <View style={styles.mainCtaContentRow}>
-            <View style={styles.mainCtaIconContainer}>
-              <Icon name="ear-hearing" size={28} color={COLORS.surface} />
-            </View>
-            <View style={styles.mainCtaTextContainer}>
-              <Text style={styles.mainCtaTitle}>내 마음 털어놓기</Text>
-              <Text style={styles.mainCtaSubtitle}>지금 느끼는 감정을 솔직하게 말해줘</Text>
-            </View>
-          </View>
-          <View style={styles.mainCtaGlow} />
-        </TouchableOpacity>
-
-        {/* Feature Grid */}
+        {/* Feature Grid - 내 마음 털어놓기 & 내가 진짜 하고 싶은 말은 */}
         <View style={styles.featureGrid}>
+          {/* 내 마음 털어놓기 */}
+          <TouchableOpacity
+            style={[styles.featureCard, styles.featureCardGreen]}
+            onPress={() => handleNavigate('Empathy')}
+            activeOpacity={0.9}
+          >
+            <View style={[styles.featureIconContainer, styles.featureIconGreen]}>
+              <Icon name="ear-hearing" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.featureTextContainer}>
+              <Text style={styles.featureTitle}>내 마음{'\n'}털어놓기</Text>
+              <Text style={styles.featureSubtitle}>솔직하게 말하기</Text>
+            </View>
+            <View style={styles.featureCardGlow} />
+          </TouchableOpacity>
+
           {/* 내가 진짜 하고 싶은 말은 */}
           <TouchableOpacity
             style={[styles.featureCard, styles.featureCardWarm]}
@@ -101,26 +95,26 @@ export default function HomeScreen({ navigation }) {
             </View>
             <View style={styles.featureCardGlow} />
           </TouchableOpacity>
-
-          {/* 그때 이렇게 말했다면 */}
-          <TouchableOpacity
-            style={[styles.featureCard, styles.featureCardGreen]}
-            onPress={() => handleNavigate('Perspective')}
-            activeOpacity={0.9}
-          >
-            <View style={[styles.featureIconContainer, styles.featureIconGreen]}>
-              <Icon name="history" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.featureTextContainer}>
-              <Text style={styles.featureTitle}>상대방 마음은{'\n'}어땠을까</Text>
-              <Text style={styles.featureSubtitle}>상대방 이해하기</Text>
-            </View>
-            <View style={styles.featureCardGlow} />
-          </TouchableOpacity>
         </View>
 
+        {/* 상대방 마음은 어땠을까 - 주석처리 */}
+        {/* <TouchableOpacity
+          style={[styles.featureCard, styles.featureCardGreen]}
+          onPress={() => handleNavigate('Perspective')}
+          activeOpacity={0.9}
+        >
+          <View style={[styles.featureIconContainer, styles.featureIconGreen]}>
+            <Icon name="history" size={20} color={COLORS.primary} />
+          </View>
+          <View style={styles.featureTextContainer}>
+            <Text style={styles.featureTitle}>상대방 마음은{'\n'}어땠을까</Text>
+            <Text style={styles.featureSubtitle}>상대방 이해하기</Text>
+          </View>
+          <View style={styles.featureCardGlow} />
+        </TouchableOpacity> */}
+
         {/* Secondary Feature Grid */}
-        <View style={styles.featureGrid}>
+        <View style={[styles.featureGrid, styles.secondaryFeatureGrid]}>
           {/* 패턴분석 */}
           <TouchableOpacity
             style={[styles.featureCardSmall, styles.featureCardBlue]}
@@ -219,17 +213,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   greetingTitle: {
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-    lineHeight: 36,
-    letterSpacing: -0.5,
+    lineHeight: 30,
   },
   greetingSubtitle: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
+    marginTop: 2,
   },
 
   // Main CTA Button
@@ -285,12 +278,15 @@ const styles = StyleSheet.create({
   // Feature Grid
   featureGrid: {
     flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  secondaryFeatureGrid: {
+    marginBottom: SPACING.md,
   },
   featureCard: {
     flex: 1,
-    height: 176,
+    height: 156,
     padding: SPACING.lg,
     borderRadius: 32,
     justifyContent: 'space-between',
@@ -306,7 +302,7 @@ const styles = StyleSheet.create({
   featureCardSmall: {
     flex: 1,
     height: 120,
-    padding: SPACING.lg,
+    padding: SPACING.md,
     borderRadius: 24,
     justifyContent: 'space-between',
     overflow: 'hidden',
@@ -372,7 +368,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   journeySectionTitle: {
     fontSize: FONT_SIZE.lg,

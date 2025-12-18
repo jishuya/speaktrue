@@ -81,7 +81,7 @@ export default function TransformScreen({ navigation }) {
       >
         {/* Title Section */}
         <View style={styles.titleSection}>
-          <Text style={styles.title}>지금 마음이 어떠신가요?</Text>
+          <Text style={styles.title}>상대방에게 어떤 말을 하고 싶으신가요?</Text>
           <Text style={styles.subtitle}>갈등을 따뜻한 연결로 변화시켜 드려요</Text>
         </View>
 
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   title: {
-    fontSize: FONT_SIZE.xxl,
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',

@@ -173,6 +173,9 @@ export default function AppNavigator() {
 
         {/* History Screen */}
         <Stack.Screen name="History" component={HistoryScreen} />
+
+        {/* Patterns Screen */}
+        <Stack.Screen name="Patterns" component={PatternsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

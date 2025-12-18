@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
   },
   periodSelector: {
     alignItems: 'center',

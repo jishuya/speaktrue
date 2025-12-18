@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
   },
 
   // Date
@@ -549,6 +550,8 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     paddingVertical: SPACING.md,
     marginTop: SPACING.xl,
+    backgroundColor: '#FFF5F5',
+    borderRadius: BORDER_RADIUS.lg,
   },
   deleteText: {
     fontFamily: FONT_FAMILY.base,
