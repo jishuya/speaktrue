@@ -49,16 +49,16 @@ export default function Header({
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
         )}
-        {showLogo && (
-          <View style={styles.logoContainer}>
-            <Logo size={36} color={COLORS.primary} />
-          </View>
-        )}
         {!centerTitle && title && (
-          <View style={[styles.titleContainer, (showBack || showLogo) && styles.titleWithBack]}>
+          <View style={[styles.titleContainer, showBack && styles.titleWithBack]}>
             {label && <Text style={styles.label}>{label}</Text>}
             <Text style={styles.title}>{title}</Text>
             {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          </View>
+        )}
+        {showLogo && (
+          <View style={styles.logoContainer}>
+            <Logo size={36} color={COLORS.primary} />
           </View>
         )}
       </View>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   logoContainer: {
-    marginRight: SPACING.xs,
+    marginLeft: 0,
   },
   titleContainer: {
     gap: 2,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
   },
   subtitle: {
     fontSize: FONT_SIZE.sm,

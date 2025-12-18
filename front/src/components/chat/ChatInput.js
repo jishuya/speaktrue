@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
@@ -29,6 +29,14 @@ export default function ChatInput({
     setInputHeight(Math.min(Math.max(44, height), maxHeight));
   };
 
+  const handleKeyPress = (event) => {
+    // Enter 키 누르면 전송 (Shift+Enter는 줄바꿈)
+    if (event.nativeEvent.key === 'Enter' && !event.nativeEvent.shiftKey) {
+      event.preventDefault?.();
+      handleSend();
+    }
+  };
+
   const canSend = value?.trim().length > 0 && !disabled;
 
   return (
@@ -49,6 +57,10 @@ export default function ChatInput({
           multiline
           onContentSizeChange={handleContentSizeChange}
           editable={!disabled}
+          returnKeyType="send"
+          blurOnSubmit={false}
+          onSubmitEditing={handleSend}
+          onKeyPress={handleKeyPress}
         />
 
         {showVoice && !canSend && (
