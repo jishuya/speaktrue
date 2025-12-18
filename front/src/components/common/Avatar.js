@@ -75,18 +75,18 @@ export default function Avatar({
 }
 
 // AI 아바타 (특별 스타일)
+const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai_female.png');
+
 export function AIAvatar({ size = 'md', style }) {
   const sizeStyles = {
-    sm: { width: 32, height: 32 },
-    md: { width: 40, height: 40 },
-    lg: { width: 48, height: 48 },
+    sm: { width: 32, height: 32, borderRadius: 16 },
+    md: { width: 40, height: 40, borderRadius: 20 },
+    lg: { width: 48, height: 48, borderRadius: 24 },
   };
 
   return (
     <View style={[styles.aiAvatarContainer, sizeStyles[size], style]}>
-      <View style={[styles.aiAvatar, sizeStyles[size]]}>
-        <Text style={styles.aiAvatarText}>AI</Text>
-      </View>
+      <Image source={AI_PROFILE_IMAGE} style={[styles.aiAvatarImage, sizeStyles[size]]} />
       <View style={styles.aiStatusDot} />
     </View>
   );
@@ -128,18 +128,10 @@ const styles = StyleSheet.create({
   aiAvatarContainer: {
     position: 'relative',
   },
-  aiAvatar: {
-    backgroundColor: COLORS.primaryBg,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+  aiAvatarImage: {
+    resizeMode: 'cover',
     borderWidth: 2,
     borderColor: `${COLORS.primary}30`,
-  },
-  aiAvatarText: {
-    fontSize: FONT_SIZE.md,  // 14px - 아바타 내 텍스트
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary,
   },
   aiStatusDot: {
     position: 'absolute',

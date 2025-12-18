@@ -10,8 +10,10 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { Icon } from '../components/ui';
+import profileFemaleImage from '../assets/images/profile_female.png';
 import { Header, MenuItem, MenuGroup } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -22,56 +24,10 @@ export default function SettingsScreen({ navigation }) {
   const [profileEmail, setProfileEmail] = useState('jisoo.kim@truespeak.com');
   const [profileGender, setProfileGender] = useState('남');
   const [partnerName, setPartnerName] = useState('스투');
-  const [profileAvatar, setProfileAvatar] = useState('male');
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editGender, setEditGender] = useState('');
   const [editPartnerName, setEditPartnerName] = useState('');
-  const [avatarModalVisible, setAvatarModalVisible] = useState(false);
-
-  // 아바타 컴포넌트
-  const MaleAvatar = ({ size = 96 }) => (
-    <View style={[styles.avatarContainer, { width: size, height: size, borderRadius: size / 2 }]}>
-      {/* 얼굴 */}
-      <View style={[styles.avatarFace, { width: size * 0.75, height: size * 0.75, borderRadius: size * 0.375 }]}>
-        {/* 머리카락 (짧은 스타일) */}
-        <View style={[styles.maleHair, { width: size * 0.6, height: size * 0.25, top: -size * 0.05 }]} />
-        {/* 눈 */}
-        <View style={styles.eyesContainer}>
-          <View style={[styles.eye, { width: size * 0.1, height: size * 0.1 }]} />
-          <View style={[styles.eye, { width: size * 0.1, height: size * 0.1 }]} />
-        </View>
-        {/* 입 */}
-        <View style={[styles.mouth, { width: size * 0.15, height: size * 0.05, marginTop: size * 0.08 }]} />
-      </View>
-    </View>
-  );
-
-  const FemaleAvatar = ({ size = 96 }) => (
-    <View style={[styles.avatarContainer, { width: size, height: size, borderRadius: size / 2, backgroundColor: '#FFE4EC' }]}>
-      {/* 얼굴 */}
-      <View style={[styles.avatarFace, { width: size * 0.75, height: size * 0.75, borderRadius: size * 0.375 }]}>
-        {/* 머리카락 (긴 스타일) */}
-        <View style={[styles.femaleHairLeft, { height: size * 0.5, left: -size * 0.12 }]} />
-        <View style={[styles.femaleHairRight, { height: size * 0.5, right: -size * 0.12 }]} />
-        <View style={[styles.femaleHairTop, { width: size * 0.65, height: size * 0.2, top: -size * 0.08 }]} />
-        {/* 눈 */}
-        <View style={styles.eyesContainer}>
-          <View style={[styles.eye, { width: size * 0.1, height: size * 0.1 }]} />
-          <View style={[styles.eye, { width: size * 0.1, height: size * 0.1 }]} />
-        </View>
-        {/* 입 */}
-        <View style={[styles.femaleMouth, { width: size * 0.12, height: size * 0.05, marginTop: size * 0.08 }]} />
-      </View>
-    </View>
-  );
-
-  const renderAvatar = (type, size = 96) => {
-    if (type === 'male') {
-      return <MaleAvatar size={size} />;
-    }
-    return <FemaleAvatar size={size} />;
-  };
 
   const handleOpenProfileModal = () => {
     setEditName(profileName);
@@ -135,10 +91,10 @@ export default function SettingsScreen({ navigation }) {
         <View style={styles.profileCard}>
           <View style={styles.profileGlow} />
           <View style={styles.profileImageContainer}>
-            {renderAvatar(profileAvatar, 96)}
-            <TouchableOpacity style={styles.editButton} onPress={() => setAvatarModalVisible(true)}>
-              <Icon name="edit" size={14} color={COLORS.surface} />
-            </TouchableOpacity>
+            <Image
+              source={profileFemaleImage}
+              style={styles.profileImageImg}
+            />
           </View>
           <Text style={styles.profileName}>{profileName}</Text>
           <Text style={styles.profileEmail}>{profileEmail}</Text>
@@ -343,69 +299,6 @@ export default function SettingsScreen({ navigation }) {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-
-      {/* Avatar Selection Modal */}
-      <Modal
-        visible={avatarModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setAvatarModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity
-            style={styles.modalBackdrop}
-            activeOpacity={1}
-            onPress={() => setAvatarModalVisible(false)}
-          />
-          <View style={styles.avatarModalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>프로필 이미지 선택</Text>
-              <TouchableOpacity
-                style={styles.modalCloseButton}
-                onPress={() => setAvatarModalVisible(false)}
-              >
-                <Icon name="close" size={24} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.avatarOptions}>
-              <TouchableOpacity
-                style={[
-                  styles.avatarOptionItem,
-                  profileAvatar === 'male' && styles.avatarOptionSelected,
-                ]}
-                onPress={() => {
-                  setProfileAvatar('male');
-                  setAvatarModalVisible(false);
-                }}
-              >
-                {renderAvatar('male', 80)}
-                <Text style={[
-                  styles.avatarOptionLabel,
-                  profileAvatar === 'male' && styles.avatarOptionLabelSelected,
-                ]}>남자</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.avatarOptionItem,
-                  profileAvatar === 'female' && styles.avatarOptionSelected,
-                ]}
-                onPress={() => {
-                  setProfileAvatar('female');
-                  setAvatarModalVisible(false);
-                }}
-              >
-                {renderAvatar('female', 80)}
-                <Text style={[
-                  styles.avatarOptionLabel,
-                  profileAvatar === 'female' && styles.avatarOptionLabelSelected,
-                ]}>여자</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -455,6 +348,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 4,
+    borderColor: COLORS.surface,
+    ...SHADOWS.md,
+  },
+  profileImageImg: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 3,
     borderColor: COLORS.surface,
     ...SHADOWS.md,
   },
@@ -620,97 +521,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   genderOptionTextSelected: {
-    color: COLORS.primary,
-    fontWeight: FONT_WEIGHT.bold,
-  },
-  // Avatar styles
-  avatarContainer: {
-    backgroundColor: '#E3F2FD',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarFace: {
-    backgroundColor: '#FFDBAC',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  maleHair: {
-    position: 'absolute',
-    backgroundColor: '#4A3728',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-  },
-  femaleHairLeft: {
-    position: 'absolute',
-    width: 12,
-    backgroundColor: '#5D4037',
-    borderBottomLeftRadius: 10,
-    top: -5,
-  },
-  femaleHairRight: {
-    position: 'absolute',
-    width: 12,
-    backgroundColor: '#5D4037',
-    borderBottomRightRadius: 10,
-    top: -5,
-  },
-  femaleHairTop: {
-    position: 'absolute',
-    backgroundColor: '#5D4037',
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
-  },
-  eyesContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 5,
-  },
-  eye: {
-    backgroundColor: '#3E2723',
-    borderRadius: 50,
-  },
-  mouth: {
-    backgroundColor: '#D7907B',
-    borderRadius: 10,
-  },
-  femaleMouth: {
-    backgroundColor: '#E57373',
-    borderRadius: 10,
-  },
-  // Avatar Modal styles
-  avatarModalContainer: {
-    width: '85%',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    ...SHADOWS.lg,
-    overflow: 'hidden',
-  },
-  avatarOptions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: SPACING.lg,
-    paddingTop: SPACING.md,
-  },
-  avatarOptionItem: {
-    alignItems: 'center',
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  avatarOptionSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primaryBg,
-  },
-  avatarOptionLabel: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textSecondary,
-  },
-  avatarOptionLabelSelected: {
     color: COLORS.primary,
     fontWeight: FONT_WEIGHT.bold,
   },

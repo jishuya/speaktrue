@@ -40,8 +40,8 @@ export default function HomeScreen({ navigation }) {
       <Header
         title="SpeakTrue"
         showLogo
-        rightIcon="settings"
-        onRightPress={() => handleNavigate('Settings')}
+        showProfile
+        onProfilePress={() => handleNavigate('Settings')}
       />
 
       <ScrollView
