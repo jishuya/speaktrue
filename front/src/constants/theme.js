@@ -155,18 +155,6 @@ export const COLORS = {
   error: palette.red,
   info: '#17A2B8',
 
-  // Emotion (앱 특화)
-  emotion: {
-    frustrated: palette.orange,
-    anxious: palette.blue,
-    sad: palette.purple,
-    happy: '#2ECC71',
-    angry: '#E74C3C',
-    peaceful: palette.teal,
-    worried: '#F39C12',
-    understood: palette.green[400],
-  },
-
   // Chat
   bubbleUser: palette.green[400],
   bubbleAi: palette.green[50],
@@ -179,6 +167,144 @@ export const COLORS = {
   kakao: palette.kakao,
   kakaoText: palette.kakaoText,
   overlay: 'rgba(0, 0, 0, 0.5)',
+};
+
+// NVC (비폭력대화) 색상
+export const NVC_COLORS = {
+  observation: '#1565C0',   // 관찰 - 파랑
+  feeling: '#7B1FA2',       // 감정 - 보라
+  need: '#2E7D32',          // 욕구 - 초록
+  request: palette.green[400], // 부탁 - 프라이머리
+};
+
+// 감정 태그 색상
+export const EMOTION_STYLES = {
+  frustrated: {
+    bg: '#FFF3E0',
+    bgDark: 'rgba(245, 166, 35, 0.2)',
+    color: '#E65100',
+    label: '답답함',
+  },
+  anxious: {
+    bg: '#E3F2FD',
+    bgDark: 'rgba(91, 141, 239, 0.2)',
+    color: '#1565C0',
+    label: '불안',
+  },
+  sad: {
+    bg: '#F3E5F5',
+    bgDark: 'rgba(155, 89, 182, 0.2)',
+    color: '#7B1FA2',
+    label: '슬픔',
+  },
+  happy: {
+    bg: '#E8F5E9',
+    bgDark: 'rgba(46, 204, 113, 0.2)',
+    color: '#2E7D32',
+    label: '행복',
+  },
+  angry: {
+    bg: '#FFEBEE',
+    bgDark: 'rgba(231, 76, 60, 0.2)',
+    color: '#C62828',
+    label: '화남',
+  },
+  peaceful: {
+    bg: '#E0F2F1',
+    bgDark: 'rgba(26, 188, 156, 0.2)',
+    color: '#00796B',
+    label: '평안함',
+  },
+  worried: {
+    bg: '#FFF8E1',
+    bgDark: 'rgba(243, 156, 18, 0.2)',
+    color: '#F57F17',
+    label: '걱정',
+  },
+  understood: {
+    bg: palette.green[50],
+    bgDark: `${palette.green[400]}30`,
+    color: palette.green[400],
+    label: '이해받음',
+  },
+  connected: {
+    bg: '#E8F5E9',
+    bgDark: 'rgba(46, 204, 113, 0.2)',
+    color: '#2E7D32',
+    label: '연결감',
+  },
+  lonely: {
+    bg: '#ECEFF1',
+    bgDark: 'rgba(96, 125, 139, 0.2)',
+    color: '#455A64',
+    label: '외로움',
+  },
+  order: {
+    bg: '#E3F2FD',
+    bgDark: 'rgba(91, 141, 239, 0.2)',
+    color: '#1565C0',
+    label: '질서의 욕구',
+  },
+  responsibility: {
+    bg: '#F3E5F5',
+    bgDark: 'rgba(155, 89, 182, 0.2)',
+    color: '#7B1FA2',
+    label: '책임 분담',
+  },
+};
+
+// 기능 카드 배경색
+export const FEATURE_CARD_COLORS = {
+  warm: '#F0EBE0',
+  green: '#E0EDE8',
+  blue: '#E0E8ED',
+  purple: '#EBE0ED',
+};
+
+// 상태 배지 색상
+export const STATUS_COLORS = {
+  resolved: {
+    bg: '#E8F5E9',
+    text: '#2E7D32',
+  },
+  unresolved: {
+    bg: '#FFF3E0',
+    text: '#E65100',
+  },
+  danger: {
+    bg: '#FFF5F5',
+    text: '#E53E3E',
+  },
+};
+
+// 아이콘 배경색
+export const ICON_BG_COLORS = {
+  orange: { bg: '#FFF3E0', icon: '#F57C00' },
+  blue: { bg: '#E3F2FD', icon: '#1976D2' },
+  purple: { bg: '#F3E5F5', icon: '#7B1FA2' },
+  teal: { bg: '#E0F2F1', icon: '#00796B' },
+  yellow: { bg: '#FFF8E1', icon: '#F57F17' },
+};
+
+// 아바타 색상 (피부톤/헤어)
+export const AVATAR_COLORS = {
+  skinLight: '#FFDBAC',
+  skinMedium: '#D7907B',
+  skinTan: '#E57373',
+  hairBrown: '#4A3728',
+  hairDark: '#3E2723',
+  hairMedium: '#5D4037',
+  femaleBg: '#FFE4EC',
+  maleBg: '#E3F2FD',
+};
+
+// 기타 UI 색상
+export const UI_COLORS = {
+  headerDarkBg: '#F5F2ED',
+  insightCardBg: '#2A3D2A',
+  insightCardText: '#E8ECE9',
+  socialApple: '#000000',
+  socialKakao: '#FEE500',
 };
 
 // 간격
@@ -291,6 +417,13 @@ export default {
   light: lightTheme,
   dark: darkTheme,
   COLORS,
+  NVC_COLORS,
+  EMOTION_STYLES,
+  FEATURE_CARD_COLORS,
+  STATUS_COLORS,
+  ICON_BG_COLORS,
+  AVATAR_COLORS,
+  UI_COLORS,
   SPACING,
   FONT_FAMILY,
   FONT_SIZE,

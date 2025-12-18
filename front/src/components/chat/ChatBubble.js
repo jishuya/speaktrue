@@ -1,7 +1,6 @@
-import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AIAvatar } from '../common/Avatar';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
+import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 export default function ChatBubble({
   message,
@@ -50,7 +49,14 @@ export default function ChatBubble({
 }
 
 // NVC 분석 결과를 보여주는 특수 버블
-export function NvcResultBubble({ original, converted, analysis }) {
+export function NvcResultBubble({ converted, analysis }) {
+  const colorMap = {
+    '[관찰]': NVC_COLORS.observation,
+    '[감정]': NVC_COLORS.feeling,
+    '[욕구]': NVC_COLORS.need,
+    '[부탁]': NVC_COLORS.request,
+  };
+
   return (
     <View style={styles.nvcContainer}>
       <View style={styles.nvcHeader}>
@@ -60,14 +66,8 @@ export function NvcResultBubble({ original, converted, analysis }) {
         <Text style={styles.nvcText}>
           {converted.split(/(\[.*?\])/).map((part, index) => {
             if (part.startsWith('[') && part.endsWith(']')) {
-              const colorMap = {
-                '[관찰]': COLORS.info,
-                '[감정]': '#9B59B6',
-                '[욕구]': COLORS.success,
-                '[부탁]': COLORS.primary,
-              };
               return (
-                <Text key={index} style={{ color: colorMap[part] || COLORS.primary, fontWeight: '500' }}>
+                <Text key={index} style={{ color: colorMap[part] || NVC_COLORS.request, fontWeight: '500' }}>
                   {part}
                 </Text>
               );
@@ -80,16 +80,16 @@ export function NvcResultBubble({ original, converted, analysis }) {
         <View style={styles.nvcAnalysis}>
           <View style={styles.nvcDivider} />
           {analysis.observation && (
-            <AnalysisItem color="#5B8DEF" label="관찰" text={analysis.observation} />
+            <AnalysisItem color={NVC_COLORS.observation} label="관찰" text={analysis.observation} />
           )}
           {analysis.feeling && (
-            <AnalysisItem color="#9B59B6" label="감정" text={analysis.feeling} />
+            <AnalysisItem color={NVC_COLORS.feeling} label="감정" text={analysis.feeling} />
           )}
           {analysis.need && (
-            <AnalysisItem color="#2ECC71" label="욕구" text={analysis.need} />
+            <AnalysisItem color={NVC_COLORS.need} label="욕구" text={analysis.need} />
           )}
           {analysis.request && (
-            <AnalysisItem color={COLORS.primary} label="부탁" text={analysis.request} />
+            <AnalysisItem color={NVC_COLORS.request} label="부탁" text={analysis.request} />
           )}
         </View>
       )}

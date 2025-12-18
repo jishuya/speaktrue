@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,8 @@ import {
   Alert,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header } from '../components/common';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Header, StatusBadge } from '../components/common';
+import { COLORS, STATUS_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 const INITIAL_HISTORY_DATA = [
   {
@@ -60,11 +60,7 @@ export default function HistoryScreen({ navigation }) {
       <View style={styles.historyHeader}>
         <View style={styles.dateStatusRow}>
           <Text style={styles.dateText}>{item.date}</Text>
-          <View style={[styles.statusBadge, item.resolved ? styles.resolvedBadge : styles.unresolvedBadge]}>
-            <Text style={[styles.statusText, item.resolved ? styles.resolvedText : styles.unresolvedText]}>
-              {item.resolved ? '해결' : '미해결'}
-            </Text>
-          </View>
+          <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
         </View>
         <TouchableOpacity onPress={() => handleDelete(item.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon name="close" size={18} color={COLORS.textMuted} />
@@ -247,10 +243,10 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   emotionTag: {
-    backgroundColor: '#FFF5F5',
+    backgroundColor: STATUS_COLORS.danger.bg,
   },
   emotionTagText: {
-    color: '#E53E3E',
+    color: STATUS_COLORS.danger.text,
   },
   historyList: {
     gap: SPACING.md,
@@ -276,27 +272,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textSecondary,
-  },
-  statusBadge: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    borderRadius: BORDER_RADIUS.full,
-  },
-  resolvedBadge: {
-    backgroundColor: '#E8F5E9',
-  },
-  unresolvedBadge: {
-    backgroundColor: '#FFF3E0',
-  },
-  statusText: {
-    fontSize: FONT_SIZE.xs,
-    fontWeight: FONT_WEIGHT.medium,
-  },
-  resolvedText: {
-    color: '#2E7D32',
-  },
-  unresolvedText: {
-    color: '#E65100',
   },
   historyContent: {
     fontSize: FONT_SIZE.base,

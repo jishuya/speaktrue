@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header } from '../components/common';
+import { Header, HeaderWithAvatar } from '../components/common';
 import { ChatBubble, EmotionTagList, ChatInput } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
@@ -96,21 +96,16 @@ export default function EmpathyScreen({ navigation }) {
       {/* Header */}
       <Header
         showBack
-        // showProfile
         borderBottom
         darkBackground
         onBackPress={() => navigation.goBack()}
         leftComponent={
-          <View style={styles.headerCenter}>
-            <View style={styles.aiAvatarSmall}>
-              <Text style={styles.aiAvatarText}>AI</Text>
-              <View style={styles.onlineDot} />
-            </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerTitle}>SpeakTrue AI</Text>
-              <Text style={styles.headerSubtitle}>항상 경청 중</Text>
-            </View>
-          </View>
+          <HeaderWithAvatar
+            avatarText="AI"
+            title="SpeakTrue AI"
+            subtitle="항상 경청 중"
+            showOnlineDot
+          />
         }
       />
 
@@ -158,52 +153,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  headerCenter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: SPACING.sm,
-  },
-  aiAvatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: `${COLORS.primary}20`,
-    position: 'relative',
-  },
-  aiAvatarText: {
-    fontSize: FONT_SIZE.md,  // 14px - 아바타 내 텍스트
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary,
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.success,
-    borderWidth: 2,
-    borderColor: COLORS.backgroundLight,
-  },
-  headerInfo: {
-    marginLeft: SPACING.sm,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: FONT_SIZE.sm,  // 12px
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textSecondary,
   },
   chatContainer: {
     flex: 1,

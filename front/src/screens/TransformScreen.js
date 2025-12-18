@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header, Button } from '../components/common';
-import { NvcResultBubble } from '../components/chat';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Header, HeaderWithIcon } from '../components/common';
+import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 export default function TransformScreen({ navigation }) {
   const [inputText, setInputText] = useState('');
@@ -56,20 +55,15 @@ export default function TransformScreen({ navigation }) {
       {/* Header */}
       <Header
         showBack
-        // showProfile
         borderBottom
         darkBackground
         onBackPress={() => navigation.goBack()}
         leftComponent={
-          <View style={styles.headerCenter}>
-            <View style={styles.aiAvatarSmall}>
-              <Icon name="psychology" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerTitle}>진심 전달</Text>
-              <Text style={styles.headerSubtitle}>NVC 변환</Text>
-            </View>
-          </View>
+          <HeaderWithIcon
+            icon="psychology"
+            title="진심 전달"
+            subtitle="NVC 변환"
+          />
         }
       />
 
@@ -169,9 +163,9 @@ export default function TransformScreen({ navigation }) {
                   작성하신 메시지에 <Text style={{ fontWeight: '700' }}>NVC(비폭력 대화) 모델</Text>을 적용했습니다:
                 </Text>
                 <View style={styles.explanationList}>
-                  <ExplanationItem color="#5B8DEF" label="관찰 (Observation)" text="판단 없이 사실 그대로 말하기" />
-                  <ExplanationItem color="#9B59B6" label="느낌 (Feeling)" text="비난이 아닌 내 감정을 표현하기" />
-                  <ExplanationItem color="#2ECC71" label="욕구 (Need)" text="내가 진정으로 원하는 가치를 찾기" />
+                  <ExplanationItem color={NVC_COLORS.observation} label="관찰 (Observation)" text="판단 없이 사실 그대로 말하기" />
+                  <ExplanationItem color={NVC_COLORS.feeling} label="느낌 (Feeling)" text="비난이 아닌 내 감정을 표현하기" />
+                  <ExplanationItem color={NVC_COLORS.need} label="욕구 (Need)" text="내가 진정으로 원하는 가치를 찾기" />
                 </View>
               </View>
             )}
@@ -197,36 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  // Header styles
-  headerCenter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: SPACING.sm,
-  },
-  aiAvatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: `${COLORS.primary}20`,
-  },
-  headerInfo: {
-    marginLeft: SPACING.sm,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textSecondary,
   },
   scrollView: {
     flex: 1,
@@ -342,19 +306,19 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   textObservation: {
-    color: '#1565C0',
+    color: NVC_COLORS.observation,
     fontWeight: FONT_WEIGHT.medium,
   },
   textFeeling: {
-    color: '#7B1FA2',
+    color: NVC_COLORS.feeling,
     fontWeight: FONT_WEIGHT.medium,
   },
   textNeed: {
-    color: '#2E7D32',
+    color: NVC_COLORS.need,
     fontWeight: FONT_WEIGHT.medium,
   },
   textRequest: {
-    color: COLORS.primary,
+    color: NVC_COLORS.request,
     fontWeight: FONT_WEIGHT.medium,
   },
   resultDivider: {

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -7,8 +6,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header, Button } from '../components/common';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Header, HeaderWithIcon, Button } from '../components/common';
+import { COLORS, EMOTION_STYLES, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 export default function PerspectiveScreen({ navigation }) {
   return (
@@ -16,20 +15,15 @@ export default function PerspectiveScreen({ navigation }) {
       {/* Header */}
       <Header
         showBack
-        // showProfile
         borderBottom
         darkBackground
         onBackPress={() => navigation.goBack()}
         leftComponent={
-          <View style={styles.headerCenter}>
-            <View style={styles.aiAvatarSmall}>
-              <Icon name="visibility" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerTitle}>관점 전환</Text>
-              <Text style={styles.headerSubtitle}>상대방 입장에서</Text>
-            </View>
-          </View>
+          <HeaderWithIcon
+            icon="visibility"
+            title="관점 전환"
+            subtitle="상대방 입장에서"
+          />
         }
       />
 
@@ -96,8 +90,8 @@ export default function PerspectiveScreen({ navigation }) {
         <View style={styles.empathySection}>
           <Text style={styles.sectionTitle}>공감 포인트</Text>
           <View style={styles.empathyCard}>
-            <View style={[styles.empathyIcon, { backgroundColor: '#E3F2FD' }]}>
-              <Icon name="sentiment-dissatisfied" size={24} color="#1565C0" />
+            <View style={[styles.empathyIcon, { backgroundColor: EMOTION_STYLES.anxious.bg }]}>
+              <Icon name="sentiment-dissatisfied" size={24} color={EMOTION_STYLES.anxious.color} />
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>숨겨진 감정</Text>
@@ -105,8 +99,8 @@ export default function PerspectiveScreen({ navigation }) {
             </View>
           </View>
           <View style={styles.empathyCard}>
-            <View style={[styles.empathyIcon, { backgroundColor: '#E8F5E9' }]}>
-              <Icon name="spa" size={24} color="#2E7D32" />
+            <View style={[styles.empathyIcon, { backgroundColor: EMOTION_STYLES.happy.bg }]}>
+              <Icon name="spa" size={24} color={EMOTION_STYLES.happy.color} />
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>핵심 욕구</Text>
@@ -135,36 +129,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-  },
-  // Header styles
-  headerCenter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: SPACING.sm,
-  },
-  aiAvatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: `${COLORS.primary}20`,
-  },
-  headerInfo: {
-    marginLeft: SPACING.sm,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textSecondary,
   },
   scrollView: {
     flex: 1,

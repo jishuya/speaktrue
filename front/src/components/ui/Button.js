@@ -33,6 +33,11 @@ const VARIANTS = {
     text: COLORS.error,
     border: COLORS.error,
   },
+  kakao: {
+    bg: COLORS.kakao,
+    text: COLORS.kakaoText,
+    border: 'transparent',
+  },
 };
 
 const SIZES = {
@@ -52,6 +57,7 @@ export default function Button({
   disabled = false,
   fullWidth = false,
   style,
+  textStyle,
 }) {
   const v = VARIANTS[variant];
   const s = SIZES[size];
@@ -84,7 +90,7 @@ export default function Button({
           {icon && iconPosition === 'left' && (
             <Icon name={icon} size={s.iconSize} color={v.text} style={styles.iconLeft} />
           )}
-          <Text style={[styles.text, { color: v.text, fontSize: s.fontSize }]}>
+          <Text style={[styles.text, { color: v.text, fontSize: s.fontSize }, textStyle]}>
             {title}
           </Text>
           {icon && iconPosition === 'right' && (

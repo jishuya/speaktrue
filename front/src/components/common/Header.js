@@ -1,7 +1,6 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Icon, Logo } from '../ui';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
+import { COLORS, UI_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
 
 const PROFILE_IMAGE_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuALGg4RghdltOox3ir7GSZ7t_iAwg6jzE1CXCAFsxTFncjZsR41Q8a6b6JQQpZFoTopU_tI0WHGAlqtyHMSgQonB0hMjb4X_9kr-IXUp2qVZlBAXB2HBjwkOZvRk5GDr9tLlyKgwvZ_v8-Iy_4oa8SyL43ga3vgCQLTDYW6VMonXLD8MCvNHDuTjNwdL-kjAnmmV3hZ_Q76cg7aud-8SYXI8lfg_FGFj0GaTMEgIx2-3MsXK3298_x4hymvHiPzLX2RdouZC9HWqY34';
 
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   darkBackground: {
-    backgroundColor: '#F5F2ED',
+    backgroundColor: UI_COLORS.headerDarkBg,
   },
   borderBottom: {
     borderBottomWidth: 1,

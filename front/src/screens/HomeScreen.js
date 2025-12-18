@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -7,8 +6,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Icon } from '../components/ui';
-import { Header } from '../components/common';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Header, StatusBadge } from '../components/common';
+import { COLORS, FEATURE_CARD_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 // 여정 데이터
 const JOURNEY_DATA = [
@@ -41,10 +40,8 @@ export default function HomeScreen({ navigation }) {
       <Header
         title="SpeakTrue"
         showLogo
-        // rightIcon="settings"
-        // onRightPress={() => handleNavigate('Settings')}
-        showProfile
-        onProfilePress={() => handleNavigate('Settings')}
+        rightIcon="settings"
+        onRightPress={() => handleNavigate('Settings')}
       />
 
       <ScrollView
@@ -164,11 +161,7 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95}>
                 <View style={styles.journeyCardHeader}>
                   <Text style={styles.journeyDate}>{item.date}</Text>
-                  <View style={[styles.statusBadge, item.resolved ? styles.resolvedBadge : styles.unresolvedBadge]}>
-                    <Text style={[styles.statusText, item.resolved ? styles.resolvedText : styles.unresolvedText]}>
-                      {item.resolved ? '해결' : '미해결'}
-                    </Text>
-                  </View>
+                  <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
                 </View>
                 <View style={styles.journeyCardContent}>
                   <Text style={styles.journeyTitle}>{item.title}</Text>
@@ -294,10 +287,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   featureCardWarm: {
-    backgroundColor: '#F0EBE0',
+    backgroundColor: FEATURE_CARD_COLORS.warm,
   },
   featureCardGreen: {
-    backgroundColor: '#E0EDE8',
+    backgroundColor: FEATURE_CARD_COLORS.green,
   },
   featureCardSmall: {
     flex: 1,
@@ -309,10 +302,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   featureCardBlue: {
-    backgroundColor: '#E0E8ED',
+    backgroundColor: FEATURE_CARD_COLORS.blue,
   },
   featureCardPurple: {
-    backgroundColor: '#EBE0ED',
+    backgroundColor: FEATURE_CARD_COLORS.purple,
   },
   featureIconContainer: {
     width: 40,
@@ -403,27 +396,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
-  },
-  statusBadge: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    borderRadius: BORDER_RADIUS.full,
-  },
-  resolvedBadge: {
-    backgroundColor: '#E8F5E9',
-  },
-  unresolvedBadge: {
-    backgroundColor: '#FFF3E0',
-  },
-  statusText: {
-    fontSize: FONT_SIZE.xs,
-    fontWeight: FONT_WEIGHT.medium,
-  },
-  resolvedText: {
-    color: '#2E7D32',
-  },
-  unresolvedText: {
-    color: '#E65100',
   },
   journeyCardContent: {
     gap: SPACING.xs,

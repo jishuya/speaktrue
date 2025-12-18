@@ -1,7 +1,6 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Icon } from '../ui';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
+import { COLORS, UI_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 export default function Card({
   children,
@@ -305,7 +304,7 @@ const styles = StyleSheet.create({
 
   // Insight Card
   insightCard: {
-    backgroundColor: '#2A3D2A',
+    backgroundColor: UI_COLORS.insightCardBg,
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
     overflow: 'hidden',
@@ -340,7 +339,7 @@ const styles = StyleSheet.create({
   },
   insightContent: {
     fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
-    color: '#E8ECE9',
+    color: UI_COLORS.insightCardText,
     lineHeight: 22,
     opacity: 0.9,
   },
