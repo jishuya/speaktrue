@@ -1,5 +1,4 @@
 export { default as Header } from './Header';
-export { default as BottomNav } from './BottomNav';
 export { default as Button, IconButton } from '../ui/Button';
 export { default as Avatar, AIAvatar } from './Avatar';
 export { default as ProgressBar, VerticalBarChart } from './ProgressBar';

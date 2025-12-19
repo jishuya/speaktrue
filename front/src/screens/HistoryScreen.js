@@ -79,7 +79,7 @@ export default function HistoryScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <Header
         title="상담 기록"
         showBack

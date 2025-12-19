@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -8,7 +7,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
-import { Header, BottomNav, InsightCard, ProgressBar } from '../components/common';
+import { Header, InsightCard, ProgressBar } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 const CONFLICT_DATA = [
@@ -25,12 +24,8 @@ const EMOTION_DATA = [
 ];
 
 export default function PatternsScreen({ navigation }) {
-  const handleNavigate = (screen) => {
-    navigation.navigate(screen);
-  };
-
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <Header
         title="패턴 분석"
@@ -138,12 +133,6 @@ export default function PatternsScreen({ navigation }) {
         {/* Bottom spacing */}
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <BottomNav
-        currentRoute="History"
-        onNavigate={handleNavigate}
-      />
     </SafeAreaView>
   );
 }
