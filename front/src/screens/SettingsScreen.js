@@ -12,6 +12,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import profileFemaleImage from '../assets/images/profile_female.png';
 import { Header, MenuItem, MenuGroup } from '../components/common';
@@ -72,7 +73,7 @@ export default function SettingsScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         title="설정"

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, FEATURE_CARD_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -35,7 +36,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         title="SpeakTrue"
@@ -180,7 +181,7 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         {/* Bottom spacing for tab bar */}
-        <View style={{ height: 100 }} />
+        <View style={{ height: 80 }} />
       </ScrollView>
     </View>
   );
@@ -202,17 +203,17 @@ const styles = StyleSheet.create({
 
   // Greeting
   greetingSection: {
-    paddingTop: SPACING.sm,
+    paddingTop: SPACING.xs,
     marginBottom: SPACING.md,
   },
   greetingTitle: {
-    fontSize: FONT_SIZE.xxl,
+    fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-    lineHeight: 30,
+    lineHeight: 26,
   },
   greetingSubtitle: {
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
     marginTop: 2,
@@ -279,10 +280,11 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     flex: 1,
-    height: 156,
-    padding: SPACING.lg,
-    borderRadius: 32,
-    justifyContent: 'space-between',
+    height: 130,
+    padding: SPACING.md,
+    borderRadius: 24,
+    justifyContent: 'flex-start',
+    gap: SPACING.sm,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -294,10 +296,11 @@ const styles = StyleSheet.create({
   },
   featureCardSmall: {
     flex: 1,
-    height: 120,
+    height: 100,
     padding: SPACING.md,
-    borderRadius: 24,
-    justifyContent: 'space-between',
+    borderRadius: 20,
+    justifyContent: 'flex-start',
+    gap: SPACING.xs,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -308,9 +311,9 @@ const styles = StyleSheet.create({
     backgroundColor: FEATURE_CARD_COLORS.purple,
   },
   featureIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     ...SHADOWS.sm,
@@ -331,17 +334,17 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   featureTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-    lineHeight: 24,
+    lineHeight: 20,
     letterSpacing: -0.3,
   },
   featureSubtitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
+    marginTop: 2,
   },
   featureCardGlow: {
     position: 'absolute',
@@ -355,37 +358,37 @@ const styles = StyleSheet.create({
 
   // Journey Section
   journeySection: {
-    marginTop: SPACING.md,
+    marginTop: SPACING.sm,
   },
   journeySectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   journeySectionTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   journeySectionLink: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.primary,
   },
   journeyScrollContent: {
     paddingRight: SPACING.lg,
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
   journeyCard: {
-    width: 240,
+    width: 200,
     backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     ...SHADOWS.sm,
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
   journeyCardHeader: {
     flexDirection: 'row',
@@ -398,15 +401,15 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   journeyCardContent: {
-    gap: SPACING.xs,
+    gap: 2,
   },
   journeyTitle: {
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   journeyContent: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
   },
   journeyCardFooter: {

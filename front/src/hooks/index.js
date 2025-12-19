@@ -1,2 +1,3 @@
 // Hooks barrel file
-// TODO: Add custom hooks as they are created
+export { default as useSpeechRecognition } from './useSpeechRecognition';
+export { default as useImagePicker } from './useImagePicker';

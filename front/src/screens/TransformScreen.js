@@ -9,6 +9,7 @@ import {
   Clipboard,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithIcon } from '../components/common';
 import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -51,7 +52,7 @@ export default function TransformScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         showBack

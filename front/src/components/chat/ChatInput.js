@@ -1,24 +1,52 @@
-import { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator } from 'react-native';
 import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
+import { useSpeechRecognition, useImagePicker } from '../../hooks';
+
+const MIN_HEIGHT = 44;
 
 export default function ChatInput({
   value,
   onChangeText,
   onSend,
   onAttach,
-  onVoice,
   placeholder = '감정을 입력해 주세요...',
   disabled = false,
+  isLoading = false,
   showAttach = true,
   showVoice = true,
   maxHeight = 100,
 }) {
-  const [inputHeight, setInputHeight] = useState(44);
+  const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
+
+  const isDisabled = disabled || isLoading;
+
+  // 음성 인식 훅
+  const { isListening, toggleListening } = useSpeechRecognition({
+    onResult: (text) => {
+      // 기존 텍스트에 음성 인식 결과 추가
+      const newText = value ? `${value} ${text}` : text;
+      onChangeText?.(newText);
+    },
+  });
+
+  // 이미지 첨부 훅
+  const { showImageOptions } = useImagePicker({
+    onImageSelected: (image) => {
+      onAttach?.(image);
+    },
+  });
+
+  // 텍스트가 비어있으면 높이를 초기화
+  useEffect(() => {
+    if (!value || value.length === 0) {
+      setInputHeight(MIN_HEIGHT);
+    }
+  }, [value]);
 
   const handleSend = () => {
-    if (value?.trim() && !disabled) {
+    if (value?.trim() && !isDisabled) {
       onSend?.(value.trim());
       Keyboard.dismiss();
     }
@@ -26,7 +54,7 @@ export default function ChatInput({
 
   const handleContentSizeChange = (event) => {
     const height = event.nativeEvent.contentSize.height;
-    setInputHeight(Math.min(Math.max(44, height), maxHeight));
+    setInputHeight(Math.min(Math.max(MIN_HEIGHT, height), maxHeight));
   };
 
   const handleKeyPress = (event) => {
@@ -37,13 +65,17 @@ export default function ChatInput({
     }
   };
 
-  const canSend = value?.trim().length > 0 && !disabled;
+  const canSend = value?.trim().length > 0 && !isDisabled;
 
   return (
     <View style={styles.container}>
       <View style={styles.inputWrapper}>
         {showAttach && (
-          <TouchableOpacity style={styles.iconButton} onPress={onAttach}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={showImageOptions}
+            disabled={isDisabled}
+          >
             <Icon name="add-circle-outline" size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
         )}
@@ -56,7 +88,7 @@ export default function ChatInput({
           placeholderTextColor={COLORS.textMuted}
           multiline
           onContentSizeChange={handleContentSizeChange}
-          editable={!disabled}
+          editable={!isDisabled}
           returnKeyType="send"
           blurOnSubmit={false}
           onSubmitEditing={handleSend}
@@ -64,21 +96,33 @@ export default function ChatInput({
         />
 
         {showVoice && !canSend && (
-          <TouchableOpacity style={styles.iconButton} onPress={onVoice}>
-            <Icon name="mic" size={24} color={COLORS.textSecondary} />
+          <TouchableOpacity
+            style={[styles.iconButton, isListening && styles.iconButtonActive]}
+            onPress={toggleListening}
+            disabled={isDisabled}
+          >
+            <Icon
+              name="mic"
+              size={24}
+              color={isListening ? COLORS.error : COLORS.textSecondary}
+            />
           </TouchableOpacity>
         )}
 
         <TouchableOpacity
           style={[styles.sendButton, canSend && styles.sendButtonActive]}
           onPress={handleSend}
-          disabled={!canSend}
+          disabled={!canSend || isLoading}
         >
-          <Icon
-            name="send"
-            size={20}
-            color={canSend ? COLORS.surface : COLORS.textMuted}
-          />
+          {isLoading ? (
+            <ActivityIndicator size="small" color={COLORS.textMuted} />
+          ) : (
+            <Icon
+              name="send"
+              size={20}
+              color={canSend ? COLORS.surface : COLORS.textMuted}
+            />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -136,6 +180,10 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
+  },
+  iconButtonActive: {
+    backgroundColor: `${COLORS.error}15`,
   },
   input: {
     flex: 1,
