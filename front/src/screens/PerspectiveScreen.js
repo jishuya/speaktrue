@@ -33,11 +33,23 @@ export default function PerspectiveScreen({ navigation, route }) {
       setIsLoading(true);
       setError(null);
       const response = await api.getPerspectiveAnalysis(conversationHistory);
-      setPerspectiveData({
-        content: response.reply,
-        hiddenEmotion: response.hiddenEmotion || '파악 중...',
-        coreNeed: response.coreNeed || '파악 중...',
-      });
+
+      // 새로운 JSON 형식 처리
+      if (response.sections) {
+        setPerspectiveData({
+          sections: response.sections,
+          hiddenEmotion: response.empathyPoints?.hiddenEmotion || '파악 중...',
+          coreNeed: response.empathyPoints?.coreNeed || '파악 중...',
+        });
+      } else {
+        // 기존 형식 호환
+        setPerspectiveData({
+          sections: null,
+          content: response.reply,
+          hiddenEmotion: '파악 중...',
+          coreNeed: '파악 중...',
+        });
+      }
     } catch (err) {
       console.error('Perspective error:', err);
       setError('관점 분석 중 문제가 발생했어요. 다시 시도해 주세요.');
@@ -46,21 +58,39 @@ export default function PerspectiveScreen({ navigation, route }) {
     }
   };
 
-  // 하이라이트 텍스트 파싱 (** ** 사이의 텍스트를 강조)
-  const renderContentWithHighlights = (text) => {
-    if (!text) return null;
+  // 섹션별 소제목 매핑
+  const sectionTitles = {
+    summary: '대화 요약',
+    emotionReaffirm: '사용자 감정 재확인',
+    partnerPerspective: '상대방(남편)의 입장 해석',
+    hiddenNeedAnalysis: '숨겨진 욕구 분석',
+    communicationTip: '실질적인 소통 방안',
+  };
 
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        const highlightText = part.slice(2, -2);
-        return (
-          <Text key={index} style={styles.highlight}>
-            {highlightText}
-          </Text>
-        );
-      }
-      return <Text key={index}>{part}</Text>;
+  // 섹션별 콘텐츠 렌더링
+  const renderSections = () => {
+    if (!perspectiveData?.sections) {
+      // 기존 형식인 경우 그대로 표시
+      return (
+        <Text style={styles.cardContent}>
+          {perspectiveData?.content}
+        </Text>
+      );
+    }
+
+    const { sections } = perspectiveData;
+    const sectionOrder = ['summary', 'emotionReaffirm', 'partnerPerspective', 'hiddenNeedAnalysis', 'communicationTip'];
+
+    return sectionOrder.map((key) => {
+      const content = sections[key];
+      if (!content) return null;
+
+      return (
+        <View key={key} style={styles.sectionBlock}>
+          <Text style={styles.sectionSubtitle}>{sectionTitles[key]}:</Text>
+          <Text style={styles.sectionContent}>{content}</Text>
+        </View>
+      );
     });
   };
 
@@ -74,7 +104,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           onBackPress={() => navigation.goBack()}
           leftComponent={
             <HeaderWithIcon
-              icon="visibility"
+              icon="favorite"
               title="관점 전환"
               subtitle="상대방 입장에서"
             />
@@ -99,7 +129,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           onBackPress={() => navigation.goBack()}
           leftComponent={
             <HeaderWithIcon
-              icon="visibility"
+              icon="favorite"
               title="관점 전환"
               subtitle="상대방 입장에서"
             />
@@ -161,9 +191,9 @@ export default function PerspectiveScreen({ navigation, route }) {
               <Text style={styles.aiLabel}>AI 공감 해석</Text>
             </View>
           </View>
-          <Text style={styles.cardContent}>
-            {renderContentWithHighlights(perspectiveData?.content)}
-          </Text>
+          <View style={styles.cardContent}>
+            {renderSections()}
+          </View>
 
           {/* Feedback */}
           <View style={styles.feedbackSection}>
@@ -335,13 +365,21 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   cardContent: {
+    marginTop: SPACING.sm,
+  },
+  sectionBlock: {
+    marginBottom: SPACING.md,
+  },
+  sectionSubtitle: {
+    fontSize: FONT_SIZE.base,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+  sectionContent: {
     fontSize: FONT_SIZE.base,
     color: COLORS.textSecondary,
     lineHeight: 24,
-  },
-  highlight: {
-    fontWeight: FONT_WEIGHT.semiBold,
-    color: COLORS.primary,
   },
   feedbackSection: {
     marginTop: SPACING.lg,

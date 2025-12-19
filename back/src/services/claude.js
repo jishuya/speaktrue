@@ -190,12 +190,21 @@ class ClaudeService {
 지금까지의 대화 내용을 바탕으로 ${partnerName}의 입장에서 상황을 분석해주세요.
 사용자는 이미 충분히 감정을 토로하고 공감을 받았으므로, 이제 ${partnerName}의 관점을 이해할 준비가 되어 있습니다.
 
-## 응답 구조
-1. 대화 요약 (1-2문장): 지금까지 사용자가 토로한 핵심 상황을 간단히 정리해요.
-2. 사용자 감정 재확인 (1문장): 사용자의 감정이 여전히 유효함을 인정해요.
-3. ${partnerName}의 입장 해석 (3-4문장): 대화 내용을 바탕으로 ${partnerName}이 그렇게 행동했을 이유, 느꼈을 감정과 생각을 구체적으로 설명해요.
-4. 숨겨진 욕구 분석 (2-3문장): ${partnerName}의 행동 뒤에 있는 욕구나 두려움, 기대를 짚어줘요.
-5. 실질적인 소통 방안 (2-3문장): 서로 이해할 수 있는 구체적인 대화법이나 행동을 제안해요.
+## 응답 형식
+반드시 아래 JSON 형식으로 응답해주세요:
+{
+  "sections": {
+    "summary": "대화 요약 (1-2문장): 지금까지 사용자가 토로한 핵심 상황",
+    "emotionReaffirm": "사용자 감정 재확인 (1문장): 사용자의 감정이 여전히 유효함을 인정",
+    "partnerPerspective": "${partnerName}의 입장 해석 (3-4문장): ${partnerName}이 그렇게 행동했을 이유, 느꼈을 감정과 생각",
+    "hiddenNeedAnalysis": "숨겨진 욕구 분석 (2-3문장): ${partnerName}의 행동 뒤에 있는 욕구나 두려움, 기대",
+    "communicationTip": "실질적인 소통 방안 (2-3문장): 서로 이해할 수 있는 구체적인 대화법이나 행동"
+  },
+  "empathyPoints": {
+    "hiddenEmotion": "${partnerName}의 숨겨진 감정을 2-4단어로 표현 (예: '불안감', '인정받고 싶은 마음', '지침과 외로움')",
+    "coreNeed": "${partnerName}의 핵심 욕구를 2-4단어로 표현 (예: '존중받고 싶음', '함께하는 시간', '인정과 감사')"
+  }
+}
 
 ## 대화 스타일
 - 진지하고 따뜻한 전문 상담사 톤
@@ -213,18 +222,38 @@ class ClaudeService {
 - ${partnerName}을 일방적으로 두둔하기
 - 이모지 사용
 - 뜬구름 잡는 추상적인 조언
-- 대화에서 언급되지 않은 내용을 추측하기`;
+- 대화에서 언급되지 않은 내용을 추측하기
+- JSON 외의 텍스트 출력`;
 
     // 대화 히스토리 끝에 관점 전환 요청 추가
     const messagesWithRequest = [
       ...conversationHistory,
       {
         role: 'user',
-        content: '지금까지 나눈 대화를 바탕으로 상대방의 입장에서 이 상황을 분석해주세요.',
+        content: '지금까지 나눈 대화를 바탕으로 상대방의 입장에서 이 상황을 분석해주세요. JSON 형식으로 응답해주세요.',
       },
     ];
 
-    return this.sendMessage(messagesWithRequest, systemPrompt);
+    const response = await this.sendMessage(messagesWithRequest, systemPrompt);
+
+    try {
+      return JSON.parse(response);
+    } catch {
+      // JSON 파싱 실패 시 기존 형식으로 반환
+      return {
+        sections: {
+          summary: '',
+          emotionReaffirm: '',
+          partnerPerspective: response,
+          hiddenNeedAnalysis: '',
+          communicationTip: '',
+        },
+        empathyPoints: {
+          hiddenEmotion: '파악 중...',
+          coreNeed: '파악 중...',
+        },
+      };
+    }
   }
 
   // 이미지와 함께 관점 전환 응답
