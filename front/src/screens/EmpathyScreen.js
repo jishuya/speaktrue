@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
 import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../components/chat';
@@ -97,7 +98,7 @@ export default function EmpathyScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <Header
         showBack
@@ -150,10 +151,11 @@ export default function EmpathyScreen({ navigation }) {
           value={inputText}
           onChangeText={setInputText}
           onSend={handleSend}
+          isLoading={isLoading}
           placeholder="감정을 입력해 주세요..."
         />
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }
 
