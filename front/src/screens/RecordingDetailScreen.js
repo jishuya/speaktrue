@@ -65,7 +65,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         title="기록 상세"
@@ -218,7 +218,7 @@ export default function RecordingDetailScreen({ navigation, route }) {
 
         <View style={{ height: SPACING.xxl }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

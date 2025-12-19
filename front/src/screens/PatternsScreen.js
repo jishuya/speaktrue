@@ -30,7 +30,7 @@ export default function PatternsScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         title="패턴 분석"
@@ -144,7 +144,7 @@ export default function PatternsScreen({ navigation }) {
         currentRoute="History"
         onNavigate={handleNavigate}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

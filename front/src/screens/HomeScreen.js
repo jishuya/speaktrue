@@ -183,7 +183,7 @@ export default function HomeScreen({ navigation }) {
         {/* Bottom spacing for tab bar */}
         <View style={{ height: 80 }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

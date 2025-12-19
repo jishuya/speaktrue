@@ -154,7 +154,7 @@ export default function HistoryScreen({ navigation }) {
         {/* Bottom spacing for tab bar */}
         <View style={{ height: 100 }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

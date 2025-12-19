@@ -12,7 +12,7 @@ import { COLORS, EMOTION_STYLES, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS,
 
 export default function PerspectiveScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <Header
         showBack
@@ -122,7 +122,7 @@ export default function PerspectiveScreen({ navigation }) {
           onPress={() => navigation.goBack()}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

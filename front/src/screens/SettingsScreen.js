@@ -300,7 +300,7 @@ export default function SettingsScreen({ navigation }) {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 

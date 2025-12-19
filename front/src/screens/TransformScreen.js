@@ -173,7 +173,7 @@ export default function TransformScreen({ navigation }) {
           </TouchableOpacity>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
