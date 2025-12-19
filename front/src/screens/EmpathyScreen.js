@@ -31,7 +31,6 @@ export default function EmpathyScreen({ navigation }) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [attachedImage, setAttachedImage] = useState(null);
-  const [isPerspectiveLoading, setIsPerspectiveLoading] = useState(false);
   const flatListRef = useRef(null);
 
   // 관점 전환 버튼 표시 조건 계산
@@ -99,43 +98,17 @@ export default function EmpathyScreen({ navigation }) {
   };
 
   // 관점 전환 버튼 클릭 핸들러
-  const handlePerspectivePress = async () => {
-    if (isPerspectiveLoading) return;
+  const handlePerspectivePress = () => {
+    // 대화 히스토리를 Claude API 형식으로 변환
+    const conversationHistory = messages
+      .filter(m => m.id !== '1') // 초기 AI 인사 메시지 제외
+      .map(m => ({
+        role: m.isUser ? 'user' : 'assistant',
+        content: m.text,
+      }));
 
-    setIsPerspectiveLoading(true);
-
-    try {
-      // 대화 히스토리를 Claude API 형식으로 변환
-      const conversationHistory = messages
-        .filter(m => m.id !== '1') // 초기 AI 인사 메시지 제외
-        .map(m => ({
-          role: m.isUser ? 'user' : 'assistant',
-          content: m.text,
-        }));
-
-      const response = await api.getPerspectiveAnalysis(conversationHistory);
-
-      // AI 관점 전환 응답을 메시지에 추가
-      const perspectiveResponse = {
-        id: Date.now().toString(),
-        text: response.reply,
-        isUser: false,
-        createdAt: new Date(),
-        isPerspective: true, // 관점 전환 응답 표시용
-      };
-      setMessages(prev => [...prev, perspectiveResponse]);
-    } catch (error) {
-      console.error('Perspective error:', error);
-      const errorResponse = {
-        id: Date.now().toString(),
-        text: '죄송합니다. 관점 분석 중 문제가 발생했어요. 다시 시도해 주세요.',
-        isUser: false,
-        createdAt: new Date(),
-      };
-      setMessages(prev => [...prev, errorResponse]);
-    } finally {
-      setIsPerspectiveLoading(false);
-    }
+    // PerspectiveScreen으로 대화 기록 전달
+    navigation.navigate('Perspective', { conversationHistory });
   };
 
   const renderMessage = ({ item, index }) => {
@@ -184,8 +157,8 @@ export default function EmpathyScreen({ navigation }) {
       {/* Chat Area */}
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <FlatList
           ref={flatListRef}
@@ -208,21 +181,11 @@ export default function EmpathyScreen({ navigation }) {
         {canShowPerspectiveButton && (
           <View style={styles.perspectiveButtonContainer}>
             <TouchableOpacity
-              style={[styles.perspectiveButton, isPerspectiveLoading && styles.perspectiveButtonDisabled]}
+              style={styles.perspectiveButton}
               onPress={handlePerspectivePress}
-              disabled={isPerspectiveLoading}
             >
-              {isPerspectiveLoading ? (
-                <>
-                  <ActivityIndicator size="small" color={COLORS.primary} />
-                  <Text style={styles.perspectiveButtonText}>분석 중...</Text>
-                </>
-              ) : (
-                <>
-                  <Icon name="visibility" size={20} color={COLORS.primary} />
-                  <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
-                </>
-              )}
+              <Icon name="visibility" size={20} color={COLORS.primary} />
+              <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -283,9 +246,6 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,
-  },
-  perspectiveButtonDisabled: {
-    opacity: 0.7,
   },
   loadingContainer: {
     flexDirection: 'row',

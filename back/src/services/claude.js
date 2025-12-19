@@ -3,7 +3,7 @@ const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 class ClaudeService {
   constructor() {
     this.apiKey = process.env.CLAUDE_API_KEY;
-    this.model = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20241022';
+    this.model = process.env.CLAUDE_MODEL || 'claude-haiku-4-20250514';
   }
 
   async sendMessage(messages, systemPrompt) {
@@ -28,6 +28,7 @@ class ClaudeService {
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('Claude API error details:', JSON.stringify(error, null, 2));
       throw new Error(`Claude API error: ${error.error?.message || 'Unknown error'}`);
     }
 

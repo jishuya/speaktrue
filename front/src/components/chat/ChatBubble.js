@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: FONT_SIZE.sm,  // 12px - 가독성 개선
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
     marginTop: 4,
     marginRight: 4,

@@ -1,16 +1,124 @@
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithIcon, Button } from '../components/common';
 import { COLORS, EMOTION_STYLES, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { api } from '../services';
 
-export default function PerspectiveScreen({ navigation }) {
+export default function PerspectiveScreen({ navigation, route }) {
+  const { conversationHistory } = route.params || {};
+  const [isLoading, setIsLoading] = useState(true);
+  const [perspectiveData, setPerspectiveData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (conversationHistory && conversationHistory.length > 0) {
+      fetchPerspectiveAnalysis();
+    } else {
+      setError('대화 기록이 없습니다.');
+      setIsLoading(false);
+    }
+  }, []);
+
+  const fetchPerspectiveAnalysis = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await api.getPerspectiveAnalysis(conversationHistory);
+      setPerspectiveData({
+        content: response.reply,
+        hiddenEmotion: response.hiddenEmotion || '파악 중...',
+        coreNeed: response.coreNeed || '파악 중...',
+      });
+    } catch (err) {
+      console.error('Perspective error:', err);
+      setError('관점 분석 중 문제가 발생했어요. 다시 시도해 주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 하이라이트 텍스트 파싱 (** ** 사이의 텍스트를 강조)
+  const renderContentWithHighlights = (text) => {
+    if (!text) return null;
+
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const highlightText = part.slice(2, -2);
+        return (
+          <Text key={index} style={styles.highlight}>
+            {highlightText}
+          </Text>
+        );
+      }
+      return <Text key={index}>{part}</Text>;
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <Header
+          showBack
+          borderBottom
+          darkBackground
+          onBackPress={() => navigation.goBack()}
+          leftComponent={
+            <HeaderWithIcon
+              icon="visibility"
+              title="관점 전환"
+              subtitle="상대방 입장에서"
+            />
+          }
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>상대방의 관점을 분석하고 있어요...</Text>
+          <Text style={styles.loadingSubText}>잠시만 기다려 주세요</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <Header
+          showBack
+          borderBottom
+          darkBackground
+          onBackPress={() => navigation.goBack()}
+          leftComponent={
+            <HeaderWithIcon
+              icon="visibility"
+              title="관점 전환"
+              subtitle="상대방 입장에서"
+            />
+          }
+        />
+        <View style={styles.errorContainer}>
+          <Icon name="error-outline" size={48} color={COLORS.error} />
+          <Text style={styles.errorText}>{error}</Text>
+          <Button
+            title="다시 시도"
+            size="sm"
+            onPress={fetchPerspectiveAnalysis}
+            style={styles.retryButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
@@ -49,31 +157,16 @@ export default function PerspectiveScreen({ navigation }) {
               <Text style={styles.avatarText}>상대</Text>
             </View>
             <View style={styles.cardHeaderText}>
-              <Text style={styles.partnerName}>알렉스의 입장</Text>
+              <Text style={styles.partnerName}>상대방의 입장</Text>
               <Text style={styles.aiLabel}>AI 공감 해석</Text>
             </View>
           </View>
           <Text style={styles.cardContent}>
-            알렉스님은 지금 화가 난 것이 아니라, 상황에{' '}
-            <Text style={styles.highlight}>압도감</Text>을 느끼고 당황스러우신 것 같아요.
-            관계를 소중히 여기기 때문에, 상처 주지 않고 생각을 정리할{' '}
-            <Text style={styles.highlight}>자신만의 공간</Text>을 찾고 계신 듯합니다.
-            {'\n\n'}
-            알렉스님이 대화를 피하는 것처럼 보일 수 있지만, 사실은 감정이 격해진 상태에서{' '}
-            <Text style={styles.highlight}>후회할 말</Text>을 하고 싶지 않은 마음이 큰 것 같아요.
-            침묵은 무관심이 아니라, 오히려 관계를 지키려는{' '}
-            <Text style={styles.highlight}>나름의 노력</Text>일 수 있습니다.
-            {'\n\n'}
-            또한 알렉스님은 자신의 감정을 말로 표현하는 것이 익숙하지 않을 수 있어요.
-            어릴 때부터 감정을 드러내면 안 된다고 배웠거나,{' '}
-            <Text style={styles.highlight}>취약함을 보이는 것</Text>이 불편하게 느껴질 수 있습니다.
-            그래서 혼자 정리할 시간이 필요한 거예요. 이건 당신을 밀어내는 게 아니라,{' '}
-            <Text style={styles.highlight}>더 나은 대화</Text>를 위한 준비 시간입니다.
+            {renderContentWithHighlights(perspectiveData?.content)}
           </Text>
 
           {/* Feedback */}
           <View style={styles.feedbackSection}>
-            {/* <Text style={styles.feedbackLabel}>도움이 되셨나요?</Text> */}
             <View style={styles.feedbackButtons}>
               <TouchableOpacity style={styles.feedbackButton}>
                 <Icon name="thumb-up" size={18} color={COLORS.primary} />
@@ -96,7 +189,7 @@ export default function PerspectiveScreen({ navigation }) {
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>숨겨진 감정</Text>
-              <Text style={styles.empathyValue}>미래에 대한 불안함</Text>
+              <Text style={styles.empathyValue}>{perspectiveData?.hiddenEmotion}</Text>
             </View>
           </View>
           <View style={styles.empathyCard}>
@@ -105,7 +198,7 @@ export default function PerspectiveScreen({ navigation }) {
             </View>
             <View style={styles.empathyContent}>
               <Text style={styles.empathyLabel}>핵심 욕구</Text>
-              <Text style={styles.empathyValue}>확신과 안정감</Text>
+              <Text style={styles.empathyValue}>{perspectiveData?.coreNeed}</Text>
             </View>
           </View>
         </View>
@@ -137,6 +230,39 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: SPACING.md,
     paddingBottom: 100,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.xl,
+  },
+  loadingText: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.semiBold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.lg,
+    textAlign: 'center',
+  },
+  loadingSubText: {
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.sm,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.xl,
+  },
+  errorText: {
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.md,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: SPACING.lg,
   },
   motivationHint: {
     flexDirection: 'row',
@@ -227,7 +353,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   feedbackLabel: {
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textMuted,
   },
   feedbackButtons: {
@@ -246,7 +372,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.borderLight,
   },
   feedbackButtonText: {
-    fontSize: FONT_SIZE.sm,  // 12px - 터치 가능한 작은 버튼
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     marginLeft: 6,
