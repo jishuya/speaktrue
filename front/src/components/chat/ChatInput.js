@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator } from 'react-native';
-import { Icon } from '../ui';
-import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
+import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator, Image, Text } from 'react-native';
+import { Icon, ImagePickerModal } from '../ui';
+import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS, FONT_FAMILY, FONT_WEIGHT } from '../../constants/theme';
 import { useSpeechRecognition, useImagePicker } from '../../hooks';
 
 const MIN_HEIGHT = 44;
@@ -11,6 +11,8 @@ export default function ChatInput({
   onChangeText,
   onSend,
   onAttach,
+  attachedImage,
+  onRemoveImage,
   placeholder = '감정을 입력해 주세요...',
   disabled = false,
   isLoading = false,
@@ -32,7 +34,7 @@ export default function ChatInput({
   });
 
   // 이미지 첨부 훅
-  const { showImageOptions } = useImagePicker({
+  const { pickImage, takePhoto, showImageOptions, hideImageOptions, isModalVisible } = useImagePicker({
     onImageSelected: (image) => {
       onAttach?.(image);
     },
@@ -65,10 +67,29 @@ export default function ChatInput({
     }
   };
 
-  const canSend = value?.trim().length > 0 && !isDisabled;
+  // 이미지가 있거나 텍스트가 있으면 전송 가능
+  const canSend = (value?.trim().length > 0 || attachedImage) && !isDisabled;
+  // 이미지만 있고 텍스트가 없으면 전송 불가 (텍스트 필수)
+  const canActuallySend = value?.trim().length > 0 && !isDisabled;
 
   return (
     <View style={styles.container}>
+      {/* 첨부된 이미지 미리보기 */}
+      {attachedImage && (
+        <View style={styles.imagePreviewContainer}>
+          <View style={styles.imagePreviewWrapper}>
+            <Image source={{ uri: attachedImage.uri }} style={styles.imagePreview} />
+            <TouchableOpacity
+              style={styles.removeImageButton}
+              onPress={onRemoveImage}
+            >
+              <Icon name="close" size={16} color={COLORS.surface} />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.imageHint}>이미지와 함께 메시지를 입력해주세요</Text>
+        </View>
+      )}
+
       <View style={styles.inputWrapper}>
         {showAttach && (
           <TouchableOpacity
@@ -110,9 +131,9 @@ export default function ChatInput({
         )}
 
         <TouchableOpacity
-          style={[styles.sendButton, canSend && styles.sendButtonActive]}
+          style={[styles.sendButton, canActuallySend && styles.sendButtonActive]}
           onPress={handleSend}
-          disabled={!canSend || isLoading}
+          disabled={!canActuallySend || isLoading}
         >
           {isLoading ? (
             <ActivityIndicator size="small" color={COLORS.textMuted} />
@@ -120,11 +141,19 @@ export default function ChatInput({
             <Icon
               name="send"
               size={20}
-              color={canSend ? COLORS.surface : COLORS.textMuted}
+              color={canActuallySend ? COLORS.surface : COLORS.textMuted}
             />
           )}
         </TouchableOpacity>
       </View>
+
+      {/* 이미지 첨부 모달 */}
+      <ImagePickerModal
+        visible={isModalVisible}
+        onClose={hideImageOptions}
+        onCamera={takePhoto}
+        onGallery={pickImage}
+      />
     </View>
   );
 }
@@ -163,6 +192,36 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight,
     borderTopWidth: 1,
     borderTopColor: `${COLORS.primary}10`,
+  },
+  // 이미지 미리보기
+  imagePreviewContainer: {
+    marginBottom: SPACING.sm,
+  },
+  imagePreviewWrapper: {
+    position: 'relative',
+    alignSelf: 'flex-start',
+  },
+  imagePreview: {
+    width: 80,
+    height: 80,
+    borderRadius: BORDER_RADIUS.lg,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: COLORS.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageHint: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
+    marginTop: SPACING.xs,
   },
   inputWrapper: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Alert, ActionSheetIOS, Platform } from 'react-native';
+import { useState, useCallback } from 'react';
+import { Alert } from 'react-native';
 
 // expo-image-picker 패키지가 설치되어 있는지 동적으로 확인
 let ImagePicker = null;
@@ -12,6 +12,7 @@ try {
 export default function useImagePicker({ onImageSelected, onError } = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const requestPermission = async (type) => {
     if (!ImagePicker) return false;
@@ -119,34 +120,15 @@ export default function useImagePicker({ onImageSelected, onError } = {}) {
     }
   };
 
-  const showImageOptions = () => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['취소', '사진 촬영', '앨범에서 선택'],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) {
-            takePhoto();
-          } else if (buttonIndex === 2) {
-            pickImage();
-          }
-        }
-      );
-    } else {
-      // Android - 간단한 Alert 사용
-      Alert.alert(
-        '이미지 첨부',
-        '어떻게 이미지를 추가할까요?',
-        [
-          { text: '취소', style: 'cancel' },
-          { text: '사진 촬영', onPress: takePhoto },
-          { text: '앨범에서 선택', onPress: pickImage },
-        ]
-      );
-    }
-  };
+  // 커스텀 모달 열기
+  const showImageOptions = useCallback(() => {
+    setIsModalVisible(true);
+  }, []);
+
+  // 커스텀 모달 닫기
+  const hideImageOptions = useCallback(() => {
+    setIsModalVisible(false);
+  }, []);
 
   const clearImage = () => {
     setSelectedImage(null);
@@ -158,6 +140,8 @@ export default function useImagePicker({ onImageSelected, onError } = {}) {
     pickImage,
     takePhoto,
     showImageOptions,
+    hideImageOptions,
+    isModalVisible,
     clearImage,
   };
 }

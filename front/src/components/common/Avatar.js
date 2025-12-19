@@ -75,7 +75,7 @@ export default function Avatar({
 }
 
 // AI 아바타 (특별 스타일)
-const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai_female.png');
+const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai.png');
 
 export function AIAvatar({ size = 'md', style }) {
   const sizeStyles = {

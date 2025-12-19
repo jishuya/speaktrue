@@ -2,7 +2,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
 
-const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai_female.png');
+const AI_PROFILE_IMAGE = require('../../assets/images/profile_ai.png');
 
 // 아이콘이 있는 헤더 콘텐츠
 export function HeaderWithIcon({ icon, title, subtitle, iconColor = COLORS.primary }) {

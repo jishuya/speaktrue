@@ -30,23 +30,53 @@ export default function EmpathyScreen({ navigation }) {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [attachedImage, setAttachedImage] = useState(null);
+  const [isPerspectiveLoading, setIsPerspectiveLoading] = useState(false);
   const flatListRef = useRef(null);
+
+  // 관점 전환 버튼 표시 조건 계산
+  const canShowPerspectiveButton = (() => {
+    const userMessages = messages.filter(m => m.isUser);
+    const aiMessages = messages.filter(m => !m.isUser);
+    const totalUserChars = userMessages.reduce((sum, m) => sum + (m.text?.length || 0), 0);
+
+    // 조건: 사용자 메시지 2개 이상 + AI 응답 1개 이상 + 총 150자 이상
+    return userMessages.length >= 2 && aiMessages.length >= 1 && totalUserChars >= 150;
+  })();
+
+  // 이미지 첨부 핸들러
+  const handleAttach = (image) => {
+    setAttachedImage(image);
+  };
+
+  // 이미지 제거 핸들러
+  const handleRemoveImage = () => {
+    setAttachedImage(null);
+  };
 
   const handleSend = async (text) => {
     const now = new Date();
+    const hasImage = !!attachedImage;
+
     const newMessage = {
       id: Date.now().toString(),
       text,
       isUser: true,
       timestamp: getCurrentTime(),
       createdAt: now,
+      image: hasImage ? attachedImage.uri : null,
     };
     setMessages(prev => [...prev, newMessage]);
     setInputText('');
+    setAttachedImage(null); // 전송 후 이미지 초기화
     setIsLoading(true);
 
     try {
-      const response = await api.sendChatMessage(text, 'empathy');
+      // 이미지가 있으면 이미지와 함께 전송
+      const response = hasImage
+        ? await api.sendChatMessageWithImage(text, attachedImage, 'empathy')
+        : await api.sendChatMessage(text, 'empathy');
+
       const aiResponse = {
         id: (Date.now() + 1).toString(),
         text: response.reply,
@@ -68,8 +98,44 @@ export default function EmpathyScreen({ navigation }) {
     }
   };
 
-  const handlePerspectivePress = () => {
-    navigation.navigate('Perspective');
+  // 관점 전환 버튼 클릭 핸들러
+  const handlePerspectivePress = async () => {
+    if (isPerspectiveLoading) return;
+
+    setIsPerspectiveLoading(true);
+
+    try {
+      // 대화 히스토리를 Claude API 형식으로 변환
+      const conversationHistory = messages
+        .filter(m => m.id !== '1') // 초기 AI 인사 메시지 제외
+        .map(m => ({
+          role: m.isUser ? 'user' : 'assistant',
+          content: m.text,
+        }));
+
+      const response = await api.getPerspectiveAnalysis(conversationHistory);
+
+      // AI 관점 전환 응답을 메시지에 추가
+      const perspectiveResponse = {
+        id: Date.now().toString(),
+        text: response.reply,
+        isUser: false,
+        createdAt: new Date(),
+        isPerspective: true, // 관점 전환 응답 표시용
+      };
+      setMessages(prev => [...prev, perspectiveResponse]);
+    } catch (error) {
+      console.error('Perspective error:', error);
+      const errorResponse = {
+        id: Date.now().toString(),
+        text: '죄송합니다. 관점 분석 중 문제가 발생했어요. 다시 시도해 주세요.',
+        isUser: false,
+        createdAt: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsPerspectiveLoading(false);
+    }
   };
 
   const renderMessage = ({ item, index }) => {
@@ -138,19 +204,37 @@ export default function EmpathyScreen({ navigation }) {
           }
         />
 
-        {/* Perspective Button */}
-        <View style={styles.perspectiveButtonContainer}>
-          <TouchableOpacity style={styles.perspectiveButton} onPress={handlePerspectivePress}>
-            <Icon name="visibility" size={20} color={COLORS.primary} />
-            <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Perspective Button - 조건 충족 시에만 표시 */}
+        {canShowPerspectiveButton && (
+          <View style={styles.perspectiveButtonContainer}>
+            <TouchableOpacity
+              style={[styles.perspectiveButton, isPerspectiveLoading && styles.perspectiveButtonDisabled]}
+              onPress={handlePerspectivePress}
+              disabled={isPerspectiveLoading}
+            >
+              {isPerspectiveLoading ? (
+                <>
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                  <Text style={styles.perspectiveButtonText}>분석 중...</Text>
+                </>
+              ) : (
+                <>
+                  <Icon name="visibility" size={20} color={COLORS.primary} />
+                  <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Input Area */}
         <ChatInput
           value={inputText}
           onChangeText={setInputText}
           onSend={handleSend}
+          onAttach={handleAttach}
+          attachedImage={attachedImage}
+          onRemoveImage={handleRemoveImage}
           isLoading={isLoading}
           placeholder="감정을 입력해 주세요..."
         />
@@ -199,6 +283,9 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,
+  },
+  perspectiveButtonDisabled: {
+    opacity: 0.7,
   },
   loadingContainer: {
     flexDirection: 'row',

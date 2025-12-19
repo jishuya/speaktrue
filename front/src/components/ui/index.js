@@ -24,3 +24,6 @@ export { default as Badge, Tag, NumberBadge, StatusDot } from './Badge';
 
 // EmptyState
 export { default as EmptyState, NoSearchResult, ErrorState, NetworkError } from './EmptyState';
+
+// ImagePickerModal
+export { default as ImagePickerModal } from './ImagePickerModal';

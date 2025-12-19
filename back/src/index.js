@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 9502;
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // 이미지 전송을 위해 limit 증가
 
 // Health check
 app.get('/health', (req, res) => {
