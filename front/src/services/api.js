@@ -138,6 +138,18 @@ class ApiService {
     });
   }
 
+  // User Profile
+  async getProfile(userId) {
+    return this.request(`/api/user/profile?userId=${userId}`);
+  }
+
+  async updateProfile(userId, profileData) {
+    return this.request('/api/user/profile', {
+      method: 'PATCH',
+      body: JSON.stringify({ userId, ...profileData }),
+    });
+  }
+
   // Auth
   async login(credentials) {
     return this.request('/api/auth/login', {

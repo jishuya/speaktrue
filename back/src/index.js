@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const chatRoutes = require('./routes/chat');
 const nvcRoutes = require('./routes/nvc');
 const historyRoutes = require('./routes/history');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 9502;
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/nvc', nvcRoutes);
 app.use('/api/history', historyRoutes);
+app.use('/api/user', userRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

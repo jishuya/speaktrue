@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,48 +6,86 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Icon } from '../components/ui';
 import profileFemaleImage from '../assets/images/profile_female.png';
-import { Header, MenuItem, MenuGroup } from '../components/common';
+import profileMaleImage from '../assets/images/profile_male.png';
+import { Header, MenuItem, MenuGroup, ProfileEditModal } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import api from '../services/api';
+
+// TODO: 실제 인증 구현 후 교체
+const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+
+// 성별 변환 함수
+const genderToKorean = (gender) => {
+  if (gender === 'male') return '남';
+  if (gender === 'female') return '여';
+  return gender || '';
+};
+
+const genderToEnglish = (gender) => {
+  if (gender === '남') return 'male';
+  if (gender === '여') return 'female';
+  return gender || '';
+};
 
 export default function SettingsScreen({ navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const [profileName, setProfileName] = useState('김지수');
-  const [profileEmail, setProfileEmail] = useState('jisoo.kim@truespeak.com');
-  const [profileGender, setProfileGender] = useState('남');
-  const [partnerName, setPartnerName] = useState('스투');
-  const [editName, setEditName] = useState('');
-  const [editEmail, setEditEmail] = useState('');
-  const [editGender, setEditGender] = useState('');
-  const [editPartnerName, setEditPartnerName] = useState('');
+  const [profile, setProfile] = useState({
+    name: '',
+    email: '',
+    gender: '',
+    partnerName: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const handleOpenProfileModal = () => {
-    setEditName(profileName);
-    setEditEmail(profileEmail);
-    setEditGender(profileGender);
-    setEditPartnerName(partnerName);
-    setProfileModalVisible(true);
-  };
-
-  const handleSaveProfile = () => {
-    if (editName.trim() === '') {
-      Alert.alert('알림', '이름을 입력해주세요.');
-      return;
+  const fetchProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await api.getProfile(TEMP_USER_ID);
+      setProfile({
+        name: data.name || '',
+        email: data.email || '',
+        gender: genderToKorean(data.gender),
+        partnerName: data.partnerName || '',
+      });
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+      // 에러 시 기본값 유지
+    } finally {
+      setLoading(false);
     }
-    setProfileName(editName.trim());
-    setProfileEmail(editEmail.trim());
-    setProfileGender(editGender);
-    setPartnerName(editPartnerName.trim());
-    setProfileModalVisible(false);
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const handleSaveProfile = async (updatedProfile) => {
+    try {
+      setSaving(true);
+      const data = await api.updateProfile(TEMP_USER_ID, {
+        ...updatedProfile,
+        gender: genderToEnglish(updatedProfile.gender),
+      });
+      setProfile({
+        name: data.name || '',
+        email: data.email || '',
+        gender: genderToKorean(data.gender),
+        partnerName: data.partnerName || '',
+      });
+      setProfileModalVisible(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      Alert.alert('오류', '프로필 수정에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleLogout = () => {
@@ -93,13 +131,19 @@ export default function SettingsScreen({ navigation }) {
           <View style={styles.profileGlow} />
           <View style={styles.profileImageContainer}>
             <Image
-              source={profileFemaleImage}
+              source={profile.gender === '남' ? profileMaleImage : profileFemaleImage}
               style={styles.profileImageImg}
             />
           </View>
-          <Text style={styles.profileName}>{profileName}</Text>
-          <Text style={styles.profileEmail}>{profileEmail}</Text>
-          <TouchableOpacity style={styles.editProfileButton} onPress={handleOpenProfileModal}>
+          {loading ? (
+            <ActivityIndicator size="small" color={COLORS.primary} style={{ marginVertical: SPACING.md }} />
+          ) : (
+            <>
+              <Text style={styles.profileName}>{profile.name || '이름 없음'}</Text>
+              <Text style={styles.profileEmail}>{profile.email || '이메일 없음'}</Text>
+            </>
+          )}
+          <TouchableOpacity style={styles.editProfileButton} onPress={() => setProfileModalVisible(true)}>
             <Text style={styles.editProfileText}>프로필 수정</Text>
           </TouchableOpacity>
         </View>
@@ -182,124 +226,13 @@ export default function SettingsScreen({ navigation }) {
       </ScrollView>
 
       {/* Profile Edit Modal */}
-      <Modal
+      <ProfileEditModal
         visible={profileModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setProfileModalVisible(false)}
-      >
-        <KeyboardAvoidingView
-          style={styles.modalOverlay}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <TouchableOpacity
-            style={styles.modalBackdrop}
-            activeOpacity={1}
-            onPress={() => setProfileModalVisible(false)}
-          />
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>프로필 수정</Text>
-              <TouchableOpacity
-                style={styles.modalCloseButton}
-                onPress={() => setProfileModalVisible(false)}
-              >
-                <Icon name="close" size={24} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalContent}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>이름</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={editName}
-                  onChangeText={setEditName}
-                  placeholder="이름을 입력하세요"
-                  placeholderTextColor={COLORS.textMuted}
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>이메일</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={editEmail}
-                  onChangeText={setEditEmail}
-                  placeholder="이메일을 입력하세요"
-                  placeholderTextColor={COLORS.textMuted}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>성별</Text>
-                <View style={styles.genderSelector}>
-                  <TouchableOpacity
-                    style={[
-                      styles.genderOption,
-                      editGender === '남' && styles.genderOptionSelected,
-                    ]}
-                    onPress={() => setEditGender('남')}
-                  >
-                    <Text
-                      style={[
-                        styles.genderOptionText,
-                        editGender === '남' && styles.genderOptionTextSelected,
-                      ]}
-                    >
-                      남
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.genderOption,
-                      editGender === '여' && styles.genderOptionSelected,
-                    ]}
-                    onPress={() => setEditGender('여')}
-                  >
-                    <Text
-                      style={[
-                        styles.genderOptionText,
-                        editGender === '여' && styles.genderOptionTextSelected,
-                      ]}
-                    >
-                      여
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>상대방 이름</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={editPartnerName}
-                  onChangeText={setEditPartnerName}
-                  placeholder="상대방 이름을 입력하세요"
-                  placeholderTextColor={COLORS.textMuted}
-                />
-              </View>
-            </View>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setProfileModalVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleSaveProfile}
-              >
-                <Text style={styles.saveButtonText}>저장</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+        onClose={() => setProfileModalVisible(false)}
+        onSave={handleSaveProfile}
+        initialData={profile}
+        loading={saving}
+      />
     </SafeAreaView>
   );
 }
@@ -414,115 +347,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: SPACING.lg,
     marginBottom: SPACING.lg,
-  },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContainer: {
-    width: '85%',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    ...SHADOWS.lg,
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  modalTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  modalCloseButton: {
-    padding: SPACING.xs,
-  },
-  modalContent: {
-    padding: SPACING.lg,
-  },
-  inputGroup: {
-    marginBottom: SPACING.md,
-  },
-  inputLabel: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.xs,
-  },
-  textInput: {
-    backgroundColor: COLORS.backgroundLight,
-    borderRadius: BORDER_RADIUS.md,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
-    fontSize: FONT_SIZE.md,
-    color: COLORS.textPrimary,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
-  },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: SPACING.md,
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: COLORS.borderLight,
-  },
-  cancelButtonText: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textSecondary,
-  },
-  saveButton: {
-    flex: 1,
-    paddingVertical: SPACING.md,
-    alignItems: 'center',
-    backgroundColor: `${COLORS.primary}E6`,
-  },
-  saveButtonText: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.surface,
-  },
-  genderSelector: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  genderOption: {
-    flex: 1,
-    paddingVertical: SPACING.sm + 2,
-    alignItems: 'center',
-    backgroundColor: COLORS.backgroundLight,
-    borderRadius: BORDER_RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-  },
-  genderOptionSelected: {
-    backgroundColor: COLORS.primaryBg,
-    borderColor: COLORS.primary,
-  },
-  genderOptionText: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.textSecondary,
-  },
-  genderOptionTextSelected: {
-    color: COLORS.primary,
-    fontWeight: FONT_WEIGHT.bold,
   },
 });
