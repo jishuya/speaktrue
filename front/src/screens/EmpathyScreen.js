@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -31,7 +31,29 @@ export default function EmpathyScreen({ navigation }) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [attachedImage, setAttachedImage] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
   const flatListRef = useRef(null);
+
+  // 화면 진입 시 새 세션 생성
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        const { sessionId: newSessionId } = await api.createSession();
+        setSessionId(newSessionId);
+        console.log('New session created:', newSessionId);
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+    };
+    initSession();
+
+    // 화면 나갈 때 세션 종료
+    return () => {
+      if (sessionId) {
+        api.endSession(sessionId).catch(console.error);
+      }
+    };
+  }, []);
 
   // 관점 전환 버튼 표시 조건 계산
   const canShowPerspectiveButton = (() => {
@@ -73,8 +95,8 @@ export default function EmpathyScreen({ navigation }) {
     try {
       // 이미지가 있으면 이미지와 함께 전송
       const response = hasImage
-        ? await api.sendChatMessageWithImage(text, attachedImage, 'empathy')
-        : await api.sendChatMessage(text, 'empathy');
+        ? await api.sendChatMessageWithImage(text, attachedImage, 'empathy', sessionId)
+        : await api.sendChatMessage(text, 'empathy', sessionId);
 
       const aiResponse = {
         id: (Date.now() + 1).toString(),
@@ -107,8 +129,8 @@ export default function EmpathyScreen({ navigation }) {
         content: m.text,
       }));
 
-    // PerspectiveScreen으로 대화 기록 전달
-    navigation.navigate('Perspective', { conversationHistory });
+    // PerspectiveScreen으로 대화 기록과 세션 ID 전달
+    navigation.navigate('Perspective', { conversationHistory, sessionId });
   };
 
   const renderMessage = ({ item, index }) => {

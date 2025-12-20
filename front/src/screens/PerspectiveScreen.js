@@ -14,7 +14,7 @@ import { COLORS, EMOTION_STYLES, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS,
 import { api } from '../services';
 
 export default function PerspectiveScreen({ navigation, route }) {
-  const { conversationHistory } = route.params || {};
+  const { conversationHistory, sessionId } = route.params || {};
   const [isLoading, setIsLoading] = useState(true);
   const [perspectiveData, setPerspectiveData] = useState(null);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ export default function PerspectiveScreen({ navigation, route }) {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.getPerspectiveAnalysis(conversationHistory);
+      const response = await api.getPerspectiveAnalysis(conversationHistory, sessionId);
 
       // 새로운 JSON 형식 처리
       if (response.sections) {

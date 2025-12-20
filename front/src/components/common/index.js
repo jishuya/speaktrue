@@ -6,6 +6,7 @@ export { default as MenuItem, MenuGroup } from './MenuItem';
 export { default as PageScrollView } from './PageScrollView';
 export { HeaderWithIcon, HeaderWithAvatar } from './HeaderContent';
 export { default as StatusBadge } from './StatusBadge';
+export { default as ProfileEditModal } from './ProfileEditModal';
 export {
   default as Card,
   TipCard,

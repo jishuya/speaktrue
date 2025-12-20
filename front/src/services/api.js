@@ -21,16 +21,36 @@ class ApiService {
     return data;
   }
 
+  // Session - 새 세션 생성
+  async createSession() {
+    return this.request('/api/chat/session', {
+      method: 'POST',
+    });
+  }
+
+  // Session - 세션 종료
+  async endSession(sessionId, isResolved = false) {
+    return this.request(`/api/chat/session/${sessionId}/end`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isResolved }),
+    });
+  }
+
+  // Session - 세션 조회
+  async getSession(sessionId) {
+    return this.request(`/api/chat/session/${sessionId}`);
+  }
+
   // Chat
-  async sendChatMessage(message, mode = 'empathy') {
+  async sendChatMessage(message, mode = 'empathy', sessionId) {
     return this.request('/api/chat/message', {
       method: 'POST',
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message, mode, sessionId }),
     });
   }
 
   // Chat with Image
-  async sendChatMessageWithImage(message, image, mode = 'empathy') {
+  async sendChatMessageWithImage(message, image, mode = 'empathy', sessionId) {
     // 이미지를 base64로 변환
     const base64Image = await this.imageToBase64(image.uri);
 
@@ -39,6 +59,7 @@ class ApiService {
       body: JSON.stringify({
         message,
         mode,
+        sessionId,
         image: {
           data: base64Image,
           mediaType: this.getMediaType(image.uri),
@@ -83,10 +104,10 @@ class ApiService {
   }
 
   // Perspective Analysis - 대화 히스토리 기반 관점 전환
-  async getPerspectiveAnalysis(conversationHistory) {
+  async getPerspectiveAnalysis(conversationHistory, sessionId) {
     return this.request('/api/chat/perspective', {
       method: 'POST',
-      body: JSON.stringify({ conversationHistory }),
+      body: JSON.stringify({ conversationHistory, sessionId }),
     });
   }
 
@@ -99,16 +120,22 @@ class ApiService {
   }
 
   // History
-  async getHistory() {
-    return this.request('/api/history');
+  async getHistory(userId) {
+    return this.request(`/api/history?userId=${userId}`);
   }
 
-  async getHistoryDetail(id) {
-    return this.request(`/api/history/${id}`);
+  async getHistorySummary(userId) {
+    return this.request(`/api/history/summary?userId=${userId}`);
   }
 
-  async getStats() {
-    return this.request('/api/history/stats/summary');
+  async getHistoryDetail(id, userId) {
+    return this.request(`/api/history/${id}?userId=${userId}`);
+  }
+
+  async deleteHistory(id, userId) {
+    return this.request(`/api/history/${id}?userId=${userId}`, {
+      method: 'DELETE',
+    });
   }
 
   // Auth
