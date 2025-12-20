@@ -53,6 +53,7 @@ const ICON_MAP = {
   'warning': { set: 'ion', iconName: 'warning' },
   'info': { set: 'ion', iconName: 'information-circle' },
   'help': { set: 'ion', iconName: 'help-circle' },
+  'help-outline': { set: 'ion', iconName: 'help-circle-outline' },
 
   // Communication
   'chat-bubble': { set: 'ion', iconName: 'chatbubble' },

@@ -253,8 +253,12 @@ export default function TransformScreen({ navigation }) {
         animationType="fade"
         onRequestClose={() => setShowHelpModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowHelpModal(false)}
+        >
+          <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>NVC란 무엇인가요?</Text>
               <TouchableOpacity onPress={() => setShowHelpModal(false)}>
@@ -324,8 +328,8 @@ export default function TransformScreen({ navigation }) {
                 </Text>
               </View>
             </ScrollView>
-          </View>
-        </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     </SafeAreaView>
   );
@@ -581,5 +585,93 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
     color: COLORS.textSecondary,
     lineHeight: 22,
+  },
+  // 모달 스타일
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  modalContent: {
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    width: '100%',
+    maxHeight: '80%',
+    ...SHADOWS.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: SPACING.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderLight,
+  },
+  modalTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+  },
+  modalBody: {
+    padding: SPACING.lg,
+  },
+  modalDescription: {
+    fontSize: FONT_SIZE.md,
+    lineHeight: 24,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.lg,
+  },
+  modalBold: {
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.primary,
+  },
+  modalSectionTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+  },
+  nvcStep: {
+    flexDirection: 'row',
+    marginBottom: SPACING.lg,
+  },
+  nvcStepDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginTop: 4,
+    marginRight: SPACING.md,
+  },
+  nvcStepContent: {
+    flex: 1,
+  },
+  nvcStepTitle: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+  nvcStepText: {
+    fontSize: FONT_SIZE.sm,
+    lineHeight: 22,
+    color: COLORS.textSecondary,
+  },
+  modalFooterNote: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: `${COLORS.primary}10`,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  modalFooterText: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    lineHeight: 20,
+    color: COLORS.primary,
   },
 });
