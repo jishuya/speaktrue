@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
 import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../components/chat';
@@ -54,6 +55,17 @@ export default function EmpathyScreen({ navigation }) {
       }
     };
   }, []);
+
+  // 화면 포커스 시 스크롤 최하단으로 이동 (PerspectiveScreen에서 돌아올 때)
+  useFocusEffect(
+    useCallback(() => {
+      // 약간의 딜레이를 줘서 레이아웃이 완료된 후 스크롤
+      const timer = setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+      return () => clearTimeout(timer);
+    }, [])
+  );
 
   // 관점 전환 버튼 표시 조건 계산
   const canShowPerspectiveButton = (() => {

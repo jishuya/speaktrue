@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   secondaryFeatureGrid: {
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   featureCard: {
     flex: 1,
@@ -296,8 +296,9 @@ const styles = StyleSheet.create({
   },
   featureCardSmall: {
     flex: 1,
-    height: 100,
+    height: 110,
     padding: SPACING.md,
+    paddingBottom: SPACING.sm,
     borderRadius: 20,
     justifyContent: 'flex-start',
     gap: SPACING.xs,
@@ -331,6 +332,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
   },
   featureTextContainer: {
+    flex: 1,
     zIndex: 1,
   },
   featureTitle: {
@@ -345,6 +347,7 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
     marginTop: 2,
+    marginBottom: SPACING.sm,
   },
   featureCardGlow: {
     position: 'absolute',

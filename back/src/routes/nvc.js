@@ -1,20 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const claudeService = require('../services/claude');
 
 // POST /api/nvc/convert
-router.post('/convert', (req, res) => {
-  const { message } = req.body;
-  // TODO: Claude API로 NVC 변환
-  res.json({
-    original: message,
-    converted: 'NVC 변환된 메시지가 여기에 표시됩니다.',
-    analysis: {
-      observation: '관찰',
-      feeling: '감정',
-      need: '욕구',
-      request: '부탁',
-    },
-  });
+router.post('/convert', async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: '메시지를 입력해주세요.' });
+    }
+
+    const result = await claudeService.convertToNvc(message);
+    console.log('NVC API Response:', JSON.stringify(result, null, 2));
+
+    res.json({
+      original: message,
+      converted: result.converted,
+      analysis: result.analysis,
+      tip: result.tip,
+    });
+  } catch (error) {
+    console.error('NVC convert error:', error);
+    res.status(500).json({ error: 'NVC 변환 중 오류가 발생했습니다.' });
+  }
 });
 
 module.exports = router;

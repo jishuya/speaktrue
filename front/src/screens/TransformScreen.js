@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,43 +6,73 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Clipboard,
   Alert,
+  Animated,
+  Modal,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import { Icon } from '../components/ui';
 import { Header, HeaderWithIcon } from '../components/common';
 import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import api from '../services/api';
 
 export default function TransformScreen({ navigation }) {
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
-  const handleTransform = () => {
+  // 반짝이 애니메이션
+  const shimmerAnim = useRef(new Animated.Value(0.4)).current;
+
+  useEffect(() => {
+    if (isLoading) {
+      const animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(shimmerAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(shimmerAnim, {
+            toValue: 0.4,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      animation.start();
+      return () => animation.stop();
+    } else {
+      shimmerAnim.setValue(0.4);
+    }
+  }, [isLoading, shimmerAnim]);
+
+  const handleTransform = async () => {
     if (!inputText.trim()) return;
 
     setIsLoading(true);
-    // API 호출 시뮬레이션
-    setTimeout(() => {
+    try {
+      const response = await api.convertToNvc(inputText);
       setResult({
-        converted: '[관찰]제가 보기에 설거지가 아직 싱크대에 남아있는 것을 보면, [감정]마음이 좀 답답해요. 왜냐하면 [욕구]저는 우리가 함께 쓰는 공간이 잘 정돈되길 바라거든요. [부탁]혹시 잠자리에 들기 전에 설거지를 정리해 주실 수 있을까요?',
-        analysis: {
-          observation: '설거지가 싱크대에 남아있음',
-          feeling: '답답함',
-          need: '공간의 정돈, 협력',
-          request: '잠자리 전 설거지 정리',
-        },
+        converted: response.converted,
+        analysis: response.analysis,
+        tip: response.tip,
       });
+    } catch (error) {
+      console.error('NVC 변환 오류:', error);
+      Alert.alert('변환 실패', '메시지 변환 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (result) {
-      const cleanText = result.converted.replace(/\[.*?\]/g, '');
-      Clipboard.setString(cleanText);
+      await Clipboard.setStringAsync(result.converted);
       Alert.alert('복사 완료', '메시지가 클립보드에 복사되었습니다.');
     }
   };
@@ -66,6 +96,8 @@ export default function TransformScreen({ navigation }) {
             subtitle="NVC 변환"
           />
         }
+        rightIcon="help-outline"
+        onRightPress={() => setShowHelpModal(true)}
       />
 
       <ScrollView
@@ -82,7 +114,7 @@ export default function TransformScreen({ navigation }) {
 
         {/* Input Section */}
         <View style={styles.inputSection}>
-          <View style={styles.inputGlow} />
+          <View style={styles.inputGlow} pointerEvents="none" />
           <TextInput
             style={styles.textInput}
             value={inputText}
@@ -91,6 +123,7 @@ export default function TransformScreen({ navigation }) {
             placeholderTextColor={COLORS.textMuted}
             multiline
             textAlignVertical="top"
+            maxLength={500}
           />
           <Text style={styles.charCount}>{inputText.length}/500</Text>
         </View>
@@ -103,11 +136,32 @@ export default function TransformScreen({ navigation }) {
           activeOpacity={0.9}
         >
           <View style={styles.buttonShine} />
-          <Icon name="auto-awesome" size={24} color={COLORS.surface} />
-          <Text style={styles.transformButtonText}>
-            {isLoading ? '변환 중...' : '부드럽게 변환하기'}
-          </Text>
+          {isLoading ? (
+            <Animated.Text style={[styles.transformButtonText, { opacity: shimmerAnim }]}>
+              ✨ 변환 중...
+            </Animated.Text>
+          ) : (
+            <>
+              <Icon name="auto-awesome" size={24} color={COLORS.surface} />
+              <Text style={styles.transformButtonText}>부드럽게 변환하기</Text>
+            </>
+          )}
         </TouchableOpacity>
+
+        {/* Arrow Indicator */}
+        {result && (
+          <View style={styles.arrowContainer}>
+            <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M12 4v12m0 0l-5-5m5 5l5-5"
+                stroke={COLORS.primary}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
+          </View>
+        )}
 
         {/* Result Section */}
         {result && (
@@ -117,13 +171,14 @@ export default function TransformScreen({ navigation }) {
               <Icon name="psychology" size={18} color={`${COLORS.primary}60`} />
             </View>
             <View style={styles.resultContent}>
-              <Text style={styles.resultText}>
-                <Text style={styles.textObservation}>제가 보기에</Text> 설거지가 아직 싱크대에 남아있는 것을 보면,{' '}
-                <Text style={styles.textFeeling}>마음이 좀 답답해요.</Text> 왜냐하면{' '}
-                <Text style={styles.textNeed}>저는 우리가 함께 쓰는 공간이</Text> 잘 정돈되길 바라거든요.{' '}
-                <Text style={styles.textRequest}>혹시 잠자리에 들기 전에</Text> 설거지를 정리해 주실 수 있을까요?
-              </Text>
+              <Text style={styles.resultText}>{result.converted}</Text>
             </View>
+            {result.tip && (
+              <View style={styles.tipContainer}>
+                <Icon name="favorite" size={16} color={COLORS.primary} />
+                <Text style={styles.tipText}>{result.tip}</Text>
+              </View>
+            )}
             <View style={styles.resultDivider} />
             <View style={styles.resultActions}>
               <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
@@ -164,15 +219,114 @@ export default function TransformScreen({ navigation }) {
                   작성하신 메시지에 <Text style={{ fontWeight: '700' }}>NVC(비폭력 대화) 모델</Text>을 적용했습니다:
                 </Text>
                 <View style={styles.explanationList}>
-                  <ExplanationItem color={NVC_COLORS.observation} label="관찰 (Observation)" text="판단 없이 사실 그대로 말하기" />
-                  <ExplanationItem color={NVC_COLORS.feeling} label="느낌 (Feeling)" text="비난이 아닌 내 감정을 표현하기" />
-                  <ExplanationItem color={NVC_COLORS.need} label="욕구 (Need)" text="내가 진정으로 원하는 가치를 찾기" />
+                  <ExplanationItem
+                    color={NVC_COLORS.observation}
+                    label="관찰"
+                    text={result.analysis?.observation || '판단 없이 사실 그대로 말하기'}
+                  />
+                  <ExplanationItem
+                    color={NVC_COLORS.feeling}
+                    label="감정"
+                    text={result.analysis?.feeling || '비난이 아닌 내 감정을 표현하기'}
+                  />
+                  <ExplanationItem
+                    color={NVC_COLORS.need}
+                    label="욕구"
+                    text={result.analysis?.need || '내가 진정으로 원하는 가치를 찾기'}
+                  />
+                  <ExplanationItem
+                    color={NVC_COLORS.request}
+                    label="부탁"
+                    text={result.analysis?.request || '구체적이고 실행 가능한 요청하기'}
+                  />
                 </View>
               </View>
             )}
           </TouchableOpacity>
         )}
       </ScrollView>
+
+      {/* NVC 도움말 모달 */}
+      <Modal
+        visible={showHelpModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowHelpModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>NVC란 무엇인가요?</Text>
+              <TouchableOpacity onPress={() => setShowHelpModal(false)}>
+                <Icon name="close" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              <Text style={styles.modalDescription}>
+                <Text style={styles.modalBold}>NVC(Nonviolent Communication, 비폭력 대화)</Text>는
+                마셜 로젠버그 박사가 개발한 대화 방식으로, 서로를 비난하거나 상처 주지 않으면서
+                진심을 전달할 수 있도록 도와줍니다.
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>NVC의 4단계</Text>
+
+              <View style={styles.nvcStep}>
+                <View style={[styles.nvcStepDot, { backgroundColor: NVC_COLORS.observation }]} />
+                <View style={styles.nvcStepContent}>
+                  <Text style={styles.nvcStepTitle}>1. 관찰 (Observation)</Text>
+                  <Text style={styles.nvcStepText}>
+                    판단 없이 있는 그대로의 상황을 말해요.{'\n'}
+                    ❌ "넌 맨날 늦어"{'\n'}
+                    ✅ "오늘 약속 시간보다 30분 늦게 왔어"
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.nvcStep}>
+                <View style={[styles.nvcStepDot, { backgroundColor: NVC_COLORS.feeling }]} />
+                <View style={styles.nvcStepContent}>
+                  <Text style={styles.nvcStepTitle}>2. 감정 (Feeling)</Text>
+                  <Text style={styles.nvcStepText}>
+                    상대방을 비난하지 않고 내 감정을 표현해요.{'\n'}
+                    ❌ "너 때문에 짜증나"{'\n'}
+                    ✅ "기다리면서 걱정이 됐어"
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.nvcStep}>
+                <View style={[styles.nvcStepDot, { backgroundColor: NVC_COLORS.need }]} />
+                <View style={styles.nvcStepContent}>
+                  <Text style={styles.nvcStepTitle}>3. 욕구 (Need)</Text>
+                  <Text style={styles.nvcStepText}>
+                    그 감정 뒤에 있는 진짜 원하는 것을 찾아요.{'\n'}
+                    예: "나는 우리 시간이 소중하게 여겨지길 바라"
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.nvcStep}>
+                <View style={[styles.nvcStepDot, { backgroundColor: NVC_COLORS.request }]} />
+                <View style={styles.nvcStepContent}>
+                  <Text style={styles.nvcStepTitle}>4. 부탁 (Request)</Text>
+                  <Text style={styles.nvcStepText}>
+                    구체적이고 실행 가능한 요청을 해요.{'\n'}
+                    ❌ "제발 좀 신경 써"{'\n'}
+                    ✅ "다음엔 늦을 것 같으면 미리 연락해줄 수 있을까?"
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.modalFooterNote}>
+                <Icon name="favorite" size={16} color={COLORS.primary} />
+                <Text style={styles.modalFooterText}>
+                  NVC는 상대방을 바꾸려는 게 아니라, 서로의 마음을 연결하는 방법이에요.
+                </Text>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -256,7 +410,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
     ...SHADOWS.lg,
     overflow: 'hidden',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   transformButtonDisabled: {
     opacity: 0.6,
@@ -305,22 +459,27 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
     lineHeight: 28,
     color: COLORS.textPrimary,
+    fontFamily: 'GamjaFlower',
+    fontWeight: FONT_WEIGHT.bold,
   },
-  textObservation: {
-    color: NVC_COLORS.observation,
-    fontWeight: FONT_WEIGHT.medium,
+  arrowContainer: {
+    alignItems: 'center',
+    marginTop: 0,
+    marginBottom: SPACING.sm,
   },
-  textFeeling: {
-    color: NVC_COLORS.feeling,
-    fontWeight: FONT_WEIGHT.medium,
+  tipContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: `${COLORS.primary}10`,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
   },
-  textNeed: {
-    color: NVC_COLORS.need,
-    fontWeight: FONT_WEIGHT.medium,
-  },
-  textRequest: {
-    color: NVC_COLORS.request,
-    fontWeight: FONT_WEIGHT.medium,
+  tipText: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    lineHeight: 20,
+    color: COLORS.primary,
   },
   resultDivider: {
     height: 1,

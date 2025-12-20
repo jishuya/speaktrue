@@ -34,18 +34,22 @@ export default function PerspectiveScreen({ navigation, route }) {
       setError(null);
       const response = await api.getPerspectiveAnalysis(conversationHistory, sessionId);
 
+      // 백엔드는 { reply: { sections, empathyPoints } } 형태로 응답
+      const data = response.reply || response;
+
       // 새로운 JSON 형식 처리
-      if (response.sections) {
+      if (data.sections) {
         setPerspectiveData({
-          sections: response.sections,
-          hiddenEmotion: response.empathyPoints?.hiddenEmotion || '파악 중...',
-          coreNeed: response.empathyPoints?.coreNeed || '파악 중...',
+          sections: data.sections,
+          hiddenEmotion: data.empathyPoints?.hiddenEmotion || '파악 중...',
+          coreNeed: data.empathyPoints?.coreNeed || '파악 중...',
         });
       } else {
-        // 기존 형식 호환
+        // 기존 형식 호환 (문자열 응답인 경우)
+        const content = typeof data === 'string' ? data : (data.reply || JSON.stringify(data));
         setPerspectiveData({
           sections: null,
-          content: response.reply,
+          content: content,
           hiddenEmotion: '파악 중...',
           coreNeed: '파악 중...',
         });
@@ -187,7 +191,7 @@ export default function PerspectiveScreen({ navigation, route }) {
               <Text style={styles.avatarText}>상대</Text>
             </View>
             <View style={styles.cardHeaderText}>
-              <Text style={styles.partnerName}>상대방의 입장</Text>
+              <Text style={styles.partnerName}>상대님의 입장</Text>
               <Text style={styles.aiLabel}>AI 공감 해석</Text>
             </View>
           </View>
@@ -196,7 +200,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           </View>
 
           {/* Feedback */}
-          <View style={styles.feedbackSection}>
+          {/* <View style={styles.feedbackSection}>
             <View style={styles.feedbackButtons}>
               <TouchableOpacity style={styles.feedbackButton}>
                 <Icon name="thumb-up" size={18} color={COLORS.primary} />
@@ -207,7 +211,7 @@ export default function PerspectiveScreen({ navigation, route }) {
                 <Text style={[styles.feedbackButtonText, styles.feedbackTextSecondary]}>잘 모르겠어요</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
         </View>
 
         {/* Empathy Points */}

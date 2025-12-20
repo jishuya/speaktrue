@@ -12,6 +12,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const [fontsLoaded] = useFonts({
     'NotoSansKR': require('./src/assets/fonts/Noto_Sans_KR/NotoSansKR-VariableFont_wght.ttf'),
+    'GamjaFlower': require('./src/assets/fonts/Noto_Sans/Gamja_Flower/GamjaFlower-Regular.ttf'),
   });
 
   const onLayoutRootView = useCallback(async () => {
