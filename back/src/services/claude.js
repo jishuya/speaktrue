@@ -1,9 +1,21 @@
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
+// 중간 요약 기준 상수
+const SUMMARY_THRESHOLD = 20; // 20개 메시지 초과 시 요약
+const RECENT_MESSAGES_TO_KEEP = 6; // 요약 후 유지할 최근 메시지 수
+
 class ClaudeService {
   constructor() {
     this.apiKey = process.env.CLAUDE_API_KEY;
     this.model = process.env.CLAUDE_MODEL || 'claude-haiku-4-20250514';
+  }
+
+  // 메시지 배열을 Claude API 형식으로 변환
+  formatMessagesForApi(messages) {
+    return messages.map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
   }
 
   async sendMessage(messages, systemPrompt) {
@@ -84,8 +96,9 @@ class ClaudeService {
     return data.content[0].text;
   }
 
-  async getEmpathyResponse(userMessage) {
-    const systemPrompt = `당신은 부부관계 전문 상담사입니다. 따뜻하지만 진지하게, 존댓말로 대화하세요.
+  // 공감 모드 시스템 프롬프트
+  getEmpathySystemPrompt() {
+    return `당신은 부부관계 전문 상담사입니다. 따뜻하지만 진지하게, 존댓말로 대화하세요.
 
 ## 응답 구조
 1. 보편화와 공감 (1-2문장): 사용자의 상황이 흔하고 이해할 수 있는 것임을 먼저 인정해요.
@@ -111,11 +124,124 @@ class ClaudeService {
 - 이모지 사용
 - 너무 짧거나 피상적인 반응
 - 뜬구름 잡는 추상적인 조언`;
+  }
 
+  async getEmpathyResponse(userMessage) {
     return this.sendMessage(
       [{ role: 'user', content: userMessage }],
+      this.getEmpathySystemPrompt()
+    );
+  }
+
+  // 대화 히스토리 기반 공감 응답 (핵심 함수)
+  async getEmpathyResponseWithHistory(userMessage, conversationHistory = [], conversationSummary = null) {
+    const messages = [];
+
+    // 1. 이전 대화 요약이 있으면 먼저 추가
+    if (conversationSummary) {
+      messages.push({
+        role: 'user',
+        content: `[이전 대화 요약]\n${conversationSummary}`,
+      });
+      messages.push({
+        role: 'assistant',
+        content: '네, 이전 대화 내용을 이해했습니다. 계속 말씀해 주세요.',
+      });
+    }
+
+    // 2. 최근 대화 히스토리 추가
+    messages.push(...this.formatMessagesForApi(conversationHistory));
+
+    // 3. 현재 사용자 메시지 추가
+    messages.push({ role: 'user', content: userMessage });
+
+    return this.sendMessage(messages, this.getEmpathySystemPrompt());
+  }
+
+  // 대화 중간 요약 생성
+  async generateConversationSummary(messages) {
+    const systemPrompt = `당신은 부부상담 대화를 요약하는 전문가입니다.
+주어진 대화 내용을 간결하게 요약해주세요.
+
+## 요약 형식
+- 사용자가 토로한 주요 상황과 감정
+- 상담사가 제공한 핵심 조언
+- 대화의 흐름과 맥락
+
+## 규칙
+- 3-5문장으로 요약
+- 핵심 감정과 상황만 포함
+- 구체적인 대화 내용은 생략하되 맥락 유지
+- 이모지 사용 금지`;
+
+    const conversationText = messages
+      .map(m => `${m.role === 'user' ? '사용자' : '상담사'}: ${m.content}`)
+      .join('\n\n');
+
+    return this.sendMessage(
+      [{ role: 'user', content: `다음 대화를 요약해주세요:\n\n${conversationText}` }],
       systemPrompt
     );
+  }
+
+  // 세션 종료 시 최종 요약 생성 (session_summaries용)
+  async generateSessionSummary(messages) {
+    const systemPrompt = `당신은 부부상담 세션을 분석하는 전문가입니다.
+주어진 대화 내용을 분석하여 JSON 형식으로 요약해주세요.
+
+## 응답 형식
+반드시 아래 JSON 형식으로만 응답해주세요:
+{
+  "mainReason": "이번 상담의 주된 원인/주제 (1문장)",
+  "summary": "대화 전체 요약 (2-3문장)",
+  "myEmotions": ["사용자가 표현한 감정들", "최대 5개"],
+  "myNeeds": ["사용자의 욕구/바람", "최대 3개"],
+  "partnerEmotions": ["상대방이 느꼈을 것으로 추정되는 감정", "최대 3개"],
+  "partnerNeeds": ["상대방의 욕구로 추정되는 것", "최대 3개"],
+  "hiddenEmotion": "사용자의 숨겨진 감정 (2-4단어)",
+  "coreNeed": "사용자의 핵심 욕구 (2-4단어)",
+  "topics": ["주제 태그", "최대 3개"]
+}
+
+## 규칙
+- JSON 외의 텍스트 출력 금지
+- 대화에서 언급되지 않은 내용 추측 금지
+- 감정/욕구는 한국어 단어로`;
+
+    const conversationText = messages
+      .map(m => `${m.role === 'user' ? '사용자' : '상담사'}: ${m.content}`)
+      .join('\n\n');
+
+    const response = await this.sendMessage(
+      [{ role: 'user', content: `다음 상담 세션을 분석해주세요:\n\n${conversationText}` }],
+      systemPrompt
+    );
+
+    try {
+      return JSON.parse(response);
+    } catch {
+      return {
+        mainReason: '분석 실패',
+        summary: response,
+        myEmotions: [],
+        myNeeds: [],
+        partnerEmotions: [],
+        partnerNeeds: [],
+        hiddenEmotion: '',
+        coreNeed: '',
+        topics: [],
+      };
+    }
+  }
+
+  // 요약이 필요한지 확인
+  shouldSummarize(messageCount) {
+    return messageCount > SUMMARY_THRESHOLD;
+  }
+
+  // 요약 후 유지할 메시지 수
+  getRecentMessagesToKeep() {
+    return RECENT_MESSAGES_TO_KEEP;
   }
 
   // 이미지와 함께 공감 응답

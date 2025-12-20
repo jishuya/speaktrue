@@ -146,6 +146,11 @@ export default function HistoryScreen({ navigation }) {
         <View style={styles.dateStatusRow}>
           <Text style={styles.dateText}>{item.date}</Text>
           <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
+          {item.summaryOnly && (
+            <View style={styles.summaryOnlyBadge}>
+              <Text style={styles.summaryOnlyText}>요약만</Text>
+            </View>
+          )}
         </View>
         <TouchableOpacity
           onPress={(e) => {
@@ -190,12 +195,29 @@ export default function HistoryScreen({ navigation }) {
                   <Text style={styles.modalDate}>
                     {formatDate(selectedSession.startedAt)} 상담
                   </Text>
-                  <StatusBadge status={selectedSession.isResolved ? 'resolved' : 'unresolved'} />
+                  <View style={styles.modalBadgeRow}>
+                    <StatusBadge status={selectedSession.isResolved ? 'resolved' : 'unresolved'} />
+                    {selectedSession.summaryOnly && (
+                      <View style={styles.summaryOnlyBadge}>
+                        <Text style={styles.summaryOnlyText}>요약만</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
                 <TouchableOpacity onPress={closeModal}>
                   <Icon name="close" size={24} color={COLORS.textSecondary} />
                 </TouchableOpacity>
               </View>
+
+              {/* 3개월 지난 세션 안내 */}
+              {selectedSession.summaryOnly && (
+                <View style={styles.summaryOnlyNotice}>
+                  <Icon name="info" size={16} color={COLORS.textMuted} />
+                  <Text style={styles.summaryOnlyNoticeText}>
+                    3개월이 지난 상담은 요약만 확인할 수 있습니다.
+                  </Text>
+                </View>
+              )}
 
               {/* 싸움 주된 이유 */}
               {selectedSession.summary?.mainReason && (
@@ -715,5 +737,39 @@ const styles = StyleSheet.create({
   modalTagText: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
+  },
+  // Summary Only 배지 및 안내
+  summaryOnlyBadge: {
+    backgroundColor: COLORS.backgroundLight,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  summaryOnlyText: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  summaryOnlyNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.backgroundLight,
+    padding: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.lg,
+    gap: SPACING.xs,
+  },
+  summaryOnlyNoticeText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+    flex: 1,
+  },
+  modalBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    marginTop: SPACING.xs,
   },
 });

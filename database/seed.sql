@@ -14,20 +14,20 @@ INSERT INTO users (id, email, name, gender, type, partner_name, oauth_provider, 
 -- =============================================
 
 -- 세션 1: 설거지 + 시댁 문제 (미해결)
-INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'ended', false, '2024-10-15 14:00:00', '2024-10-15 14:35:00');
+INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at, summary_only) VALUES
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'ended', false, '2024-10-15 14:00:00', '2024-10-15 14:35:00', false);
 
 -- 세션 2: 여행 계획 (해결됨, 긍정적)
-INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at) VALUES
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', 'ended', true, '2024-10-16 20:30:00', '2024-10-16 20:55:00');
+INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at, summary_only) VALUES
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', 'ended', true, '2024-10-16 20:30:00', '2024-10-16 20:55:00', false);
 
 -- 세션 3: 육아 방식 갈등 (진행 중)
-INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at) VALUES
-('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', 'active', false, '2024-10-17 09:15:00', NULL);
+INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_a, summary_only) VALUES
+('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', 'active', false, '2024-10-17 09:15:00', NULL, false);
 
 -- 세션 4: 경제적 갈등 (종료됨, 미해결)
-INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at) VALUES
-('dddddddd-dddd-dddd-dddd-dddddddddddd', '11111111-1111-1111-1111-111111111111', 'ended', false, '2024-10-18 21:00:00', '2024-10-18 21:45:00');
+INSERT INTO sessions (id, user_id, status, is_resolved, started_at, ended_at, summary_only VALUES
+('dddddddd-dddd-dddd-dddd-dddddddddddd', '11111111-1111-1111-1111-111111111111', 'ended', false, '2024-10-18 21:00:00', '2024-10-18 21:45:00', false);
 
 -- =============================================
 -- 3. 메시지 샘플

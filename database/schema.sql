@@ -50,6 +50,7 @@ CREATE TABLE sessions (
 
     status          VARCHAR(20) DEFAULT 'active',  -- 'active', 'ended'
     is_resolved     BOOLEAN DEFAULT false,
+    summary_only    BOOLEAN DEFAULT false,  -- true면 메시지 삭제됨, 요약만 보기 가능
 
     started_at      TIMESTAMP DEFAULT NOW(),
     ended_at        TIMESTAMP

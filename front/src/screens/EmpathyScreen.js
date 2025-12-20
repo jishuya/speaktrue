@@ -35,11 +35,26 @@ export default function EmpathyScreen({ navigation }) {
   const [sessionId, setSessionId] = useState(null);
   const flatListRef = useRef(null);
 
+  // 세션 종료 함수 (안정적인 종료 처리)
+  const endCurrentSession = useCallback(async (currentSessionId) => {
+    if (!currentSessionId) return;
+
+    try {
+      await api.endSession(currentSessionId);
+      console.log('Session ended:', currentSessionId);
+    } catch (error) {
+      console.error('Failed to end session:', error);
+    }
+  }, []);
+
   // 화면 진입 시 새 세션 생성
   useEffect(() => {
+    let currentSessionId = null;
+
     const initSession = async () => {
       try {
         const { sessionId: newSessionId } = await api.createSession();
+        currentSessionId = newSessionId;
         setSessionId(newSessionId);
         console.log('New session created:', newSessionId);
       } catch (error) {
@@ -48,13 +63,13 @@ export default function EmpathyScreen({ navigation }) {
     };
     initSession();
 
-    // 화면 나갈 때 세션 종료
+    // 화면 나갈 때 세션 종료 (클로저로 현재 세션 ID 캡처)
     return () => {
-      if (sessionId) {
-        api.endSession(sessionId).catch(console.error);
+      if (currentSessionId) {
+        endCurrentSession(currentSessionId);
       }
     };
-  }, []);
+  }, [endCurrentSession]);
 
   // 화면 포커스 시 스크롤 최하단으로 이동 (PerspectiveScreen에서 돌아올 때)
   useFocusEffect(

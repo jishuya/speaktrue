@@ -2,6 +2,53 @@ const express = require('express');
 const router = express.Router();
 const db = require('../services/db');
 
+// 3개월(90일) 기준
+const ARCHIVE_DAYS = 90;
+
+// 3개월 지난 세션 정리 (메시지 삭제, 요약만 유지)
+async function archiveOldSessions() {
+  try {
+    // 1. 3개월 지난 세션 중 아직 정리 안된 것들 조회
+    const oldSessionsResult = await db.query(
+      `SELECT s.id FROM sessions s
+       WHERE s.status = 'ended'
+         AND s.summary_only = false
+         AND s.ended_at < NOW() - INTERVAL '${ARCHIVE_DAYS} days'
+         AND EXISTS (SELECT 1 FROM session_summaries ss WHERE ss.session_id = s.id)`
+    );
+
+    if (oldSessionsResult.rows.length === 0) {
+      return { archived: 0 };
+    }
+
+    const sessionIds = oldSessionsResult.rows.map(r => r.id);
+
+    // 2. 해당 세션들의 메시지 삭제
+    await db.query(
+      `DELETE FROM messages WHERE session_id = ANY($1)`,
+      [sessionIds]
+    );
+
+    // 3. conversation_summaries도 삭제 (session_summaries는 유지)
+    await db.query(
+      `DELETE FROM conversation_summaries WHERE session_id = ANY($1)`,
+      [sessionIds]
+    );
+
+    // 4. 세션을 summary_only로 마킹
+    await db.query(
+      `UPDATE sessions SET summary_only = true WHERE id = ANY($1)`,
+      [sessionIds]
+    );
+
+    console.log(`Archived ${sessionIds.length} old sessions`);
+    return { archived: sessionIds.length, sessionIds };
+  } catch (error) {
+    console.error('Archive old sessions error:', error);
+    throw error;
+  }
+}
+
 // GET /api/history/summary - 통합 API (세션 목록 + 통계)
 router.get('/summary', async (req, res) => {
   try {
@@ -12,12 +59,18 @@ router.get('/summary', async (req, res) => {
       return res.status(400).json({ error: 'userId가 필요합니다' });
     }
 
-    // 1. 세션 목록 조회 (태그 포함)
+    // 백그라운드로 오래된 세션 정리 실행
+    archiveOldSessions().catch(err => {
+      console.error('Background archive failed:', err);
+    });
+
+    // 1. 세션 목록 조회 (태그 포함, summary_only 플래그 추가)
     const sessionsQuery = `
       SELECT
         s.id,
         s.started_at,
         s.is_resolved,
+        s.summary_only,
         ss.main_reason as content,
         COALESCE(
           (SELECT json_agg(st.tag_name)
@@ -89,6 +142,7 @@ router.get('/summary', async (req, res) => {
         content: row.content || '',
         tags: row.tags || [],
         resolved: row.is_resolved,
+        summaryOnly: row.summary_only || false, // 3개월 지난 세션은 요약만 가능
       })),
       stats: {
         totalSessions: parseInt(stats.total_sessions) || 0,
@@ -118,6 +172,7 @@ router.get('/', async (req, res) => {
         s.id,
         s.started_at,
         s.is_resolved,
+        s.summary_only,
         ss.main_reason as content,
         COALESCE(
           (SELECT json_agg(st.tag_name)
@@ -143,6 +198,7 @@ router.get('/', async (req, res) => {
         content: row.content || '',
         tags: row.tags || [],
         resolved: row.is_resolved,
+        summaryOnly: row.summary_only || false,
       })),
       total: result.rows.length,
     });
@@ -158,13 +214,14 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const userId = req.query.userId || req.user?.id;
 
-    // 세션 정보 조회
+    // 세션 정보 조회 (summary_only 포함)
     const sessionQuery = `
       SELECT
         s.id,
         s.started_at,
         s.ended_at,
         s.is_resolved,
+        s.summary_only,
         ss.main_reason,
         ss.summary,
         ss.my_emotions,
@@ -178,14 +235,6 @@ router.get('/:id', async (req, res) => {
       WHERE s.id = $1 AND s.user_id = $2
     `;
 
-    // 메시지 조회
-    const messagesQuery = `
-      SELECT id, role, content, image_url, created_at
-      FROM messages
-      WHERE session_id = $1
-      ORDER BY created_at ASC
-    `;
-
     // 태그 조회
     const tagsQuery = `
       SELECT tag_type, tag_name
@@ -193,9 +242,8 @@ router.get('/:id', async (req, res) => {
       WHERE session_id = $1
     `;
 
-    const [sessionResult, messagesResult, tagsResult] = await Promise.all([
+    const [sessionResult, tagsResult] = await Promise.all([
       db.query(sessionQuery, [id, userId]),
-      db.query(messagesQuery, [id]),
       db.query(tagsQuery, [id]),
     ]);
 
@@ -210,11 +258,25 @@ router.get('/:id', async (req, res) => {
       return acc;
     }, {});
 
+    // 메시지 조회 (summary_only가 아닐 때만)
+    let messages = [];
+    if (!session.summary_only) {
+      const messagesResult = await db.query(
+        `SELECT id, role, content, image_url, created_at
+         FROM messages
+         WHERE session_id = $1
+         ORDER BY created_at ASC`,
+        [id]
+      );
+      messages = messagesResult.rows;
+    }
+
     res.json({
       id: session.id,
       startedAt: session.started_at,
       endedAt: session.ended_at,
       isResolved: session.is_resolved,
+      summaryOnly: session.summary_only || false, // 3개월 지난 세션 여부
       summary: {
         mainReason: session.main_reason,
         summary: session.summary,
@@ -225,7 +287,7 @@ router.get('/:id', async (req, res) => {
         hiddenEmotion: session.hidden_emotion,
         coreNeed: session.core_need,
       },
-      messages: messagesResult.rows,
+      messages, // summary_only면 빈 배열
       tags,
     });
   } catch (error) {
