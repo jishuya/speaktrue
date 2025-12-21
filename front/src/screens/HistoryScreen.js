@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -62,7 +63,10 @@ export default function HistoryScreen({ navigation }) {
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 5;
+
+  // 검색 상태
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchHistorySummary = async () => {
     try {
@@ -163,12 +167,38 @@ export default function HistoryScreen({ navigation }) {
     }
   };
 
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(historyData.length / ITEMS_PER_PAGE);
-  const paginatedData = historyData.slice(
+  // 검색 필터링
+  const filteredData = historyData.filter(item => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    // 날짜 검색 (예: "12월", "오늘", "어제")
+    const dateMatch = item.date.toLowerCase().includes(query);
+
+    // 내용 검색
+    const contentMatch = item.content.toLowerCase().includes(query);
+
+    // 태그 검색
+    const tagMatch = item.tags.some(tag =>
+      tag.toLowerCase().includes(query)
+    );
+
+    return dateMatch || contentMatch || tagMatch;
+  });
+
+  // 페이지네이션 계산 (필터링된 데이터 기준)
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  // 검색어 변경 시 첫 페이지로 이동
+  const handleSearchChange = (text) => {
+    setSearchQuery(text);
+    setCurrentPage(1);
+  };
 
   const renderHistoryItem = (item) => (
     <TouchableOpacity
@@ -505,14 +535,41 @@ export default function HistoryScreen({ navigation }) {
             </View>
           </View>
 
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <Icon name="search" size={20} color={COLORS.textMuted} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="날짜, 키워드, 태그로 검색"
+              placeholderTextColor={COLORS.textMuted}
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              returnKeyType="search"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => handleSearchChange('')}>
+                <Icon name="close" size={18} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Search Result Count */}
+          {searchQuery.trim() && (
+            <Text style={styles.searchResultText}>
+              {filteredData.length}개의 결과
+            </Text>
+          )}
+
           {/* History List */}
           <View style={styles.historyList}>
-            {historyData.length > 0 ? (
+            {filteredData.length > 0 ? (
               paginatedData.map(renderHistoryItem)
             ) : (
               <View style={styles.emptyContainer}>
-                <Icon name="history" size={48} color={COLORS.textMuted} />
-                <Text style={styles.emptyText}>아직 상담 기록이 없어요</Text>
+                <Icon name={searchQuery.trim() ? "search" : "history"} size={48} color={COLORS.textMuted} />
+                <Text style={styles.emptyText}>
+                  {searchQuery.trim() ? "검색 결과가 없어요" : "아직 상담 기록이 없어요"}
+                </Text>
               </View>
             )}
           </View>
@@ -725,6 +782,29 @@ const styles = StyleSheet.create({
   },
   emotionTagText: {
     color: STATUS_COLORS.danger.text,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    gap: SPACING.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: FONT_SIZE.base,
+    color: COLORS.textPrimary,
+    paddingVertical: SPACING.xs,
+  },
+  searchResultText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.sm,
   },
   historyList: {
     gap: SPACING.md,
