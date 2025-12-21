@@ -115,6 +115,55 @@ export function ConfirmModal({
   );
 }
 
+// Session Feedback 모달 (세션 종료 시 해결/미해결 피드백)
+export function SessionFeedbackModal({
+  visible,
+  onClose,
+  onResolve,
+  onUnresolve,
+  title = '오늘 대화가 도움이 되셨나요?',
+  resolveText = '마음이 정리됐어요',
+  unresolveText = '아직 복잡해요',
+}) {
+  return (
+    <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={styles.backdrop}>
+        <View style={styles.feedbackContainer}>
+          <View style={[styles.iconCircle, { backgroundColor: `${COLORS.primary}15` }]}>
+            <Icon name="favorite" size={32} color={COLORS.primary} />
+          </View>
+          <Text style={styles.feedbackTitle}>{title}</Text>
+          <Text style={styles.feedbackSubtitle}>
+            다음 대화에 도움이 될 수 있어요
+          </Text>
+          <View style={styles.feedbackButtons}>
+            <TouchableOpacity
+              style={styles.feedbackButton}
+              onPress={() => {
+                onResolve?.();
+                onClose();
+              }}
+            >
+              <Icon name="sentiment-satisfied" size={28} color={COLORS.success} />
+              <Text style={styles.feedbackButtonText}>{resolveText}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.feedbackButton}
+              onPress={() => {
+                onUnresolve?.();
+                onClose();
+              }}
+            >
+              <Icon name="sentiment-dissatisfied" size={28} color={COLORS.warning} />
+              <Text style={styles.feedbackButtonText}>{unresolveText}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </RNModal>
+  );
+}
+
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -229,5 +278,54 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
+  },
+
+  // Session Feedback styles
+  feedbackContainer: {
+    width: '100%',
+    maxWidth: 320,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
+    alignItems: 'center',
+    ...SHADOWS.lg,
+  },
+  feedbackTitle: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+    textAlign: 'center',
+  },
+  feedbackSubtitle: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+  },
+  feedbackButtons: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: SPACING.md,
+  },
+  feedbackButton: {
+    flex: 1,
+    backgroundColor: COLORS.backgroundLight,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.lg,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  feedbackButtonText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semiBold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.xs,
+    textAlign: 'center',
   },
 });

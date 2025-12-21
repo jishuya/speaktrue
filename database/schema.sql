@@ -82,8 +82,9 @@ CREATE TABLE session_summaries (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id      UUID NOT NULL UNIQUE REFERENCES sessions(id) ON DELETE CASCADE,
 
-    -- 싸움의 주된 이유
-    main_reason     TEXT,
+    -- 근본 원인
+    root_cause      TEXT,                -- 이 싸움의 근본 원인 (한 문장)
+    trigger_situation TEXT,              -- 트리거 상황 (가사, 시댁, 돈, 육아 등)
 
     -- 대화 내용을 요약한 텍스트
     summary         TEXT,
@@ -91,14 +92,17 @@ CREATE TABLE session_summaries (
     -- 나의 관점
     my_emotions     TEXT[],
     my_needs        TEXT[],
+    my_unmet_need   TEXT,                -- 내가 충족받지 못한 핵심 욕구
 
     -- 상대방 관점 (입장전환에서 추정)
     partner_emotions TEXT[],
     partner_needs    TEXT[],
+    partner_unmet_need TEXT,             -- 상대방의 충족되지 못한 욕구
 
-    -- AI 인사이트
-    hidden_emotion  VARCHAR(100),
-    core_need       VARCHAR(100),
+    -- 갈등 패턴 및 솔루션
+    conflict_pattern TEXT,               -- 갈등 패턴 (회피형, 폭발형, 냉전형 등)
+    suggested_approach TEXT,             -- AI 제안 접근법
+    action_items    TEXT[],              -- 실천 항목
 
     created_at      TIMESTAMP DEFAULT NOW()
 );

@@ -306,10 +306,13 @@ router.patch('/session/:id/end', async (req, res) => {
       return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
     }
 
-    // 5. 최종 요약 생성 (비동기)
-    generateAndSaveSessionSummary(id, messagesResult.rows).catch(err => {
+    // 5. 최종 요약 생성 (동기적으로 처리하여 History에 바로 표시되도록)
+    try {
+      await generateAndSaveSessionSummary(id, messagesResult.rows);
+    } catch (err) {
       console.error('Session summary generation failed:', err);
-    });
+      // 요약 생성 실패해도 세션 종료는 성공으로 처리
+    }
 
     res.json({
       message: '세션이 종료되었습니다.',
@@ -329,26 +332,30 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
     // session_summaries 테이블에 저장
     await db.query(
       `INSERT INTO session_summaries (
-        session_id, main_reason, summary,
-        my_emotions, my_needs,
-        partner_emotions, partner_needs,
-        hidden_emotion, core_need
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        session_id, root_cause, trigger_situation, summary,
+        my_emotions, my_needs, my_unmet_need,
+        partner_emotions, partner_needs, partner_unmet_need,
+        conflict_pattern, suggested_approach, action_items
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       ON CONFLICT (session_id) DO UPDATE SET
-        main_reason = $2, summary = $3,
-        my_emotions = $4, my_needs = $5,
-        partner_emotions = $6, partner_needs = $7,
-        hidden_emotion = $8, core_need = $9`,
+        root_cause = $2, trigger_situation = $3, summary = $4,
+        my_emotions = $5, my_needs = $6, my_unmet_need = $7,
+        partner_emotions = $8, partner_needs = $9, partner_unmet_need = $10,
+        conflict_pattern = $11, suggested_approach = $12, action_items = $13`,
       [
         sessionId,
-        summary.mainReason,
+        summary.rootCause,
+        summary.triggerSituation,
         summary.summary,
         summary.myEmotions,
         summary.myNeeds,
+        summary.myUnmetNeed,
         summary.partnerEmotions,
         summary.partnerNeeds,
-        summary.hiddenEmotion,
-        summary.coreNeed,
+        summary.partnerUnmetNeed,
+        summary.conflictPattern,
+        summary.suggestedApproach,
+        summary.actionItems,
       ]
     );
 

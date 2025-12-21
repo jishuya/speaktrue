@@ -71,7 +71,7 @@ router.get('/summary', async (req, res) => {
         s.started_at,
         s.is_resolved,
         s.summary_only,
-        ss.main_reason as content,
+        ss.root_cause as content,
         COALESCE(
           (SELECT json_agg(st.tag_name)
            FROM session_tags st
@@ -173,7 +173,7 @@ router.get('/', async (req, res) => {
         s.started_at,
         s.is_resolved,
         s.summary_only,
-        ss.main_reason as content,
+        ss.root_cause as content,
         COALESCE(
           (SELECT json_agg(st.tag_name)
            FROM session_tags st
@@ -222,14 +222,18 @@ router.get('/:id', async (req, res) => {
         s.ended_at,
         s.is_resolved,
         s.summary_only,
-        ss.main_reason,
+        ss.root_cause,
+        ss.trigger_situation,
         ss.summary,
         ss.my_emotions,
         ss.my_needs,
+        ss.my_unmet_need,
         ss.partner_emotions,
         ss.partner_needs,
-        ss.hidden_emotion,
-        ss.core_need
+        ss.partner_unmet_need,
+        ss.conflict_pattern,
+        ss.suggested_approach,
+        ss.action_items
       FROM sessions s
       LEFT JOIN session_summaries ss ON s.id = ss.session_id
       WHERE s.id = $1 AND s.user_id = $2
@@ -278,14 +282,18 @@ router.get('/:id', async (req, res) => {
       isResolved: session.is_resolved,
       summaryOnly: session.summary_only || false, // 3개월 지난 세션 여부
       summary: {
-        mainReason: session.main_reason,
+        rootCause: session.root_cause,
+        triggerSituation: session.trigger_situation,
         summary: session.summary,
         myEmotions: session.my_emotions || [],
         myNeeds: session.my_needs || [],
+        myUnmetNeed: session.my_unmet_need,
         partnerEmotions: session.partner_emotions || [],
         partnerNeeds: session.partner_needs || [],
-        hiddenEmotion: session.hidden_emotion,
-        coreNeed: session.core_need,
+        partnerUnmetNeed: session.partner_unmet_need,
+        conflictPattern: session.conflict_pattern,
+        suggestedApproach: session.suggested_approach,
+        actionItems: session.action_items || [],
       },
       messages, // summary_only면 빈 배열
       tags,

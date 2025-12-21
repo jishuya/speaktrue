@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { Icon } from '../components/ui';
+import { Icon, SessionFeedbackModal } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
 import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -33,15 +33,17 @@ export default function EmpathyScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [attachedImage, setAttachedImage] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const flatListRef = useRef(null);
+  const sessionIdRef = useRef(null);
 
   // 세션 종료 함수 (안정적인 종료 처리)
-  const endCurrentSession = useCallback(async (currentSessionId) => {
+  const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
     if (!currentSessionId) return;
 
     try {
-      await api.endSession(currentSessionId);
-      console.log('Session ended:', currentSessionId);
+      await api.endSession(currentSessionId, isResolved);
+      console.log('Session ended:', currentSessionId, 'isResolved:', isResolved);
     } catch (error) {
       console.error('Failed to end session:', error);
     }
@@ -49,12 +51,10 @@ export default function EmpathyScreen({ navigation }) {
 
   // 화면 진입 시 새 세션 생성
   useEffect(() => {
-    let currentSessionId = null;
-
     const initSession = async () => {
       try {
         const { sessionId: newSessionId } = await api.createSession();
-        currentSessionId = newSessionId;
+        sessionIdRef.current = newSessionId;
         setSessionId(newSessionId);
         console.log('New session created:', newSessionId);
       } catch (error) {
@@ -62,14 +62,30 @@ export default function EmpathyScreen({ navigation }) {
       }
     };
     initSession();
+  }, []);
 
-    // 화면 나갈 때 세션 종료 (클로저로 현재 세션 ID 캡처)
-    return () => {
-      if (currentSessionId) {
-        endCurrentSession(currentSessionId);
-      }
-    };
-  }, [endCurrentSession]);
+  // 뒤로가기 핸들러 - 피드백 모달 표시
+  const handleBackPress = useCallback(() => {
+    // 대화가 진행되지 않았으면 (초기 메시지만 있으면) 바로 나가기
+    const userMessages = messages.filter(m => m.isUser);
+    if (userMessages.length === 0) {
+      navigation.goBack();
+      return;
+    }
+    // 대화가 있으면 피드백 모달 표시
+    setShowFeedbackModal(true);
+  }, [messages, navigation]);
+
+  // 피드백 선택 후 세션 종료 및 네비게이션
+  const handleFeedbackResolve = useCallback(async () => {
+    await endCurrentSession(sessionIdRef.current, true);
+    navigation.goBack();
+  }, [endCurrentSession, navigation]);
+
+  const handleFeedbackUnresolve = useCallback(async () => {
+    await endCurrentSession(sessionIdRef.current, false);
+    navigation.goBack();
+  }, [endCurrentSession, navigation]);
 
   // 화면 포커스 시 스크롤 최하단으로 이동 (PerspectiveScreen에서 돌아올 때)
   useFocusEffect(
@@ -191,7 +207,7 @@ export default function EmpathyScreen({ navigation }) {
         showBack
         borderBottom
         darkBackground
-        onBackPress={() => navigation.goBack()}
+        onBackPress={handleBackPress}
         leftComponent={
           <HeaderWithAvatar
             avatarText="AI"
@@ -201,6 +217,19 @@ export default function EmpathyScreen({ navigation }) {
           />
         }
       />
+
+      {/* Perspective Button - 채팅창 상단에 표시 */}
+      {canShowPerspectiveButton && (
+        <View style={styles.topButtonContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handlePerspectivePress}
+          >
+            <Icon name="visibility" size={20} color={COLORS.primary} />
+            <Text style={styles.actionButtonText}>상대방 관점 보기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Chat Area */}
       <KeyboardAvoidingView
@@ -225,15 +254,15 @@ export default function EmpathyScreen({ navigation }) {
           }
         />
 
-        {/* Perspective Button - 조건 충족 시에만 표시 */}
+        {/* Send Message Button - 채팅창 하단에 표시 (상대방 관점 보기와 같은 시점에) */}
         {canShowPerspectiveButton && (
-          <View style={styles.perspectiveButtonContainer}>
+          <View style={styles.bottomButtonContainer}>
             <TouchableOpacity
-              style={styles.perspectiveButton}
-              onPress={handlePerspectivePress}
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('Transform')}
             >
-              <Icon name="visibility" size={20} color={COLORS.primary} />
-              <Text style={styles.perspectiveButtonText}>상대방 관점 보기</Text>
+              <Icon name="send" size={20} color={COLORS.primary} />
+              <Text style={styles.actionButtonText}>메세지 보내기</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -250,6 +279,14 @@ export default function EmpathyScreen({ navigation }) {
           placeholder="감정을 입력해 주세요..."
         />
       </KeyboardAvoidingView>
+
+      {/* Session Feedback Modal */}
+      <SessionFeedbackModal
+        visible={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        onResolve={handleFeedbackResolve}
+        onUnresolve={handleFeedbackUnresolve}
+      />
     </SafeAreaView>
   );
 }
@@ -271,14 +308,16 @@ const styles = StyleSheet.create({
     marginTop: -SPACING.xs,
     marginBottom: SPACING.sm,
   },
-  perspectiveButtonContainer: {
-    position: 'absolute',
-    bottom: 80,
-    left: 0,
-    right: 0,
+  topButtonContainer: {
     alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.backgroundLight,
   },
-  perspectiveButton: {
+  bottomButtonContainer: {
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+  },
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.surface,
@@ -289,8 +328,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: `${COLORS.primary}20`,
   },
-  perspectiveButtonText: {
-    fontSize: FONT_SIZE.base,  // 16px - 터치 가능 텍스트 권장 크기
+  actionButtonText: {
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,

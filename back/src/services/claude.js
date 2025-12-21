@@ -153,18 +153,48 @@ class ClaudeService {
   // 대화 중간 요약 생성
   async generateConversationSummary(messages) {
     const systemPrompt = `당신은 부부상담 대화를 요약하는 전문가입니다.
-주어진 대화 내용을 간결하게 요약해주세요.
+주어진 대화 내용을 분석하여 요약해주세요.
 
 ## 요약 형식
-- 사용자가 토로한 주요 상황과 감정
-- 상담사가 제공한 핵심 조언
-- 대화의 흐름과 맥락
+아래 형식으로 요약해주세요. 대화에서 파악 가능한 항목만 포함하고, 파악되지 않는 항목은 생략하세요.
+
+[상황 요약]
+대화의 주요 상황과 흐름을 2-3문장으로 요약
+
+[근본 원인] (파악된 경우만)
+이 갈등의 근본적인 원인
+
+[나의 감정] (파악된 경우만)
+사용자가 표현한 감정들 (쉼표로 구분)
+
+[나의 욕구] (파악된 경우만)
+사용자의 욕구/바람
+
+[나의 충족되지 못한 욕구] (파악된 경우만)
+사용자가 충족받지 못한 핵심 욕구
+
+[상대방 감정] (파악된 경우만)
+상대방이 느꼈을 것으로 추정되는 감정
+
+[상대방 욕구] (파악된 경우만)
+상대방의 욕구로 추정되는 것
+
+[상대방의 충족되지 못한 욕구] (파악된 경우만)
+상대방이 충족받지 못한 욕구
+
+[갈등 패턴] (파악된 경우만)
+회피형, 폭발형, 냉전형, 비난형, 방어형 등
+
+[상담사 조언] (제공된 경우만)
+상담사가 제안한 접근법이나 조언
+
+[실천 항목] (제안된 경우만)
+구체적인 실천 항목들
 
 ## 규칙
-- 3-5문장으로 요약
-- 핵심 감정과 상황만 포함
-- 구체적인 대화 내용은 생략하되 맥락 유지
-- 이모지 사용 금지`;
+- 대화에서 언급되지 않은 내용은 추측하지 말고 해당 항목 생략
+- 이모지 사용 금지
+- 간결하게 작성`;
 
     const conversationText = messages
       .map(m => `${m.role === 'user' ? '사용자' : '상담사'}: ${m.content}`)
@@ -184,21 +214,27 @@ class ClaudeService {
 ## 응답 형식
 반드시 아래 JSON 형식으로만 응답해주세요:
 {
-  "mainReason": "이번 상담의 주된 원인/주제 (1문장)",
+  "rootCause": "이 싸움의 근본 원인 (1문장)",
+  "triggerSituation": "트리거 상황 (가사, 시댁, 돈, 육아, 소통 등 핵심 키워드)",
   "summary": "대화 전체 요약 (2-3문장)",
   "myEmotions": ["사용자가 표현한 감정들", "최대 5개"],
   "myNeeds": ["사용자의 욕구/바람", "최대 3개"],
+  "myUnmetNeed": "사용자가 충족받지 못한 핵심 욕구 (1문장)",
   "partnerEmotions": ["상대방이 느꼈을 것으로 추정되는 감정", "최대 3개"],
   "partnerNeeds": ["상대방의 욕구로 추정되는 것", "최대 3개"],
-  "hiddenEmotion": "사용자의 숨겨진 감정 (2-4단어)",
-  "coreNeed": "사용자의 핵심 욕구 (2-4단어)",
+  "partnerUnmetNeed": "상대방의 충족되지 못한 욕구 (1문장)",
+  "conflictPattern": "갈등 패턴 (회피형, 폭발형, 냉전형, 비난형, 방어형 등)",
+  "suggestedApproach": "AI가 제안하는 접근법/해결 방안 (2-3문장)",
+  "actionItems": ["구체적 실천 항목", "최대 3개"],
   "topics": ["주제 태그", "최대 3개"]
 }
 
 ## 규칙
 - JSON 외의 텍스트 출력 금지
 - 대화에서 언급되지 않은 내용 추측 금지
-- 감정/욕구는 한국어 단어로`;
+- 감정/욕구는 한국어 단어로
+- suggestedApproach는 대화 중 상담사가 제안한 조언을 요약
+- actionItems는 사용자가 실천할 수 있는 구체적인 행동`;
 
     const conversationText = messages
       .map(m => `${m.role === 'user' ? '사용자' : '상담사'}: ${m.content}`)
@@ -213,14 +249,18 @@ class ClaudeService {
       return JSON.parse(response);
     } catch {
       return {
-        mainReason: '분석 실패',
+        rootCause: '분석 실패',
+        triggerSituation: '',
         summary: response,
         myEmotions: [],
         myNeeds: [],
+        myUnmetNeed: '',
         partnerEmotions: [],
         partnerNeeds: [],
-        hiddenEmotion: '',
-        coreNeed: '',
+        partnerUnmetNeed: '',
+        conflictPattern: '',
+        suggestedApproach: '',
+        actionItems: [],
         topics: [],
       };
     }

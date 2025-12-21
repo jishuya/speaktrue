@@ -253,15 +253,15 @@ export default function HistoryScreen({ navigation }) {
                 </View>
               )}
 
-              {/* 싸움 주된 이유 */}
-              {selectedSession.summary?.mainReason && (
+              {/* 근본 원인 */}
+              {selectedSession.summary?.rootCause && (
                 <View style={styles.modalSection}>
                   <View style={styles.modalSectionHeader}>
                     <Icon name="chat" size={16} color={COLORS.primary} />
-                    <Text style={styles.modalSectionTitle}>싸움 이유</Text>
+                    <Text style={styles.modalSectionTitle}>근본 원인</Text>
                   </View>
                   <Text style={styles.modalSectionText}>
-                    {selectedSession.summary.mainReason}
+                    {selectedSession.summary.rootCause}
                   </Text>
                 </View>
               )}
@@ -320,23 +320,46 @@ export default function HistoryScreen({ navigation }) {
                 </View>
               </View>
 
-              {/* AI 인사이트 */}
-              {(selectedSession.summary?.hiddenEmotion || selectedSession.summary?.coreNeed) && (
+              {/* 핵심 욕구 */}
+              {(selectedSession.summary?.myUnmetNeed || selectedSession.summary?.partnerUnmetNeed) && (
                 <View style={styles.insightSection}>
                   <View style={styles.modalSectionHeader}>
                     <Icon name="lightbulb" size={16} color="#F6AD55" />
-                    <Text style={styles.modalSectionTitle}>AI 인사이트</Text>
+                    <Text style={styles.modalSectionTitle}>충족되지 못한 욕구</Text>
                   </View>
-                  {selectedSession.summary.hiddenEmotion && (
+                  {selectedSession.summary.myUnmetNeed && (
                     <View style={styles.insightItem}>
-                      <Text style={styles.insightLabel}>숨겨진 감정</Text>
-                      <Text style={styles.insightValue}>{selectedSession.summary.hiddenEmotion}</Text>
+                      <Text style={styles.insightLabel}>나</Text>
+                      <Text style={styles.insightValue}>{selectedSession.summary.myUnmetNeed}</Text>
                     </View>
                   )}
-                  {selectedSession.summary.coreNeed && (
+                  {selectedSession.summary.partnerUnmetNeed && (
                     <View style={styles.insightItem}>
-                      <Text style={styles.insightLabel}>핵심 욕구</Text>
-                      <Text style={styles.insightValue}>{selectedSession.summary.coreNeed}</Text>
+                      <Text style={styles.insightLabel}>상대방</Text>
+                      <Text style={styles.insightValue}>{selectedSession.summary.partnerUnmetNeed}</Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {/* AI 제안 솔루션 */}
+              {selectedSession.summary?.suggestedApproach && (
+                <View style={styles.solutionSection}>
+                  <View style={styles.modalSectionHeader}>
+                    <Icon name="tips-and-updates" size={16} color="#48BB78" />
+                    <Text style={styles.modalSectionTitle}>AI 제안 솔루션</Text>
+                  </View>
+                  <Text style={styles.modalSectionText}>
+                    {selectedSession.summary.suggestedApproach}
+                  </Text>
+                  {selectedSession.summary.actionItems?.length > 0 && (
+                    <View style={styles.actionItemsContainer}>
+                      {selectedSession.summary.actionItems.map((item, idx) => (
+                        <View key={idx} style={styles.actionItem}>
+                          <Icon name="check-circle" size={14} color="#48BB78" />
+                          <Text style={styles.actionItemText}>{item}</Text>
+                        </View>
+                      ))}
                     </View>
                   )}
                 </View>
@@ -844,17 +867,41 @@ const styles = StyleSheet.create({
   insightItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: SPACING.xs,
   },
   insightLabel: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
+    minWidth: 50,
   },
   insightValue: {
     fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semiBold,
     color: '#D69E2E',
+    flex: 1,
+    textAlign: 'right',
+  },
+  solutionSection: {
+    backgroundColor: '#F0FFF4',
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  actionItemsContainer: {
+    marginTop: SPACING.sm,
+    gap: SPACING.xs,
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.xs,
+  },
+  actionItemText: {
+    fontSize: FONT_SIZE.sm,
+    color: '#276749',
+    flex: 1,
+    lineHeight: 20,
   },
   modalTagList: {
     flexDirection: 'row',

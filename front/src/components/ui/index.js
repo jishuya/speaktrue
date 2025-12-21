@@ -5,7 +5,7 @@ export { default as Icon } from './Icon';
 export { default as Logo } from './Logo';
 
 // Modal
-export { default as Modal, AlertModal, ConfirmModal } from './Modal';
+export { default as Modal, AlertModal, ConfirmModal, SessionFeedbackModal } from './Modal';
 
 // Toast
 export { ToastProvider, useToast } from './Toast';
