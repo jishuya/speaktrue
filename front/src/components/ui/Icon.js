@@ -93,7 +93,7 @@ const ICON_MAP = {
   'history': { set: 'mat', iconName: 'history' },
   'home': { set: 'ion', iconName: 'home' },
   'inbox': { set: 'mat', iconName: 'inbox' },
-  'description': { set: 'mat', iconName: 'description' },
+  'description': { set: 'ion', iconName: 'document-text-outline' },
   'menu-book': { set: 'mat', iconName: 'menu-book' },
   'analytics': { set: 'ion', iconName: 'analytics' },
   'trending-up': { set: 'ion', iconName: 'trending-up' },
@@ -110,6 +110,8 @@ const ICON_MAP = {
   'handshake': { set: 'mci', iconName: 'handshake' },
   'wifi-off': { set: 'ion', iconName: 'wifi' },
   'ear-hearing': { set: 'mci', iconName: 'ear-hearing' },
+  'pricetag': { set: 'ion', iconName: 'pricetag-outline' },
+  'pricetags': { set: 'ion', iconName: 'pricetags' },
 
   // Default fallback
   'default': { set: 'ion', iconName: 'help-circle' },

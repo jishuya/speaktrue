@@ -264,13 +264,36 @@ router.get('/session/:id', async (req, res) => {
   }
 });
 
+// 저장할 가치가 있는 세션인지 판단 (사용자 메시지 4개 이상)
+const MIN_USER_MESSAGES_TO_SAVE = 4;
+
 // PATCH /api/chat/session/:id/end - 세션 종료 및 요약 생성
 router.patch('/session/:id/end', async (req, res) => {
   try {
     const { id } = req.params;
     const { isResolved = false } = req.body;
 
-    // 1. 세션 종료 처리
+    // 1. 세션의 메시지 조회
+    const messagesResult = await db.query(
+      `SELECT role, content FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
+      [id]
+    );
+
+    // 2. 사용자 메시지 수 확인
+    const userMessageCount = messagesResult.rows.filter(m => m.role === 'user').length;
+
+    // 3. 사용자 메시지가 3개 미만이면 세션 삭제 (영양가 없음)
+    if (userMessageCount < MIN_USER_MESSAGES_TO_SAVE) {
+      await db.query('DELETE FROM sessions WHERE id = $1', [id]);
+      console.log(`Session ${id} discarded (only ${userMessageCount} user messages)`);
+      return res.json({
+        message: '세션이 종료되었습니다.',
+        discarded: true,
+        reason: 'insufficient_content',
+      });
+    }
+
+    // 4. 세션 종료 처리
     const result = await db.query(
       `UPDATE sessions
        SET status = 'ended', is_resolved = $2, ended_at = NOW()
@@ -283,18 +306,10 @@ router.patch('/session/:id/end', async (req, res) => {
       return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
     }
 
-    // 2. 세션의 메시지 조회
-    const messagesResult = await db.query(
-      `SELECT role, content FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
-      [id]
-    );
-
-    // 3. 메시지가 있으면 최종 요약 생성 (비동기)
-    if (messagesResult.rows.length >= 2) {
-      generateAndSaveSessionSummary(id, messagesResult.rows).catch(err => {
-        console.error('Session summary generation failed:', err);
-      });
-    }
+    // 5. 최종 요약 생성 (비동기)
+    generateAndSaveSessionSummary(id, messagesResult.rows).catch(err => {
+      console.error('Session summary generation failed:', err);
+    });
 
     res.json({
       message: '세션이 종료되었습니다.',

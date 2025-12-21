@@ -318,4 +318,30 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// PATCH /api/history/:id/resolved - 세션 해결 상태 변경
+router.patch('/:id/resolved', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isResolved } = req.body;
+
+    const result = await db.query(
+      'UPDATE sessions SET is_resolved = $1 WHERE id = $2 RETURNING id, is_resolved',
+      [isResolved, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: '세션을 찾을 수 없습니다' });
+    }
+
+    res.json({
+      success: true,
+      sessionId: id,
+      isResolved: result.rows[0].is_resolved
+    });
+  } catch (error) {
+    console.error('Update resolved status error:', error);
+    res.status(500).json({ error: '상태 변경에 실패했습니다' });
+  }
+});
+
 module.exports = router;

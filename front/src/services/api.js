@@ -138,6 +138,13 @@ class ApiService {
     });
   }
 
+  async updateSessionResolved(sessionId, isResolved) {
+    return this.request(`/api/history/${sessionId}/resolved`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isResolved }),
+    });
+  }
+
   // User Profile
   async getProfile(userId) {
     return this.request(`/api/user/profile?userId=${userId}`);

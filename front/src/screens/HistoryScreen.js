@@ -5,14 +5,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   Modal,
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { Icon } from '../components/ui';
+import { Icon, ConfirmModal } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, STATUS_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
@@ -57,6 +56,14 @@ export default function HistoryScreen({ navigation }) {
   const [selectedSession, setSelectedSession] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
 
+  // 삭제 확인 모달 상태
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
   const fetchHistorySummary = async () => {
     try {
       setLoading(true);
@@ -69,8 +76,13 @@ export default function HistoryScreen({ navigation }) {
         date: formatDate(session.date),
       })));
       setStats(data.stats);
-      setFrequentTopics(data.frequentTopics);
-      setFrequentEmotions(data.frequentEmotions);
+
+      // 주제와 감정에서 중복 제거 후 각각 최대 6개씩
+      const uniqueTopics = [...new Set(data.frequentTopics || [])];
+      const uniqueEmotions = (data.frequentEmotions || []).filter(e => !uniqueTopics.includes(e));
+
+      setFrequentTopics(uniqueTopics.slice(0, 6));
+      setFrequentEmotions(uniqueEmotions.slice(0, 6));
     } catch (err) {
       console.error('Failed to fetch history:', err);
       setError(err.message);
@@ -109,31 +121,54 @@ export default function HistoryScreen({ navigation }) {
   };
 
   const handleDelete = (id) => {
-    Alert.alert(
-      '기록 삭제',
-      '이 상담 기록을 삭제하시겠어요?',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.deleteHistory(id, TEMP_USER_ID);
-              setHistoryData(prev => prev.filter(item => item.id !== id));
-              // 통계도 업데이트
-              setStats(prev => ({
-                ...prev,
-                totalSessions: Math.max(0, prev.totalSessions - 1),
-              }));
-            } catch (err) {
-              Alert.alert('오류', '삭제에 실패했습니다');
-            }
-          },
-        },
-      ]
-    );
+    setDeleteTargetId(id);
+    setDeleteModalVisible(true);
   };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+
+    try {
+      await api.deleteHistory(deleteTargetId, TEMP_USER_ID);
+      setHistoryData(prev => prev.filter(item => item.id !== deleteTargetId));
+      setStats(prev => ({
+        ...prev,
+        totalSessions: Math.max(0, prev.totalSessions - 1),
+      }));
+    } catch (err) {
+      console.error('Failed to delete:', err);
+    } finally {
+      setDeleteModalVisible(false);
+      setDeleteTargetId(null);
+    }
+  };
+
+  // 해결 상태 토글
+  const handleResolveToggle = async (sessionId, isResolved) => {
+    try {
+      await api.updateSessionResolved(sessionId, isResolved);
+
+      // 로컬 상태 업데이트
+      setSelectedSession(prev => ({ ...prev, isResolved }));
+      setHistoryData(prev => prev.map(item =>
+        item.id === sessionId ? { ...item, resolved: isResolved } : item
+      ));
+      setStats(prev => ({
+        ...prev,
+        resolvedCount: isResolved ? prev.resolvedCount + 1 : prev.resolvedCount - 1,
+        unresolvedCount: isResolved ? prev.unresolvedCount - 1 : prev.unresolvedCount + 1,
+      }));
+    } catch (err) {
+      console.error('Failed to update resolved status:', err);
+    }
+  };
+
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(historyData.length / ITEMS_PER_PAGE);
+  const paginatedData = historyData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const renderHistoryItem = (item) => (
     <TouchableOpacity
@@ -162,9 +197,9 @@ export default function HistoryScreen({ navigation }) {
           <Icon name="close" size={18} color={COLORS.textMuted} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.historyContent} numberOfLines={2}>{item.content}</Text>
+      <Text style={styles.historyContent} numberOfLines={1}>{item.content}</Text>
       <View style={styles.tagRow}>
-        {item.tags.map((tag, index) => (
+        {item.tags.slice(0, 4).map((tag, index) => (
           <View key={index} style={styles.tag}>
             <Text style={styles.tagText}>{tag}</Text>
           </View>
@@ -188,21 +223,20 @@ export default function HistoryScreen({ navigation }) {
               <ActivityIndicator size="large" color={COLORS.primary} />
             </View>
           ) : selectedSession ? (
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <>
+              <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScrollView}>
               {/* 헤더 */}
               <View style={styles.modalHeader}>
-                <View>
+                <View style={styles.modalHeaderLeft}>
                   <Text style={styles.modalDate}>
                     {formatDate(selectedSession.startedAt)} 상담
                   </Text>
-                  <View style={styles.modalBadgeRow}>
-                    <StatusBadge status={selectedSession.isResolved ? 'resolved' : 'unresolved'} />
-                    {selectedSession.summaryOnly && (
-                      <View style={styles.summaryOnlyBadge}>
-                        <Text style={styles.summaryOnlyText}>요약만</Text>
-                      </View>
-                    )}
-                  </View>
+                  <StatusBadge status={selectedSession.isResolved ? 'resolved' : 'unresolved'} />
+                  {selectedSession.summaryOnly && (
+                    <View style={styles.summaryOnlyBadge}>
+                      <Text style={styles.summaryOnlyText}>요약만</Text>
+                    </View>
+                  )}
                 </View>
                 <TouchableOpacity onPress={closeModal}>
                   <Icon name="close" size={24} color={COLORS.textSecondary} />
@@ -236,7 +270,7 @@ export default function HistoryScreen({ navigation }) {
               {selectedSession.summary?.summary && (
                 <View style={styles.modalSection}>
                   <View style={styles.modalSectionHeader}>
-                    <Icon name="summarize" size={16} color={COLORS.primary} />
+                    <Icon name="description" size={16} color={COLORS.primary} />
                     <Text style={styles.modalSectionTitle}>대화 요약</Text>
                   </View>
                   <Text style={styles.modalSectionText}>
@@ -269,7 +303,7 @@ export default function HistoryScreen({ navigation }) {
                 {/* 상대방 감정 */}
                 <View style={styles.emotionColumn}>
                   <View style={styles.modalSectionHeader}>
-                    <Icon name="person" size={16} color="#E53E3E" />
+                    <Icon name="sentiment-satisfied" size={16} color="#9F7AEA" />
                     <Text style={styles.modalSectionTitle}>상대방 감정</Text>
                   </View>
                   <View style={styles.emotionTagList}>
@@ -312,7 +346,7 @@ export default function HistoryScreen({ navigation }) {
               {selectedSession.tags?.topic?.length > 0 && (
                 <View style={styles.modalSection}>
                   <View style={styles.modalSectionHeader}>
-                    <Icon name="label" size={16} color={COLORS.textSecondary} />
+                    <Icon name="pricetag" size={16} color={COLORS.textSecondary} />
                     <Text style={styles.modalSectionTitle}>주제</Text>
                   </View>
                   <View style={styles.modalTagList}>
@@ -325,6 +359,39 @@ export default function HistoryScreen({ navigation }) {
                 </View>
               )}
             </ScrollView>
+
+            {/* 해결/미해결 버튼 */}
+            <View style={styles.resolveButtonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.resolveButton,
+                  selectedSession.isResolved ? styles.resolveButtonActive : styles.resolveButtonInactive
+                ]}
+                onPress={() => handleResolveToggle(selectedSession.id, true)}
+                disabled={selectedSession.isResolved}
+              >
+                <Icon name="thumb-up" size={18} color={selectedSession.isResolved ? COLORS.surface : '#68A37A'} />
+                <Text style={[
+                  styles.resolveButtonText,
+                  selectedSession.isResolved ? styles.resolveButtonTextActive : styles.resolveButtonTextInactive
+                ]}>해결</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.resolveButton,
+                  !selectedSession.isResolved ? styles.unresolveButtonActive : styles.unresolveButtonInactive
+                ]}
+                onPress={() => handleResolveToggle(selectedSession.id, false)}
+                disabled={!selectedSession.isResolved}
+              >
+                <Icon name="thumb-down" size={18} color={!selectedSession.isResolved ? COLORS.surface : '#E8936A'} />
+                <Text style={[
+                  styles.resolveButtonText,
+                  !selectedSession.isResolved ? styles.unresolveButtonTextActive : styles.unresolveButtonTextInactive
+                ]}>미해결</Text>
+              </TouchableOpacity>
+            </View>
+            </>
           ) : null}
         </Pressable>
       </Pressable>
@@ -418,7 +485,7 @@ export default function HistoryScreen({ navigation }) {
           {/* History List */}
           <View style={styles.historyList}>
             {historyData.length > 0 ? (
-              historyData.map(renderHistoryItem)
+              paginatedData.map(renderHistoryItem)
             ) : (
               <View style={styles.emptyContainer}>
                 <Icon name="history" size={48} color={COLORS.textMuted} />
@@ -427,6 +494,29 @@ export default function HistoryScreen({ navigation }) {
             )}
           </View>
 
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <View style={styles.pagination}>
+              <TouchableOpacity
+                style={[styles.pageButton, currentPage === 1 && styles.pageButtonDisabled]}
+                onPress={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <Icon name="chevron-left" size={20} color={currentPage === 1 ? COLORS.textMuted : COLORS.textPrimary} />
+              </TouchableOpacity>
+
+              <Text style={styles.pageInfo}>{currentPage} / {totalPages}</Text>
+
+              <TouchableOpacity
+                style={[styles.pageButton, currentPage === totalPages && styles.pageButtonDisabled]}
+                onPress={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <Icon name="chevron-right" size={20} color={currentPage === totalPages ? COLORS.textMuted : COLORS.textPrimary} />
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Bottom spacing for tab bar */}
           <View style={{ height: 100 }} />
         </ScrollView>
@@ -434,6 +524,21 @@ export default function HistoryScreen({ navigation }) {
 
       {/* Detail Modal */}
       {renderDetailModal()}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        visible={deleteModalVisible}
+        onClose={() => {
+          setDeleteModalVisible(false);
+          setDeleteTargetId(null);
+        }}
+        onConfirm={confirmDelete}
+        title="기록 삭제"
+        message="이 상담 기록을 삭제하시겠어요?"
+        confirmText="삭제"
+        cancelText="취소"
+        confirmType="danger"
+      />
     </SafeAreaView>
   );
 }
@@ -483,6 +588,34 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     color: COLORS.textMuted,
   },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    gap: SPACING.md,
+  },
+  pageButton: {
+    width: 36,
+    height: 36,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  pageButtonDisabled: {
+    backgroundColor: COLORS.backgroundLight,
+    borderColor: COLORS.backgroundLight,
+  },
+  pageInfo: {
+    fontSize: FONT_SIZE.base,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textPrimary,
+    minWidth: 60,
+    textAlign: 'center',
+  },
   scrollView: {
     flex: 1,
   },
@@ -526,7 +659,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.md,
   },
   tagSection: {
     flex: 1,
@@ -535,7 +669,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.sm,
   },
   tagSectionLabel: {
     fontSize: FONT_SIZE.xs,
@@ -545,7 +679,7 @@ const styles = StyleSheet.create({
   tagSectionDivider: {
     width: 1,
     backgroundColor: COLORS.borderLight,
-    marginHorizontal: SPACING.md,
+    marginHorizontal: SPACING.sm,
   },
   tagList: {
     flexDirection: 'row',
@@ -559,7 +693,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   summaryTagText: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
   },
@@ -603,7 +737,6 @@ const styles = StyleSheet.create({
   },
   tagRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: SPACING.xs,
   },
   tag: {
@@ -697,10 +830,10 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   partnerEmotionTag: {
-    backgroundColor: STATUS_COLORS.danger.bg,
+    backgroundColor: '#F3E8FF',
   },
   partnerEmotionText: {
-    color: STATUS_COLORS.danger.text,
+    color: '#9F7AEA',
   },
   insightSection: {
     backgroundColor: '#FFFBEB',
@@ -771,5 +904,62 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.xs,
     marginTop: SPACING.xs,
+  },
+  modalHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    flex: 1,
+  },
+  modalScrollView: {
+    flex: 1,
+  },
+  resolveButtonContainer: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    paddingTop: SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderLight,
+  },
+  resolveButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    gap: SPACING.xs,
+  },
+  resolveButtonActive: {
+    backgroundColor: '#68A37A',
+  },
+  resolveButtonInactive: {
+    backgroundColor: '#E8F5E9',
+    borderWidth: 1,
+    borderColor: '#68A37A',
+  },
+  unresolveButtonActive: {
+    backgroundColor: '#E8936A',
+  },
+  unresolveButtonInactive: {
+    backgroundColor: '#FDECE5',
+    borderWidth: 1,
+    borderColor: '#E8936A',
+  },
+  resolveButtonText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  resolveButtonTextActive: {
+    color: COLORS.surface,
+  },
+  resolveButtonTextInactive: {
+    color: '#68A37A',
+  },
+  unresolveButtonTextActive: {
+    color: COLORS.surface,
+  },
+  unresolveButtonTextInactive: {
+    color: '#E8936A',
   },
 });

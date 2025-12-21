@@ -86,10 +86,9 @@ export default function EmpathyScreen({ navigation }) {
   const canShowPerspectiveButton = (() => {
     const userMessages = messages.filter(m => m.isUser);
     const aiMessages = messages.filter(m => !m.isUser);
-    const totalUserChars = userMessages.reduce((sum, m) => sum + (m.text?.length || 0), 0);
 
-    // 조건: 사용자 메시지 2개 이상 + AI 응답 1개 이상 + 총 150자 이상
-    return userMessages.length >= 2 && aiMessages.length >= 1 && totalUserChars >= 150;
+    // 조건: 사용자 메시지 3개 이상 + AI 응답 2개 이상
+    return userMessages.length >= 3 && aiMessages.length >= 2;
   })();
 
   // 이미지 첨부 핸들러
