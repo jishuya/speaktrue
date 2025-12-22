@@ -77,6 +77,7 @@ const ICON_MAP = {
   'sentiment-dissatisfied': { set: 'mat', iconName: 'sentiment-dissatisfied' },
   'sentiment-neutral': { set: 'mat', iconName: 'sentiment-neutral' },
   'sentiment-very-satisfied': { set: 'mat', iconName: 'sentiment-very-satisfied' },
+  'sentiment-very-dissatisfied': { set: 'mat', iconName: 'sentiment-very-dissatisfied' },
 
   // Nature & Wellness
   'spa': { set: 'mat', iconName: 'spa' },

@@ -149,6 +149,15 @@ class ApiService {
     });
   }
 
+  // Analysis - 패턴 분석
+  async getPatternAnalysis(userId, period = '30days') {
+    return this.request(`/api/analysis/patterns?userId=${userId}&period=${period}`);
+  }
+
+  async getPatternInsight(userId, period = '30days') {
+    return this.request(`/api/analysis/insight?userId=${userId}&period=${period}`);
+  }
+
   // User Profile
   async getProfile(userId) {
     return this.request(`/api/user/profile?userId=${userId}`);

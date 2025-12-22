@@ -1,36 +1,74 @@
+import { useState, useCallback } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, FEATURE_CARD_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import api from '../services/api';
 
-// 여정 데이터
-const JOURNEY_DATA = [
-  {
-    id: '1',
-    date: '어제',
-    title: '일요일의 대화',
-    content: '집안일 분담에 대해 이야기를 나누고...',
-    tags: ['집안일', '답답함'],
-    resolved: true,
-  },
-  {
-    id: '2',
-    date: '10월 24일 (금)',
-    title: '고마움의 쪽지',
-    content: '내 이야기를 끝까지 들어줘서 고마...',
-    tags: ['소통', '감사함'],
-    resolved: false,
-  },
-];
+// TODO: 실제 인증 구현 후 제거
+const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+
+// 날짜 포맷 함수
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = now - date;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    return '오늘';
+  } else if (diffDays === 1) {
+    return '어제';
+  } else {
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    return `${date.getMonth() + 1}월 ${date.getDate()}일 (${dayNames[date.getDay()]})`;
+  }
+};
 
 export default function HomeScreen({ navigation }) {
+  const [journeyData, setJourneyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchJourneyData = async () => {
+    try {
+      setLoading(true);
+      const data = await api.getHistorySummary(TEMP_USER_ID);
+
+      // 최근 5개만 표시
+      const recentSessions = data.sessions.slice(0, 5).map(session => ({
+        id: session.id,
+        date: formatDate(session.date),
+        title: session.content.substring(0, 15) + (session.content.length > 15 ? '...' : ''),
+        content: session.content,
+        tags: session.tags.slice(0, 2),
+        resolved: session.resolved,
+      }));
+
+      setJourneyData(recentSessions);
+    } catch (err) {
+      console.error('Failed to fetch journey data:', err);
+      setJourneyData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 화면 포커스될 때마다 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      fetchJourneyData();
+    }, [])
+  );
+
   const handleNavigate = (screen) => {
     navigation.navigate(screen);
   };
@@ -153,31 +191,42 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.journeyScrollContent}
-          >
-            {JOURNEY_DATA.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95}>
-                <View style={styles.journeyCardHeader}>
-                  <Text style={styles.journeyDate}>{item.date}</Text>
-                  <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
-                </View>
-                <View style={styles.journeyCardContent}>
-                  <Text style={styles.journeyTitle}>{item.title}</Text>
-                  <Text style={styles.journeyContent} numberOfLines={1}>{item.content}</Text>
-                </View>
-                <View style={styles.journeyCardFooter}>
-                  {item.tags.map((tag, index) => (
-                    <View key={index} style={styles.journeyTag}>
-                      <Text style={styles.journeyTagText}>{tag}</Text>
-                    </View>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {loading ? (
+            <View style={styles.journeyLoadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            </View>
+          ) : journeyData.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.journeyScrollContent}
+            >
+              {journeyData.map((item) => (
+                <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95}>
+                  <View style={styles.journeyCardHeader}>
+                    <Text style={styles.journeyDate}>{item.date}</Text>
+                    <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
+                  </View>
+                  <View style={styles.journeyCardContent}>
+                    <Text style={styles.journeyTitle}>{item.title}</Text>
+                    <Text style={styles.journeyContent} numberOfLines={1}>{item.content}</Text>
+                  </View>
+                  <View style={styles.journeyCardFooter}>
+                    {item.tags.map((tag, index) => (
+                      <View key={index} style={styles.journeyTag}>
+                        <Text style={styles.journeyTagText}>{tag}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={styles.journeyEmptyContainer}>
+              <Icon name="history" size={32} color={COLORS.textMuted} />
+              <Text style={styles.journeyEmptyText}>아직 상담 기록이 없어요</Text>
+            </View>
+          )}
         </View>
 
         {/* Bottom spacing for tab bar */}
@@ -430,5 +479,24 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
+  },
+  journeyLoadingContainer: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  journeyEmptyContainer: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    gap: SPACING.xs,
+  },
+  journeyEmptyText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
   },
 });

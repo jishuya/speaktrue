@@ -441,6 +441,70 @@ class ClaudeService {
     return this.sendMessageWithImage(userMessage, image, systemPrompt);
   }
 
+  // 패턴 분석 인사이트 생성
+  async generatePatternInsight(sessionSummaries) {
+    const systemPrompt = `당신은 부부관계 전문 상담사입니다. 사용자의 과거 상담 세션들을 분석하여 맞춤형 인사이트와 조언을 제공해주세요.
+
+## 응답 형식
+반드시 아래 JSON 형식으로 응답해주세요:
+{
+  "patternAnalysis": "발견된 갈등 패턴에 대한 분석 (2-3문장)",
+  "emotionalTrend": "감정 추이에 대한 관찰 (1-2문장)",
+  "keyInsight": "핵심 인사이트 - 사용자가 반복적으로 겪는 문제의 핵심 (1-2문장)",
+  "rootCausePattern": "반복되는 근본 원인 패턴 (1문장)",
+  "practicalAdvice": "구체적이고 실천 가능한 조언 (2-3문장)",
+  "encouragement": "따뜻한 격려 메시지 (1문장)"
+}
+
+## 분석 기준
+- 반복적으로 나타나는 갈등 주제 파악
+- 자주 느끼는 감정 패턴 분석
+- 충족되지 못한 욕구의 공통점 찾기
+- 갈등 패턴(회피형, 폭발형 등)의 경향성 파악
+
+## 대화 스타일
+- 진지하고 따뜻한 전문 상담사 톤
+- 이모지 사용하지 않음
+- 비난이나 판단 없이 객관적으로 분석
+- 실천 가능한 구체적인 조언 제공
+
+## 절대 하지 말 것
+- 사용자를 비난하거나 잘못을 지적
+- 추상적이거나 뜬구름 잡는 조언
+- 이모지 사용
+- JSON 외의 텍스트 출력`;
+
+    const summaryText = sessionSummaries
+      .map((s, i) => `세션 ${i + 1}:
+- 근본 원인: ${s.root_cause || '없음'}
+- 트리거 상황: ${s.trigger_situation || '없음'}
+- 요약: ${s.summary || '없음'}
+- 나의 감정: ${s.my_emotions?.join(', ') || '없음'}
+- 나의 욕구: ${s.my_needs?.join(', ') || '없음'}
+- 충족되지 못한 욕구: ${s.my_unmet_need || '없음'}
+- 상대방 감정: ${s.partner_emotions?.join(', ') || '없음'}
+- 갈등 패턴: ${s.conflict_pattern || '없음'}`)
+      .join('\n\n');
+
+    const response = await this.sendMessage(
+      [{ role: 'user', content: `다음 상담 세션들을 분석하여 패턴 인사이트를 제공해주세요:\n\n${summaryText}` }],
+      systemPrompt
+    );
+
+    try {
+      return JSON.parse(response);
+    } catch {
+      return {
+        patternAnalysis: response,
+        emotionalTrend: '',
+        keyInsight: '',
+        rootCausePattern: '',
+        practicalAdvice: '',
+        encouragement: '',
+      };
+    }
+  }
+
   async convertToNvc(message, sessionContext = null) {
     // 세션 컨텍스트가 있으면 프롬프트에 추가
     let contextSection = '';
