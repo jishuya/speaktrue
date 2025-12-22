@@ -8,16 +8,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon, Badge } from '../components/ui';
-import { Header } from '../components/common';
+import { Header, EmotionBadge } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
-// 감정 태그 데이터
-const EMOTION_TAGS = [
-  { id: 1, label: '인정의 욕구', icon: 'favorite', color: COLORS.primary, bg: `${COLORS.primary}15` },
-  { id: 2, label: '압도감', icon: 'bolt', color: '#F57F17', bg: '#FFF8E1' },
-  { id: 3, label: '자율성', icon: 'lock-open', color: '#1565C0', bg: '#E3F2FD' },
-  { id: 4, label: '유대감', icon: 'handshake', color: '#00897B', bg: '#E0F2F1' },
-];
+// 감정 태그 데이터 (EmotionBadge에서 자동으로 아이콘/색상 매핑)
+const EMOTION_TAGS = ['인정의 욕구', '압도감', '자율성', '유대감'];
 
 // 대화 내용 데이터
 const CONVERSATION_DATA = [
@@ -144,11 +139,12 @@ export default function RecordingDetailScreen({ navigation, route }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>감정 분석</Text>
           <View style={styles.emotionTags}>
-            {EMOTION_TAGS.map((tag) => (
-              <View key={tag.id} style={[styles.emotionTag, { backgroundColor: tag.bg }]}>
-                <Icon name={tag.icon} size={18} color={tag.color} />
-                <Text style={styles.emotionTagText}>{tag.label}</Text>
-              </View>
+            {EMOTION_TAGS.map((emotion, index) => (
+              <EmotionBadge
+                key={`${emotion}-${index}`}
+                emotion={emotion}
+                size="md"
+              />
             ))}
           </View>
         </View>
@@ -390,20 +386,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.sm,
-  },
-  emotionTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
-    gap: SPACING.xs,
-  },
-  emotionTagText: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
-    fontWeight: FONT_WEIGHT.semiBold,
-    color: COLORS.textPrimary,
   },
 
   // Conversation

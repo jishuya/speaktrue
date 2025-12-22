@@ -137,6 +137,43 @@ export const EMOTION_MAP = {
   '소속감': { icon: 'people', color: '#26A69A' },
   '친밀감': { icon: 'favorite', color: '#00897B' },
   '유대감': { icon: 'handshake', color: '#00796B' },
+
+  // 욕구/필요 관련 (AI 분석에서 자주 사용)
+  '인정의 욕구': { icon: 'medal', color: '#E91E63' },
+  '인정 욕구': { icon: 'medal', color: '#EC407A' },
+  '압도감': { icon: 'thunderstorm', color: '#F57F17' },
+  '압도': { icon: 'thunderstorm', color: '#F9A825' },
+  '자율성': { icon: 'lock-open', color: '#1565C0' },
+  '자율성 욕구': { icon: 'lock-open', color: '#1976D2' },
+  '통제감': { icon: 'options', color: '#0D47A1' },
+  '통제 욕구': { icon: 'options', color: '#1565C0' },
+  '안정감': { icon: 'home', color: '#2E7D32' },
+  '안전 욕구': { icon: 'shield-checkmark', color: '#388E3C' },
+  '존중 욕구': { icon: 'ribbon', color: '#7B1FA2' },
+  '이해 욕구': { icon: 'ear-hearing', color: '#5B8DEF' },
+  '공감 욕구': { icon: 'people', color: '#00ACC1' },
+  '소통 욕구': { icon: 'chatbubbles', color: '#00897B' },
+  '연결 욕구': { icon: 'link', color: '#4DB6AC' },
+  '독립심': { icon: 'person', color: '#5C6BC0' },
+  '주도성': { icon: 'flag', color: '#FF7043' },
+  '성장 욕구': { icon: 'trending-up', color: '#66BB6A' },
+
+  // 관계/상황 감정 (AI 분석에서 자주 사용)
+  '방어적': { icon: 'shield', color: '#78909C' },
+  '공격적': { icon: 'flame', color: '#D32F2F' },
+  '회피적': { icon: 'eye-off', color: '#90A4AE' },
+  '수동적': { icon: 'remove', color: '#B0BEC5' },
+  '적극적': { icon: 'arrow-forward', color: '#4CAF50' },
+  '소극적': { icon: 'arrow-back', color: '#9E9E9E' },
+  '개방적': { icon: 'open', color: '#42A5F5' },
+  '폐쇄적': { icon: 'lock-closed', color: '#607D8B' },
+  '협력적': { icon: 'handshake', color: '#26A69A' },
+  '경쟁적': { icon: 'trophy', color: '#FF9800' },
+  '의존적': { icon: 'people', color: '#AB47BC' },
+  '거리감': { icon: 'resize', color: '#78909C' },
+  '단절감': { icon: 'cut', color: '#455A64' },
+  '소외감': { icon: 'person-remove', color: '#5D6D7E' },
+  '고립감': { icon: 'person', color: '#37474F' },
 };
 
 // 기본값 (매핑에 없는 감정용)
@@ -145,9 +182,42 @@ export const DEFAULT_EMOTION = {
   color: '#9E9E9E',
 };
 
+// 매핑에 없는 감정용 랜덤 fallback 아이콘/색상 조합
+const FALLBACK_STYLES = [
+  { icon: 'ellipse', color: '#9575CD' },
+  { icon: 'square', color: '#7986CB' },
+  { icon: 'triangle', color: '#64B5F6' },
+  { icon: 'diamond', color: '#4FC3F7' },
+  { icon: 'star', color: '#4DD0E1' },
+  { icon: 'heart', color: '#4DB6AC' },
+  { icon: 'water', color: '#81C784' },
+  { icon: 'leaf', color: '#AED581' },
+  { icon: 'flower', color: '#FFD54F' },
+  { icon: 'planet', color: '#FFB74D' },
+  { icon: 'sparkles', color: '#FF8A65' },
+  { icon: 'prism', color: '#A1887F' },
+];
+
+// 감정 이름에 기반한 일관된 해시 생성 (같은 감정은 항상 같은 스타일)
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
 // 감정 이름으로 아이콘과 색상 가져오기
 export function getEmotionStyle(emotionName) {
-  return EMOTION_MAP[emotionName] || DEFAULT_EMOTION;
+  if (EMOTION_MAP[emotionName]) {
+    return EMOTION_MAP[emotionName];
+  }
+
+  // 매핑에 없으면 감정 이름 기반으로 일관된 fallback 스타일 반환
+  const index = hashString(emotionName) % FALLBACK_STYLES.length;
+  return FALLBACK_STYLES[index];
 }
 
 // 감정 배열에 아이콘과 색상 매핑하기

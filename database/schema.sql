@@ -1,6 +1,6 @@
 -- =============================================
 -- SpeakTrue Database Schema (PostgreSQL)
--- MVP 버전 - 총 7개 테이블 + 3개 뷰
+-- MVP 버전 - 총 8개 테이블 + 3개 뷰
 -- =============================================
 
 -- 기존 테이블 삭제 (개발용)
@@ -8,6 +8,7 @@ DROP VIEW IF EXISTS user_session_stats CASCADE;
 DROP VIEW IF EXISTS emotion_stats CASCADE;
 DROP VIEW IF EXISTS topic_stats CASCADE;
 
+DROP TABLE IF EXISTS recordings CASCADE;
 DROP TABLE IF EXISTS conversation_summaries CASCADE;
 DROP TABLE IF EXISTS nvc_conversions CASCADE;
 DROP TABLE IF EXISTS session_tags CASCADE;
@@ -162,6 +163,36 @@ CREATE TABLE conversation_summaries (
 );
 
 CREATE INDEX idx_conv_summary_session ON conversation_summaries(session_id);
+
+-- =============================================
+-- 8. 녹음 기록 (Recordings)
+-- 부부 대화 녹음 및 STT 변환, AI 분석 결과
+-- =============================================
+CREATE TABLE recordings (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    session_id      UUID REFERENCES sessions(id) ON DELETE SET NULL,  -- 감정토로 세션과 연결 (선택)
+
+    -- 오디오 정보
+    audio_url       TEXT NOT NULL,           -- 오디오 파일 경로
+    duration        INTEGER NOT NULL,        -- 녹음 길이 (초)
+    location        VARCHAR(50),             -- 장소 (주방, 거실 등)
+
+    -- STT 변환 결과 (JSONB)
+    -- [{speaker: 'me'|'partner', content: '...', startTime: 0, endTime: 5, nvcSuggestion: '...'}, ...]
+    transcripts     JSONB,
+
+    -- AI 분석 결과
+    emotions        TEXT[],                  -- 감지된 감정 ['인정의 욕구', '압도감', ...]
+    ai_summary      TEXT,                    -- AI 인사이트 요약
+    conflict_points TEXT[],                  -- 갈등 포인트
+
+    recorded_at     TIMESTAMP NOT NULL,      -- 녹음 시각
+    created_at      TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_recordings_user ON recordings(user_id, recorded_at DESC);
+CREATE INDEX idx_recordings_session ON recordings(session_id);
 
 -- =============================================
 -- 뷰 (Views) - 통계/조회용

@@ -16,3 +16,8 @@ export {
   HistoryCard,
   InsightCard,
 } from './Card';
+export {
+  default as EmotionBadge,
+  EmotionBadgeList,
+  EmotionIcon,
+} from './EmotionBadge';
