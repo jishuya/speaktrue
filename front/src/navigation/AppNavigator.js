@@ -259,11 +259,6 @@ export default function AppNavigator() {
         />
 
         {/* Recording Screens */}
-        <Stack.Screen
-          name="Recording"
-          component={RecordingScreen}
-          options={{ animation: 'slide_from_bottom' }}
-        />
         <Stack.Screen name="RecordingDetail" component={RecordingDetailScreen} />
 
         {/* Transform Screen (NVC 변환) */}
