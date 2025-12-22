@@ -254,9 +254,41 @@ router.get('/session/:id', async (req, res) => {
       [id]
     );
 
+    // 세션 요약 조회
+    const summaryResult = await db.query(
+      `SELECT root_cause, trigger_situation, summary,
+              my_emotions, my_needs, my_unmet_need,
+              partner_emotions, partner_needs, partner_unmet_need,
+              conflict_pattern, suggested_approach, action_items
+       FROM session_summaries WHERE session_id = $1`,
+      [id]
+    );
+
+    const session = sessionResult.rows[0];
+    const summary = summaryResult.rows[0] ? {
+      rootCause: summaryResult.rows[0].root_cause,
+      triggerSituation: summaryResult.rows[0].trigger_situation,
+      summary: summaryResult.rows[0].summary,
+      myEmotions: summaryResult.rows[0].my_emotions,
+      myNeeds: summaryResult.rows[0].my_needs,
+      myUnmetNeed: summaryResult.rows[0].my_unmet_need,
+      partnerEmotions: summaryResult.rows[0].partner_emotions,
+      partnerNeeds: summaryResult.rows[0].partner_needs,
+      partnerUnmetNeed: summaryResult.rows[0].partner_unmet_need,
+      conflictPattern: summaryResult.rows[0].conflict_pattern,
+      suggestedApproach: summaryResult.rows[0].suggested_approach,
+      actionItems: summaryResult.rows[0].action_items,
+    } : null;
+
     res.json({
-      session: sessionResult.rows[0],
+      id: session.id,
+      userId: session.user_id,
+      status: session.status,
+      isResolved: session.is_resolved,
+      startedAt: session.started_at,
+      endedAt: session.ended_at,
       messages: messagesResult.rows,
+      summary,
     });
   } catch (error) {
     console.error('Session fetch error:', error);

@@ -112,10 +112,14 @@ class ApiService {
   }
 
   // NVC
-  async convertToNvc(message) {
+  async convertToNvc(message, sessionId = null) {
+    const body = { message };
+    if (sessionId) {
+      body.sessionId = sessionId;
+    }
     return this.request('/api/nvc/convert', {
       method: 'POST',
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(body),
     });
   }
 

@@ -441,9 +441,34 @@ class ClaudeService {
     return this.sendMessageWithImage(userMessage, image, systemPrompt);
   }
 
-  async convertToNvc(message) {
-    const systemPrompt = `당신은 비폭력대화(NVC) 전문가입니다. 사용자가 입력한 메시지를 상대방에게 상처 주지 않으면서도 진심을 전달할 수 있는 형태로 변환해주세요.
+  async convertToNvc(message, sessionContext = null) {
+    // 세션 컨텍스트가 있으면 프롬프트에 추가
+    let contextSection = '';
+    if (sessionContext) {
+      contextSection = `
+## 과거 상담 맥락
+사용자가 이전에 진행한 상담 내용입니다. 이 맥락을 참고하여 더 적절하고 상황에 맞는 NVC 변환을 해주세요.
 
+- 근본 원인: ${sessionContext.root_cause || '정보 없음'}
+- 트리거 상황: ${sessionContext.trigger_situation || '정보 없음'}
+- 상담 요약: ${sessionContext.summary || '정보 없음'}
+- 나의 감정: ${sessionContext.my_emotions?.join(', ') || '정보 없음'}
+- 나의 욕구: ${sessionContext.my_needs?.join(', ') || '정보 없음'}
+- 나의 충족되지 못한 욕구: ${sessionContext.my_unmet_need || '정보 없음'}
+- 상대방 감정 (추정): ${sessionContext.partner_emotions?.join(', ') || '정보 없음'}
+- 상대방 욕구 (추정): ${sessionContext.partner_needs?.join(', ') || '정보 없음'}
+- 상대방의 충족되지 못한 욕구: ${sessionContext.partner_unmet_need || '정보 없음'}
+- 갈등 패턴: ${sessionContext.conflict_pattern || '정보 없음'}
+
+이 맥락을 활용하여:
+1. 사용자의 진짜 감정과 욕구를 더 정확하게 파악해주세요
+2. 상대방의 입장도 고려한 부드러운 표현을 제안해주세요
+3. 이전 갈등 패턴을 반복하지 않도록 도와주세요
+`;
+    }
+
+    const systemPrompt = `당신은 비폭력대화(NVC) 전문가입니다. 사용자가 입력한 메시지를 상대방에게 상처 주지 않으면서도 진심을 전달할 수 있는 형태로 변환해주세요.
+${contextSection}
 ## NVC 4단계 변환 원칙
 1. 관찰: 판단 없이 구체적인 상황만 ("맨날", "항상", "절대" 같은 일반화 금지)
 2. 감정: "나는 ~하게 느꼈어"로 나의 감정을 표현

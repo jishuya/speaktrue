@@ -99,12 +99,13 @@ export default function EmpathyScreen({ navigation }) {
   );
 
   // 관점 전환 버튼 표시 조건 계산
+  // 백엔드에서 세션 저장 조건이 사용자 메시지 4개 이상이므로 맞춤
   const canShowPerspectiveButton = (() => {
     const userMessages = messages.filter(m => m.isUser);
     const aiMessages = messages.filter(m => !m.isUser);
 
-    // 조건: 사용자 메시지 3개 이상 + AI 응답 2개 이상
-    return userMessages.length >= 3 && aiMessages.length >= 2;
+    // 조건: 사용자 메시지 4개 이상 + AI 응답 3개 이상
+    return userMessages.length >= 4 && aiMessages.length >= 3;
   })();
 
   // 이미지 첨부 핸들러
@@ -259,7 +260,11 @@ export default function EmpathyScreen({ navigation }) {
           <View style={styles.bottomButtonContainer}>
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => navigation.navigate('Transform')}
+              onPress={async () => {
+                // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
+                await endCurrentSession(sessionIdRef.current, false);
+                navigation.navigate('Transform', { sessionId });
+              }}
             >
               <Icon name="send" size={20} color={COLORS.primary} />
               <Text style={styles.actionButtonText}>메세지 보내기</Text>

@@ -103,6 +103,7 @@ const ICON_MAP = {
   'auto-awesome': { set: 'mat', iconName: 'auto-awesome' },
   'psychology': { set: 'mat', iconName: 'psychology' },
   'smart-toy': { set: 'mat', iconName: 'smart-toy' },
+  'tips-and-updates': { set: 'mat', iconName: 'tips-and-updates' },
 
   // Misc
   'apple': { set: 'ion', iconName: 'logo-apple' },
@@ -112,6 +113,7 @@ const ICON_MAP = {
   'ear-hearing': { set: 'mci', iconName: 'ear-hearing' },
   'pricetag': { set: 'ion', iconName: 'pricetag-outline' },
   'pricetags': { set: 'ion', iconName: 'pricetags' },
+  'link': { set: 'ion', iconName: 'link' },
 
   // Default fallback
   'default': { set: 'ion', iconName: 'help-circle' },

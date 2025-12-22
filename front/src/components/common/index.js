@@ -7,6 +7,7 @@ export { default as PageScrollView } from './PageScrollView';
 export { HeaderWithIcon, HeaderWithAvatar } from './HeaderContent';
 export { default as StatusBadge } from './StatusBadge';
 export { default as ProfileEditModal } from './ProfileEditModal';
+export { HistoryDetailModal } from './HistoryDetailModal';
 export {
   default as Card,
   TipCard,
