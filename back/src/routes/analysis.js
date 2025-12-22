@@ -39,11 +39,6 @@ router.get('/patterns', async (req, res) => {
 
     const { startDate, endDate } = getDateRange(period);
 
-    // 디버그: period 값 확인
-    console.log('=== Pattern Analysis Debug ===');
-    console.log('Received period:', period);
-    console.log('Period type:', typeof period);
-
     // 이전 기간 계산 (비교용) - 기간별로 다르게 설정
     let periodDays;
     let periodLabel;
@@ -66,10 +61,6 @@ router.get('/patterns', async (req, res) => {
         periodLabel = '지난달';
         break;
     }
-
-    // 디버그: periodLabel 값 확인
-    console.log('Calculated periodDays:', periodDays);
-    console.log('Calculated periodLabel:', periodLabel);
 
     const prevStartDate = new Date(startDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
     const prevEndDate = startDate;
@@ -197,10 +188,6 @@ router.get('/patterns', async (req, res) => {
     }
 
     // 트렌드 메시지 생성 (기간별 라벨 사용)
-    console.log('=== Trend Message Debug ===');
-    console.log('trend value:', trend);
-    console.log('periodLabel at this point:', periodLabel);
-
     let trendMessage = '';
     if (trend > 0) {
       trendMessage = `${periodLabel}보다 더 자주 소통했어요`;
@@ -209,9 +196,6 @@ router.get('/patterns', async (req, res) => {
     } else {
       trendMessage = `${periodLabel}과 비슷한 소통량이에요`;
     }
-
-    console.log('Final trendMessage:', trendMessage);
-    console.log('=== End Debug ===\n');
 
     res.json({
       period,

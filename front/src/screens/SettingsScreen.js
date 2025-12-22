@@ -54,8 +54,7 @@ export default function SettingsScreen({ navigation }) {
         gender: genderToKorean(data.gender),
         partnerName: data.partnerName || '',
       });
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
+    } catch {
       // 에러 시 기본값 유지
     } finally {
       setLoading(false);
@@ -80,8 +79,7 @@ export default function SettingsScreen({ navigation }) {
         partnerName: data.partnerName || '',
       });
       setProfileModalVisible(false);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
+    } catch {
       Alert.alert('오류', '프로필 수정에 실패했습니다.');
     } finally {
       setSaving(false);

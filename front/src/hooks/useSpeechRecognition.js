@@ -27,8 +27,7 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
     try {
       const available = await ExpoSpeechRecognition.isAvailableAsync();
       setIsAvailable(available);
-    } catch (error) {
-      console.log('Speech recognition not available:', error);
+    } catch {
       setIsAvailable(false);
     }
   };
@@ -41,8 +40,7 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
     try {
       const { status } = await ExpoSpeechRecognition.requestPermissionsAsync();
       return status === 'granted';
-    } catch (error) {
-      console.error('Permission request failed:', error);
+    } catch {
       return false;
     }
   };
@@ -93,7 +91,6 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
 
       // 에러 이벤트 리스너
       const errorSubscription = ExpoSpeechRecognition.addOnErrorListener((event) => {
-        console.error('Speech recognition error:', event.error);
         onError?.(event.error);
         setIsListening(false);
       });
@@ -109,7 +106,6 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
         endSubscription?.remove();
       };
     } catch (error) {
-      console.error('Failed to start speech recognition:', error);
       onError?.(error.message);
       setIsListening(false);
     }
@@ -121,8 +117,8 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
     try {
       await ExpoSpeechRecognition.stopAsync();
       setIsListening(false);
-    } catch (error) {
-      console.error('Failed to stop speech recognition:', error);
+    } catch {
+      // 중지 실패
     }
   }, []);
 

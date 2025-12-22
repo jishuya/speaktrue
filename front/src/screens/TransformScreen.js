@@ -54,26 +54,19 @@ export default function TransformScreen({ navigation, route }) {
   // EmpathyScreen에서 전달받은 sessionId로 자동 연결
   useEffect(() => {
     if (passedSessionId) {
-      console.log('[TransformScreen] 전달받은 sessionId:', passedSessionId);
       const fetchPassedSession = async () => {
         try {
-          // 먼저 세션 정보 조회 시도
           const sessionData = await api.getSession(passedSessionId);
-          console.log('[TransformScreen] 세션 조회 결과:', sessionData);
 
           if (sessionData) {
-            // 세션의 summary가 있으면 rootCause 사용, 없으면 기본 텍스트
             const content = sessionData.summary?.rootCause || '방금 진행한 상담';
             setSelectedSession({
               id: passedSessionId,
               content,
             });
-            console.log('[TransformScreen] 세션 연결됨:', { id: passedSessionId, content });
           }
-        } catch (error) {
-          console.error('[TransformScreen] 세션 조회 실패:', error);
-          // 세션이 삭제되었거나 찾을 수 없으면 연결하지 않음 (내용이 부족한 세션)
-          console.log('[TransformScreen] 세션이 존재하지 않음 - 연결 스킵');
+        } catch {
+          // 세션이 삭제되었거나 찾을 수 없으면 연결하지 않음
         }
       };
       fetchPassedSession();
@@ -137,8 +130,7 @@ export default function TransformScreen({ navigation, route }) {
       }
 
       setSessions(sessionList);
-    } catch (error) {
-      console.error('Failed to fetch sessions:', error);
+    } catch {
       Alert.alert('오류', '상담 기록을 불러오지 못했습니다.');
     } finally {
       setSessionsLoading(false);
@@ -175,8 +167,7 @@ export default function TransformScreen({ navigation, route }) {
       setShowDetailModal(true);
       const data = await api.getHistoryDetail(sessionId, TEMP_USER_ID);
       setDetailSession(data);
-    } catch (error) {
-      console.error('Failed to fetch session detail:', error);
+    } catch {
       Alert.alert('오류', '상세 정보를 불러오지 못했습니다.');
       setShowDetailModal(false);
     } finally {
@@ -207,8 +198,7 @@ export default function TransformScreen({ navigation, route }) {
         analysis: response.analysis,
         tip: response.tip,
       });
-    } catch (error) {
-      console.error('NVC 변환 오류:', error);
+    } catch {
       Alert.alert('변환 실패', '메시지 변환 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);

@@ -85,7 +85,6 @@ class ApiService {
         reader.readAsDataURL(blob);
       });
     } catch (error) {
-      console.error('Image to base64 failed:', error);
       throw error;
     }
   }

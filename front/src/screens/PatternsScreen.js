@@ -49,8 +49,7 @@ export default function PatternsScreen({ navigation }) {
         result.emotions = mapEmotionsWithStyle(result.emotions);
       }
       setData(result);
-    } catch (err) {
-      console.error('Pattern analysis error:', err);
+    } catch {
       setError('데이터를 불러오는데 실패했습니다');
     } finally {
       setLoading(false);
@@ -90,8 +89,7 @@ export default function PatternsScreen({ navigation }) {
       } else {
         setInsightError(result.message || '인사이트를 생성할 수 없습니다');
       }
-    } catch (err) {
-      console.error('AI Insight error:', err);
+    } catch {
       setInsightError('인사이트 생성에 실패했습니다');
     } finally {
       setInsightLoading(false);

@@ -44,9 +44,8 @@ export default function EmpathyScreen({ navigation }) {
 
     try {
       await api.endSession(currentSessionId, isResolved);
-      console.log('Session ended:', currentSessionId, 'isResolved:', isResolved);
-    } catch (error) {
-      console.error('Failed to end session:', error);
+    } catch {
+      // 세션 종료 실패해도 진행
     }
   }, []);
 
@@ -57,9 +56,8 @@ export default function EmpathyScreen({ navigation }) {
         const { sessionId: newSessionId } = await api.createSession();
         sessionIdRef.current = newSessionId;
         setSessionId(newSessionId);
-        console.log('New session created:', newSessionId);
-      } catch (error) {
-        console.error('Failed to create session:', error);
+      } catch {
+        // 세션 생성 실패
       }
     };
     initSession();
@@ -149,8 +147,7 @@ export default function EmpathyScreen({ navigation }) {
         createdAt: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
-    } catch (error) {
-      console.error('Chat error:', error);
+    } catch {
       const errorResponse = {
         id: (Date.now() + 1).toString(),
         text: '죄송합니다. 잠시 문제가 발생했어요. 다시 말씀해 주시겠어요?',

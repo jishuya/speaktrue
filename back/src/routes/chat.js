@@ -72,7 +72,6 @@ async function createOrUpdateConversationSummary(sessionId) {
     [sessionId, summaryContent, messagesToSummarize.length]
   );
 
-  console.log(`Conversation summary created/updated for session ${sessionId}, summarized ${messagesToSummarize.length} messages`);
   return summaryContent;
 }
 
@@ -317,7 +316,6 @@ router.patch('/session/:id/end', async (req, res) => {
     // 3. 사용자 메시지가 3개 미만이면 세션 삭제 (영양가 없음)
     if (userMessageCount < MIN_USER_MESSAGES_TO_SAVE) {
       await db.query('DELETE FROM sessions WHERE id = $1', [id]);
-      console.log(`Session ${id} discarded (only ${userMessageCount} user messages)`);
       return res.json({
         message: '세션이 종료되었습니다.',
         discarded: true,
@@ -412,7 +410,6 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
       }
     }
 
-    console.log(`Session summary saved for session ${sessionId}`);
   } catch (error) {
     console.error('Failed to save session summary:', error);
     throw error;

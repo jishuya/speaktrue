@@ -43,7 +43,6 @@ router.post('/convert', async (req, res) => {
     }
 
     const result = await claudeService.convertToNvc(message, sessionContext);
-    console.log('NVC API Response:', JSON.stringify(result, null, 2));
 
     res.json({
       original: message,

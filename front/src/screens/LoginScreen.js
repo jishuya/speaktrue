@@ -21,19 +21,16 @@ export default function LoginScreen({ navigation }) {
     navigation.replace('Main');
   };
 
-  const handleSocialLogin = (provider) => {
+  const handleSocialLogin = () => {
     // TODO: 소셜 로그인 구현
-    console.log(`${provider} login`);
   };
 
   const handleForgotPassword = () => {
     // TODO: 비밀번호 찾기 화면으로 이동
-    console.log('Forgot password');
   };
 
   const handleSignUp = () => {
     // TODO: 회원가입 화면으로 이동
-    console.log('Sign up');
   };
 
   return (

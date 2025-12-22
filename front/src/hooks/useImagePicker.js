@@ -25,8 +25,7 @@ export default function useImagePicker({ onImageSelected, onError } = {}) {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         return status === 'granted';
       }
-    } catch (error) {
-      console.error('Permission request failed:', error);
+    } catch {
       return false;
     }
   };
@@ -68,7 +67,6 @@ export default function useImagePicker({ onImageSelected, onError } = {}) {
       }
       return null;
     } catch (error) {
-      console.error('Image pick failed:', error);
       onError?.(error.message);
       return null;
     } finally {
@@ -112,7 +110,6 @@ export default function useImagePicker({ onImageSelected, onError } = {}) {
       }
       return null;
     } catch (error) {
-      console.error('Camera failed:', error);
       onError?.(error.message);
       return null;
     } finally {

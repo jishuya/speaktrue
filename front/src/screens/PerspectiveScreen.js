@@ -54,8 +54,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           coreNeed: '파악 중...',
         });
       }
-    } catch (err) {
-      console.error('Perspective error:', err);
+    } catch {
       setError('관점 분석 중 문제가 발생했어요. 다시 시도해 주세요.');
     } finally {
       setIsLoading(false);

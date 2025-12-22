@@ -41,10 +41,8 @@ async function archiveOldSessions() {
       [sessionIds]
     );
 
-    console.log(`Archived ${sessionIds.length} old sessions`);
     return { archived: sessionIds.length, sessionIds };
   } catch (error) {
-    console.error('Archive old sessions error:', error);
     throw error;
   }
 }
@@ -60,9 +58,7 @@ router.get('/summary', async (req, res) => {
     }
 
     // 백그라운드로 오래된 세션 정리 실행
-    archiveOldSessions().catch(err => {
-      console.error('Background archive failed:', err);
-    });
+    archiveOldSessions().catch(() => {});
 
     // 1. 세션 목록 조회 (태그 포함, summary_only 플래그 추가)
     const sessionsQuery = `

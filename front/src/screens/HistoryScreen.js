@@ -88,7 +88,6 @@ export default function HistoryScreen({ navigation }) {
       setFrequentTopics(uniqueTopics.slice(0, 6));
       setFrequentEmotions(uniqueEmotions.slice(0, 6));
     } catch (err) {
-      console.error('Failed to fetch history:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -110,8 +109,7 @@ export default function HistoryScreen({ navigation }) {
 
       const data = await api.getHistoryDetail(sessionId, TEMP_USER_ID);
       setSelectedSession(data);
-    } catch (err) {
-      console.error('Failed to fetch session detail:', err);
+    } catch {
       Alert.alert('오류', '상세 정보를 불러오지 못했습니다');
       setModalVisible(false);
     } finally {
@@ -139,8 +137,8 @@ export default function HistoryScreen({ navigation }) {
         ...prev,
         totalSessions: Math.max(0, prev.totalSessions - 1),
       }));
-    } catch (err) {
-      console.error('Failed to delete:', err);
+    } catch {
+      // 삭제 실패
     } finally {
       setDeleteModalVisible(false);
       setDeleteTargetId(null);
@@ -162,8 +160,8 @@ export default function HistoryScreen({ navigation }) {
         resolvedCount: isResolved ? prev.resolvedCount + 1 : prev.resolvedCount - 1,
         unresolvedCount: isResolved ? prev.unresolvedCount - 1 : prev.unresolvedCount + 1,
       }));
-    } catch (err) {
-      console.error('Failed to update resolved status:', err);
+    } catch {
+      // 상태 업데이트 실패
     }
   };
 

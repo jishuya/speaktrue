@@ -54,8 +54,7 @@ export default function HomeScreen({ navigation }) {
       }));
 
       setJourneyData(recentSessions);
-    } catch (err) {
-      console.error('Failed to fetch journey data:', err);
+    } catch {
       setJourneyData([]);
     } finally {
       setLoading(false);
