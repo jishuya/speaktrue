@@ -71,6 +71,7 @@ const ICON_MAP = {
   // Emotion & Sentiment
   'favorite': { set: 'ion', iconName: 'heart' },
   'favorite-border': { set: 'ion', iconName: 'heart-outline' },
+  'heart-broken': { set: 'ion', iconName: 'heart-dislike' },
   'thumb-up': { set: 'ion', iconName: 'thumbs-up' },
   'thumb-down': { set: 'ion', iconName: 'thumbs-down' },
   'sentiment-satisfied': { set: 'mat', iconName: 'sentiment-satisfied' },
@@ -78,6 +79,58 @@ const ICON_MAP = {
   'sentiment-neutral': { set: 'mat', iconName: 'sentiment-neutral' },
   'sentiment-very-satisfied': { set: 'mat', iconName: 'sentiment-very-satisfied' },
   'sentiment-very-dissatisfied': { set: 'mat', iconName: 'sentiment-very-dissatisfied' },
+
+  // Emotion Icons (다양한 감정 표현용)
+  'flame': { set: 'ion', iconName: 'flame' },                    // 분노/화남
+  'flash': { set: 'ion', iconName: 'flash' },                    // 짜증
+  'thunderstorm': { set: 'ion', iconName: 'thunderstorm' },      // 폭발적 분노
+  'cloud': { set: 'ion', iconName: 'cloud' },                    // 답답함
+  'cloudy': { set: 'ion', iconName: 'cloudy' },                  // 우울
+  'rainy': { set: 'ion', iconName: 'rainy' },                    // 슬픔
+  'water': { set: 'ion', iconName: 'water' },                    // 눈물/슬픔
+  'snow': { set: 'ion', iconName: 'snow' },                      // 차가움/냉담
+  'sunny': { set: 'ion', iconName: 'sunny' },                    // 기쁨/행복
+  'partly-sunny': { set: 'ion', iconName: 'partly-sunny' },      // 희망
+  'moon': { set: 'ion', iconName: 'moon' },                      // 외로움/공허함
+  'star': { set: 'ion', iconName: 'star' },                      // 설렘/기대
+  'scale': { set: 'mci', iconName: 'scale-balance' },            // 불공평함
+  'shield': { set: 'ion', iconName: 'shield' },                  // 방어적/불신
+  'shield-checkmark': { set: 'ion', iconName: 'shield-checkmark' }, // 안심
+  'ban': { set: 'ion', iconName: 'ban' },                        // 거부/억압
+  'alert-circle': { set: 'ion', iconName: 'alert-circle' },      // 불안/걱정
+  'time': { set: 'ion', iconName: 'time' },                      // 지침/피로
+  'battery-dead': { set: 'ion', iconName: 'battery-dead' },      // 무기력
+  'battery-half': { set: 'ion', iconName: 'battery-half' },      // 피곤
+  'leaf': { set: 'ion', iconName: 'leaf' },                      // 평온/차분
+  'rose': { set: 'mci', iconName: 'flower-tulip' },              // 감사/애정
+  'gift': { set: 'ion', iconName: 'gift' },                      // 감사
+  'ribbon': { set: 'ion', iconName: 'ribbon' },                  // 뿌듯/성취
+  'trophy': { set: 'ion', iconName: 'trophy' },                  // 성취감
+  'medal': { set: 'ion', iconName: 'medal' },                    // 인정받음
+  'hand-left': { set: 'ion', iconName: 'hand-left' },            // 거부/정지
+  'hand-right': { set: 'ion', iconName: 'hand-right' },          // 도움
+  'eye': { set: 'ion', iconName: 'eye' },                        // 시기/질투
+  'eye-off': { set: 'ion', iconName: 'eye-off' },                // 회피
+  'skull': { set: 'ion', iconName: 'skull' },                    // 절망
+  'sad': { set: 'ion', iconName: 'sad' },                        // 슬픔
+  'happy': { set: 'ion', iconName: 'happy' },                    // 기쁨
+  'sparkles': { set: 'ion', iconName: 'sparkles' },              // 설렘
+  'cafe': { set: 'ion', iconName: 'cafe' },                      // 편안함
+  'bed': { set: 'ion', iconName: 'bed' },                        // 피곤
+  'fitness': { set: 'ion', iconName: 'fitness' },                // 활력/자신감
+  'pulse': { set: 'ion', iconName: 'pulse' },                    // 긴장/불안
+  'nuclear': { set: 'ion', iconName: 'nuclear' },                // 스트레스
+  'bonfire': { set: 'ion', iconName: 'bonfire' },                // 따뜻함/위로
+  'prism': { set: 'ion', iconName: 'prism' },                    // 혼란
+  'shuffle': { set: 'ion', iconName: 'shuffle' },                // 복잡함
+  'help-buoy': { set: 'ion', iconName: 'help-buoy' },            // 도움필요
+  'compass': { set: 'ion', iconName: 'compass' },                // 방향상실
+  'footsteps': { set: 'ion', iconName: 'footsteps' },            // 불안/초조
+  'infinite': { set: 'ion', iconName: 'infinite' },              // 지속적 감정
+  'megaphone': { set: 'ion', iconName: 'megaphone' },            // 억울함 호소
+  'volume-mute': { set: 'ion', iconName: 'volume-mute' },        // 답답함/억압
+  'lock-closed': { set: 'ion', iconName: 'lock-closed' },        // 억압감
+  'unlink': { set: 'ion', iconName: 'unlink' },                  // 단절/외로움
 
   // Nature & Wellness
   'spa': { set: 'mat', iconName: 'spa' },
@@ -98,6 +151,7 @@ const ICON_MAP = {
   'menu-book': { set: 'mat', iconName: 'menu-book' },
   'analytics': { set: 'ion', iconName: 'analytics' },
   'trending-up': { set: 'ion', iconName: 'trending-up' },
+  'trending-down': { set: 'ion', iconName: 'trending-down' },
   'language': { set: 'ion', iconName: 'globe' },
 
   // AI & Tech
