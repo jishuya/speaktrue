@@ -34,6 +34,7 @@ export default function EmpathyScreen({ navigation }) {
   const [attachedImage, setAttachedImage] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const flatListRef = useRef(null);
   const sessionIdRef = useRef(null);
 
@@ -259,15 +260,30 @@ export default function EmpathyScreen({ navigation }) {
         {canShowPerspectiveButton && (
           <View style={styles.bottomButtonContainer}>
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, isNavigating && styles.actionButtonDisabled]}
+              disabled={isNavigating}
               onPress={async () => {
-                // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
-                await endCurrentSession(sessionIdRef.current, false);
-                navigation.navigate('Transform', { sessionId });
+                setIsNavigating(true);
+                try {
+                  // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
+                  await endCurrentSession(sessionIdRef.current, false);
+                  navigation.navigate('Transform', { sessionId });
+                } finally {
+                  setIsNavigating(false);
+                }
               }}
             >
-              <Icon name="send" size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>메세지 보내기</Text>
+              {isNavigating ? (
+                <>
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                  <Text style={styles.actionButtonText}>준비 중...</Text>
+                </>
+              ) : (
+                <>
+                  <Icon name="send" size={20} color={COLORS.primary} />
+                  <Text style={styles.actionButtonText}>메세지 보내기</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
         )}
@@ -338,6 +354,9 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,
+  },
+  actionButtonDisabled: {
+    opacity: 0.7,
   },
   loadingContainer: {
     flexDirection: 'row',

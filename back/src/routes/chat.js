@@ -338,13 +338,10 @@ router.patch('/session/:id/end', async (req, res) => {
       return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
     }
 
-    // 5. 최종 요약 생성 (동기적으로 처리하여 History에 바로 표시되도록)
-    try {
-      await generateAndSaveSessionSummary(id, messagesResult.rows);
-    } catch (err) {
-      console.error('Session summary generation failed:', err);
-      // 요약 생성 실패해도 세션 종료는 성공으로 처리
-    }
+    // 5. 최종 요약 생성 (비동기로 백그라운드 처리 - 빠른 화면 전환을 위해)
+    generateAndSaveSessionSummary(id, messagesResult.rows).catch(err => {
+      console.error('Background session summary generation failed:', err);
+    });
 
     res.json({
       message: '세션이 종료되었습니다.',

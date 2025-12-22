@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
@@ -32,6 +33,12 @@ export default function PatternsScreen({ navigation }) {
   const [showPeriodPicker, setShowPeriodPicker] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+
+  // AI 인사이트 관련 상태
+  const [showInsightModal, setShowInsightModal] = useState(false);
+  const [aiInsight, setAiInsight] = useState(null);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightError, setInsightError] = useState(null);
 
   const fetchPatternData = useCallback(async () => {
     try {
@@ -68,6 +75,33 @@ export default function PatternsScreen({ navigation }) {
 
   const getPeriodLabel = () => {
     return PERIOD_OPTIONS.find(opt => opt.value === period)?.label || '지난 30일';
+  };
+
+  // AI 인사이트 가져오기
+  const fetchAiInsight = async () => {
+    setInsightLoading(true);
+    setInsightError(null);
+    setShowInsightModal(true);
+
+    try {
+      const result = await api.getPatternInsight(TEMP_USER_ID, period);
+      if (result.insight) {
+        setAiInsight(result.insight);
+      } else {
+        setInsightError(result.message || '인사이트를 생성할 수 없습니다');
+      }
+    } catch (err) {
+      console.error('AI Insight error:', err);
+      setInsightError('인사이트 생성에 실패했습니다');
+    } finally {
+      setInsightLoading(false);
+    }
+  };
+
+  const closeInsightModal = () => {
+    setShowInsightModal(false);
+    setAiInsight(null);
+    setInsightError(null);
   };
 
   // 로딩 상태
@@ -301,9 +335,7 @@ export default function PatternsScreen({ navigation }) {
                   }
                   content={data.insight.advice}
                   buttonText="맞춤형 조언 더보기"
-                  onButtonPress={() => {
-                    // TODO: 상세 인사이트 화면으로 이동
-                  }}
+                  onButtonPress={fetchAiInsight}
                 />
               </View>
             )}
@@ -313,6 +345,134 @@ export default function PatternsScreen({ navigation }) {
         {/* Bottom spacing */}
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* AI Insight Modal */}
+      <Modal
+        visible={showInsightModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeInsightModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <View style={styles.modalTitleRow}>
+                <Icon name="auto-awesome" size={24} color={COLORS.primary} />
+                <Text style={styles.modalTitle}>AI 맞춤 인사이트</Text>
+              </View>
+              <TouchableOpacity onPress={closeInsightModal} style={styles.modalCloseButton}>
+                <Icon name="close" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Modal Body */}
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              {insightLoading ? (
+                <View style={styles.modalLoading}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                  <Text style={styles.modalLoadingText}>AI가 분석 중이에요...</Text>
+                  <Text style={styles.modalLoadingSubtext}>잠시만 기다려주세요</Text>
+                </View>
+              ) : insightError ? (
+                <View style={styles.modalError}>
+                  <Icon name="error-outline" size={48} color={COLORS.textTertiary} />
+                  <Text style={styles.modalErrorText}>{insightError}</Text>
+                  <TouchableOpacity style={styles.modalRetryButton} onPress={fetchAiInsight}>
+                    <Text style={styles.modalRetryButtonText}>다시 시도</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : aiInsight ? (
+                <View style={styles.insightContent}>
+                  {/* Title */}
+                  {aiInsight.title && (
+                    <Text style={styles.insightTitle}>{aiInsight.title}</Text>
+                  )}
+
+                  {/* Pattern Analysis */}
+                  {aiInsight.patternAnalysis && (
+                    <View style={styles.insightSection}>
+                      <View style={styles.insightSectionHeader}>
+                        <Icon name="analytics" size={18} color={COLORS.primary} />
+                        <Text style={styles.insightSectionTitle}>갈등 패턴 분석</Text>
+                      </View>
+                      <Text style={styles.insightText}>{aiInsight.patternAnalysis}</Text>
+                    </View>
+                  )}
+
+                  {/* Emotional Trend */}
+                  {aiInsight.emotionalTrend && (
+                    <View style={styles.insightSection}>
+                      <View style={styles.insightSectionHeader}>
+                        <Icon name="pulse" size={18} color={COLORS.primary} />
+                        <Text style={styles.insightSectionTitle}>감정 추이</Text>
+                      </View>
+                      <Text style={styles.insightText}>{aiInsight.emotionalTrend}</Text>
+                    </View>
+                  )}
+
+                  {/* Key Insight */}
+                  {aiInsight.keyInsight && (
+                    <View style={[styles.insightSection, styles.keyInsightSection]}>
+                      <View style={styles.insightSectionHeader}>
+                        <Icon name="lightbulb" size={18} color={COLORS.warning} />
+                        <Text style={styles.insightSectionTitle}>핵심 인사이트</Text>
+                      </View>
+                      <Text style={styles.keyInsightText}>{aiInsight.keyInsight}</Text>
+                    </View>
+                  )}
+
+                  {/* Root Cause Pattern */}
+                  {aiInsight.rootCausePattern && (
+                    <View style={styles.insightSection}>
+                      <View style={styles.insightSectionHeader}>
+                        <Icon name="search" size={18} color={COLORS.primary} />
+                        <Text style={styles.insightSectionTitle}>반복되는 원인</Text>
+                      </View>
+                      <Text style={styles.insightText}>{aiInsight.rootCausePattern}</Text>
+                    </View>
+                  )}
+
+                  {/* Practical Advice */}
+                  {aiInsight.practicalAdvice && (
+                    <View style={styles.insightSection}>
+                      <View style={styles.insightSectionHeader}>
+                        <Icon name="check-circle" size={18} color={COLORS.success} />
+                        <Text style={styles.insightSectionTitle}>실천 조언</Text>
+                      </View>
+                      {Array.isArray(aiInsight.practicalAdvice) ? (
+                        aiInsight.practicalAdvice.map((advice, index) => (
+                          <View key={index} style={styles.adviceItem}>
+                            <Text style={styles.adviceNumber}>{index + 1}</Text>
+                            <Text style={styles.adviceText}>{advice}</Text>
+                          </View>
+                        ))
+                      ) : (
+                        <Text style={styles.insightText}>{aiInsight.practicalAdvice}</Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Encouragement */}
+                  {aiInsight.encouragement && (
+                    <View style={styles.encouragementSection}>
+                      <Icon name="favorite" size={20} color={COLORS.primary} />
+                      <Text style={styles.encouragementText}>{aiInsight.encouragement}</Text>
+                    </View>
+                  )}
+                </View>
+              ) : null}
+            </ScrollView>
+
+            {/* Modal Footer */}
+            {!insightLoading && (
+              <TouchableOpacity style={styles.modalCloseFullButton} onPress={closeInsightModal}>
+                <Text style={styles.modalCloseFullButtonText}>닫기</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -563,5 +723,178 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     ...SHADOWS.sm,
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: COLORS.surface,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
+    maxHeight: '90%',
+    minHeight: '50%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: SPACING.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderLight,
+  },
+  modalTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  modalTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+  },
+  modalCloseButton: {
+    padding: SPACING.xs,
+  },
+  modalBody: {
+    padding: SPACING.lg,
+    flex: 1,
+  },
+  modalLoading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.giant,
+  },
+  modalLoadingText: {
+    marginTop: SPACING.lg,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textPrimary,
+  },
+  modalLoadingSubtext: {
+    marginTop: SPACING.xs,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+  },
+  modalError: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.giant,
+  },
+  modalErrorText: {
+    marginTop: SPACING.md,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  modalRetryButton: {
+    marginTop: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+  },
+  modalRetryButtonText: {
+    color: COLORS.surface,
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  modalCloseFullButton: {
+    margin: SPACING.lg,
+    padding: SPACING.md,
+    backgroundColor: COLORS.backgroundLight,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: 'center',
+  },
+  modalCloseFullButtonText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textSecondary,
+  },
+
+  // Insight Content Styles
+  insightContent: {
+    paddingBottom: SPACING.md,
+  },
+  insightTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.lg,
+    textAlign: 'center',
+  },
+  insightSection: {
+    marginBottom: SPACING.lg,
+  },
+  insightSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  insightSectionTitle: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semiBold,
+    color: COLORS.textPrimary,
+  },
+  insightText: {
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+  },
+  keyInsightSection: {
+    backgroundColor: '#FFF8E1',
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.warning,
+  },
+  keyInsightText: {
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+    fontWeight: FONT_WEIGHT.medium,
+    lineHeight: 22,
+  },
+  adviceItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  adviceNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.primaryBg,
+    color: COLORS.primary,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.bold,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  adviceText: {
+    flex: 1,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+  },
+  encouragementSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primaryBg,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginTop: SPACING.md,
+  },
+  encouragementText: {
+    flex: 1,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.medium,
+    lineHeight: 20,
   },
 });

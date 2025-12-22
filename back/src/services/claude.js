@@ -505,6 +505,97 @@ class ClaudeService {
     }
   }
 
+  // 패턴 분석 인사이트 생성 (통계 + 샘플 방식)
+  async generatePatternInsightWithStats(data) {
+    const { period, totalSessions, topTopics, topEmotions, conflictPatterns, recentSummaries } = data;
+
+    const systemPrompt = `당신은 부부관계 전문 상담사입니다. 사용자의 상담 데이터를 분석하여 맞춤형 인사이트와 조언을 제공해주세요.
+
+## 응답 형식
+반드시 아래 JSON 형식으로 응답해주세요:
+{
+  "title": "핵심 인사이트를 담은 제목 (15자 이내, 예: '가사분담에서 인정받고 싶은 마음')",
+  "patternAnalysis": "발견된 갈등 패턴에 대한 분석 (2-3문장)",
+  "emotionalTrend": "감정 추이에 대한 관찰 (1-2문장)",
+  "keyInsight": "핵심 인사이트 - 사용자가 반복적으로 겪는 문제의 핵심 (1-2문장)",
+  "rootCausePattern": "반복되는 근본 원인 패턴 (1문장)",
+  "practicalAdvice": [
+    "구체적이고 실천 가능한 조언 1",
+    "구체적이고 실천 가능한 조언 2",
+    "구체적이고 실천 가능한 조언 3"
+  ],
+  "encouragement": "따뜻한 격려 메시지 (1문장)"
+}
+
+## 분석 기준
+- 통계 데이터로 전체 트렌드 파악
+- 최근 세션 샘플로 구체적 맥락 이해
+- 반복되는 갈등 주제와 감정 패턴 연결
+- 충족되지 못한 욕구의 공통점 찾기
+
+## 대화 스타일
+- 진지하고 따뜻한 전문 상담사 톤
+- 이모지 사용하지 않음
+- 비난이나 판단 없이 객관적으로 분석
+- 실천 가능한 구체적인 조언 제공
+
+## 절대 하지 말 것
+- 사용자를 비난하거나 잘못을 지적
+- 추상적이거나 뜬구름 잡는 조언
+- 이모지 사용
+- JSON 외의 텍스트 출력`;
+
+    // 통계 정보 텍스트
+    const periodLabel = period === '7days' ? '7일' : period === '30days' ? '30일' : period === '90days' ? '90일' : '전체 기간';
+
+    let statsText = `## 전체 통계 (${periodLabel} 기준)
+- 총 대화 세션: ${totalSessions}회
+
+### 주요 갈등 주제:
+${topTopics.length > 0 ? topTopics.map(t => `- ${t.topic}: ${t.count}회`).join('\n') : '- 데이터 없음'}
+
+### 주요 감정:
+${topEmotions.length > 0 ? topEmotions.map(e => `- ${e.emotion}: ${e.count}회`).join('\n') : '- 데이터 없음'}
+
+### 갈등 패턴:
+${conflictPatterns.length > 0 ? conflictPatterns.map(p => `- ${p.pattern}: ${p.count}회`).join('\n') : '- 데이터 없음'}`;
+
+    // 최근 세션 샘플 텍스트
+    let samplesText = '\n\n## 최근 대화 상세 내용:';
+    if (recentSummaries.length > 0) {
+      samplesText += recentSummaries
+        .map((s, i) => `
+### 세션 ${i + 1}:
+- 트리거 상황: ${s.trigger_situation || '없음'}
+- 요약: ${s.summary || '없음'}
+- 나의 감정: ${Array.isArray(s.my_emotions) ? s.my_emotions.join(', ') : s.my_emotions || '없음'}
+- 충족되지 못한 욕구: ${s.my_unmet_need || '없음'}
+- 갈등 패턴: ${s.conflict_pattern || '없음'}`)
+        .join('\n');
+    } else {
+      samplesText += '\n- 상세 데이터 없음';
+    }
+
+    const response = await this.sendMessage(
+      [{ role: 'user', content: `다음 상담 데이터를 분석하여 패턴 인사이트를 제공해주세요:\n\n${statsText}${samplesText}` }],
+      systemPrompt
+    );
+
+    try {
+      return JSON.parse(response);
+    } catch {
+      return {
+        title: '분석 결과',
+        patternAnalysis: response,
+        emotionalTrend: '',
+        keyInsight: '',
+        rootCausePattern: '',
+        practicalAdvice: [],
+        encouragement: '',
+      };
+    }
+  }
+
   async convertToNvc(message, sessionContext = null) {
     // 세션 컨텍스트가 있으면 프롬프트에 추가
     let contextSection = '';

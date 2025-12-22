@@ -39,8 +39,38 @@ router.get('/patterns', async (req, res) => {
 
     const { startDate, endDate } = getDateRange(period);
 
-    // 이전 기간 계산 (비교용)
-    const periodDays = period === '7days' ? 7 : period === '90days' ? 90 : 30;
+    // 디버그: period 값 확인
+    console.log('=== Pattern Analysis Debug ===');
+    console.log('Received period:', period);
+    console.log('Period type:', typeof period);
+
+    // 이전 기간 계산 (비교용) - 기간별로 다르게 설정
+    let periodDays;
+    let periodLabel;
+    switch (period) {
+      case '7days':
+        periodDays = 7;
+        periodLabel = '지난주';
+        break;
+      case '90days':
+        periodDays = 90;
+        periodLabel = '지난 분기';
+        break;
+      case 'all':
+        periodDays = 365; // 전체 기간은 작년과 비교
+        periodLabel = '작년';
+        break;
+      case '30days':
+      default:
+        periodDays = 30;
+        periodLabel = '지난달';
+        break;
+    }
+
+    // 디버그: periodLabel 값 확인
+    console.log('Calculated periodDays:', periodDays);
+    console.log('Calculated periodLabel:', periodLabel);
+
     const prevStartDate = new Date(startDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
     const prevEndDate = startDate;
 
@@ -166,15 +196,22 @@ router.get('/patterns', async (req, res) => {
       };
     }
 
-    // 트렌드 메시지 생성
+    // 트렌드 메시지 생성 (기간별 라벨 사용)
+    console.log('=== Trend Message Debug ===');
+    console.log('trend value:', trend);
+    console.log('periodLabel at this point:', periodLabel);
+
     let trendMessage = '';
     if (trend > 0) {
-      trendMessage = '지난달보다 더 자주 소통했어요';
+      trendMessage = `${periodLabel}보다 더 자주 소통했어요`;
     } else if (trend < 0) {
-      trendMessage = '지난달보다 대화가 줄었어요';
+      trendMessage = `${periodLabel}보다 대화가 줄었어요`;
     } else {
-      trendMessage = '지난달과 비슷한 소통량이에요';
+      trendMessage = `${periodLabel}과 비슷한 소통량이에요`;
     }
+
+    console.log('Final trendMessage:', trendMessage);
+    console.log('=== End Debug ===\n');
 
     res.json({
       period,
@@ -198,6 +235,7 @@ router.get('/patterns', async (req, res) => {
 });
 
 // GET /api/analysis/insight - AI 맞춤 인사이트 생성
+// 옵션 3: 통계 기반 + 최근 세션 샘플링 방식
 router.get('/insight', async (req, res) => {
   try {
     const userId = req.query.userId || req.user?.id;
@@ -209,8 +247,71 @@ router.get('/insight', async (req, res) => {
 
     const { startDate, endDate } = getDateRange(period);
 
-    // 최근 세션 요약들 가져오기
-    const summariesQuery = `
+    // 1. 전체 통계 정보 가져오기 (가벼운 쿼리들)
+    const statsQueries = await Promise.all([
+      // 총 세션 수
+      db.query(`
+        SELECT COUNT(*) as count
+        FROM sessions
+        WHERE user_id = $1 AND status = 'ended'
+          AND started_at >= $2 AND started_at < $3
+      `, [userId, startDate, endDate]),
+
+      // 주요 갈등 주제 Top 5
+      db.query(`
+        SELECT st.tag_name as topic, COUNT(*) as count
+        FROM session_tags st
+        JOIN sessions s ON st.session_id = s.id
+        WHERE s.user_id = $1 AND st.tag_type = 'topic'
+          AND s.status = 'ended'
+          AND s.started_at >= $2 AND s.started_at < $3
+        GROUP BY st.tag_name
+        ORDER BY count DESC
+        LIMIT 5
+      `, [userId, startDate, endDate]),
+
+      // 주요 감정 Top 5
+      db.query(`
+        SELECT st.tag_name as emotion, COUNT(*) as count
+        FROM session_tags st
+        JOIN sessions s ON st.session_id = s.id
+        WHERE s.user_id = $1 AND st.tag_type = 'my_emotion'
+          AND s.status = 'ended'
+          AND s.started_at >= $2 AND s.started_at < $3
+        GROUP BY st.tag_name
+        ORDER BY count DESC
+        LIMIT 5
+      `, [userId, startDate, endDate]),
+
+      // 갈등 패턴 분포
+      db.query(`
+        SELECT ss.conflict_pattern as pattern, COUNT(*) as count
+        FROM session_summaries ss
+        JOIN sessions s ON ss.session_id = s.id
+        WHERE s.user_id = $1 AND s.status = 'ended'
+          AND s.started_at >= $2 AND s.started_at < $3
+          AND ss.conflict_pattern IS NOT NULL
+          AND ss.conflict_pattern != ''
+        GROUP BY ss.conflict_pattern
+        ORDER BY count DESC
+        LIMIT 3
+      `, [userId, startDate, endDate]),
+    ]);
+
+    const totalSessions = parseInt(statsQueries[0].rows[0]?.count) || 0;
+    const topTopics = statsQueries[1].rows;
+    const topEmotions = statsQueries[2].rows;
+    const conflictPatterns = statsQueries[3].rows;
+
+    if (totalSessions === 0) {
+      return res.json({
+        insight: null,
+        message: '아직 분석할 대화가 충분하지 않아요. 더 많은 대화를 나눠보세요.',
+      });
+    }
+
+    // 2. 최근 5~7개 세션 요약만 상세히 가져오기 (토큰 절약)
+    const recentSummariesQuery = `
       SELECT
         ss.root_cause,
         ss.trigger_situation,
@@ -221,7 +322,8 @@ router.get('/insight', async (req, res) => {
         ss.partner_emotions,
         ss.partner_needs,
         ss.conflict_pattern,
-        ss.suggested_approach
+        ss.suggested_approach,
+        s.started_at
       FROM session_summaries ss
       JOIN sessions s ON ss.session_id = s.id
       WHERE s.user_id = $1
@@ -229,24 +331,29 @@ router.get('/insight', async (req, res) => {
         AND s.started_at >= $2
         AND s.started_at < $3
       ORDER BY s.started_at DESC
-      LIMIT 10
+      LIMIT 7
     `;
 
-    const summariesResult = await db.query(summariesQuery, [userId, startDate, endDate]);
+    const recentSummaries = await db.query(recentSummariesQuery, [userId, startDate, endDate]);
 
-    if (summariesResult.rows.length === 0) {
-      return res.json({
-        insight: null,
-        message: '아직 분석할 대화가 충분하지 않아요. 더 많은 대화를 나눠보세요.',
-      });
-    }
-
-    // AI에게 인사이트 생성 요청
-    const insight = await claudeService.generatePatternInsight(summariesResult.rows);
+    // 3. AI에게 통계 + 샘플 데이터 함께 전달
+    const insight = await claudeService.generatePatternInsightWithStats({
+      period,
+      totalSessions,
+      topTopics: topTopics.map(t => ({ topic: t.topic, count: parseInt(t.count) })),
+      topEmotions: topEmotions.map(e => ({ emotion: e.emotion, count: parseInt(e.count) })),
+      conflictPatterns: conflictPatterns.map(p => ({ pattern: p.pattern, count: parseInt(p.count) })),
+      recentSummaries: recentSummaries.rows,
+    });
 
     res.json({
       insight,
-      sessionCount: summariesResult.rows.length,
+      stats: {
+        totalSessions,
+        topicsAnalyzed: topTopics.length,
+        emotionsAnalyzed: topEmotions.length,
+        recentSessionsUsed: recentSummaries.rows.length,
+      },
     });
   } catch (error) {
     console.error('Analysis insight error:', error);
