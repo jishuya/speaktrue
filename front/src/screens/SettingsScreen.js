@@ -15,6 +15,7 @@ import profileMaleImage from '../assets/images/profile_male.png';
 import { Header, MenuItem, MenuGroup, ProfileEditModal } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
+import { useAuth } from '../store/AuthContext';
 
 // TODO: 실제 인증 구현 후 교체
 const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
@@ -33,6 +34,7 @@ const genderToEnglish = (gender) => {
 };
 
 export default function SettingsScreen({ navigation }) {
+  const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [profile, setProfile] = useState({
@@ -43,6 +45,9 @@ export default function SettingsScreen({ navigation }) {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // OAuth 사용자인지 확인 (oauth_provider가 있으면 OAuth 사용자)
+  const isOAuthUser = user?.oauthProvider != null;
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -86,13 +91,28 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
+  const handleChangePassword = async (currentPassword, newPassword) => {
+    const result = await api.changePassword(currentPassword, newPassword);
+    if (result.success) {
+      Alert.alert('성공', '비밀번호가 변경되었습니다.');
+    } else {
+      throw new Error(result.error || '비밀번호 변경에 실패했습니다.');
+    }
+  };
+
   const handleLogout = () => {
     Alert.alert(
       '로그아웃',
       '정말 로그아웃 하시겠습니까?',
       [
         { text: '취소', style: 'cancel' },
-        { text: '로그아웃', style: 'destructive', onPress: () => {} },
+        {
+          text: '로그아웃',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+          },
+        },
       ]
     );
   };
@@ -228,8 +248,10 @@ export default function SettingsScreen({ navigation }) {
         visible={profileModalVisible}
         onClose={() => setProfileModalVisible(false)}
         onSave={handleSaveProfile}
+        onChangePassword={handleChangePassword}
         initialData={profile}
         loading={saving}
+        isOAuthUser={isOAuthUser}
       />
     </SafeAreaView>
   );

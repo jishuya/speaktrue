@@ -89,13 +89,25 @@ router.post('/login', asyncHandler(async (req, res) => {
 
 // POST /api/auth/register - 회원가입
 router.post('/register', asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name, gender, partnerName } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
   }
 
-  const result = await authService.handleEmailRegister(email, password, name);
+  if (!name) {
+    return res.status(400).json({ error: '이름을 입력해주세요.' });
+  }
+
+  if (!gender || !['male', 'female'].includes(gender)) {
+    return res.status(400).json({ error: '성별을 선택해주세요.' });
+  }
+
+  if (!partnerName) {
+    return res.status(400).json({ error: '상대방 이름을 입력해주세요.' });
+  }
+
+  const result = await authService.handleEmailRegister(email, password, name, gender, partnerName);
 
   if (!result.success) {
     return res.status(400).json({ error: result.error });
@@ -140,6 +152,30 @@ router.post('/refresh', authenticate, asyncHandler(async (req, res) => {
   res.json({
     message: '토큰 갱신 성공',
     token: newToken,
+  });
+}));
+
+// POST /api/auth/change-password - 비밀번호 변경
+router.post('/change-password', authenticate, asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: '현재 비밀번호와 새 비밀번호를 입력해주세요.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: '새 비밀번호는 6자 이상이어야 합니다.' });
+  }
+
+  const result = await authService.handleChangePassword(req.user.id, currentPassword, newPassword);
+
+  if (!result.success) {
+    return res.status(400).json({ error: result.error });
+  }
+
+  res.json({
+    success: true,
+    message: result.message,
   });
 }));
 

@@ -6,6 +6,8 @@ const AuthContext = createContext(null);
 
 const AUTH_TOKEN_KEY = '@speaktrue_auth_token';
 const USER_DATA_KEY = '@speaktrue_user_data';
+const OAUTH_TOKEN_KEY = '@speaktrue_oauth_token';
+const OAUTH_PROVIDER_KEY = '@speaktrue_oauth_provider';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -52,10 +54,20 @@ export function AuthProvider({ children }) {
       }
 
       if (response.token && response.user) {
-        await Promise.all([
+        const storagePromises = [
           AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token),
           AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(response.user)),
-        ]);
+        ];
+
+        // OAuth 로그인인 경우 OAuth 토큰과 provider 저장
+        if (provider !== 'email' && accessToken) {
+          storagePromises.push(
+            AsyncStorage.setItem(OAUTH_TOKEN_KEY, accessToken),
+            AsyncStorage.setItem(OAUTH_PROVIDER_KEY, provider)
+          );
+        }
+
+        await Promise.all(storagePromises);
 
         setToken(response.token);
         setUser(response.user);

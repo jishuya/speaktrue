@@ -224,7 +224,7 @@ class AuthService {
   }
 
   // 이메일 회원가입 처리
-  async handleEmailRegister(email, password, name = null) {
+  async handleEmailRegister(email, password, name, gender = null, partnerName = null) {
     try {
       // 이메일 중복 확인
       const existingUser = await db.query(
@@ -241,11 +241,14 @@ class AuthService {
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
       // 새 사용자 생성
+      // type: 생물학적 성별 (male/female)
+      // gender: 역할 (husband/wife) - type에서 자동 매핑
+      const genderRole = gender === 'male' ? 'husband' : 'wife';
       const newUser = await db.query(
-        `INSERT INTO users (email, password_hash, name)
-         VALUES ($1, $2, $3)
+        `INSERT INTO users (email, password_hash, name, type, gender, partner_name)
+         VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
-        [email, passwordHash, name || email.split('@')[0]]
+        [email, passwordHash, name || email.split('@')[0], gender, genderRole, partnerName]
       );
 
       const user = newUser.rows[0];
@@ -269,6 +272,44 @@ class AuthService {
     } catch (error) {
       console.error('Email registration failed:', error.message);
       return { success: false, error: '회원가입 중 오류가 발생했습니다.' };
+    }
+  }
+
+  // 비밀번호 변경 처리
+  async handleChangePassword(userId, currentPassword, newPassword) {
+    try {
+      // 사용자 조회
+      const result = await db.query(
+        'SELECT * FROM users WHERE id = $1 AND oauth_provider IS NULL',
+        [userId]
+      );
+
+      if (result.rows.length === 0) {
+        return { success: false, error: '사용자를 찾을 수 없거나 소셜 로그인 사용자입니다.' };
+      }
+
+      const user = result.rows[0];
+
+      // 현재 비밀번호 검증
+      const isValidPassword = await bcrypt.compare(currentPassword, user.password_hash);
+      if (!isValidPassword) {
+        return { success: false, error: '현재 비밀번호가 일치하지 않습니다.' };
+      }
+
+      // 새 비밀번호 해시
+      const saltRounds = 10;
+      const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+      // 비밀번호 업데이트
+      await db.query(
+        'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+        [newPasswordHash, userId]
+      );
+
+      return { success: true, message: '비밀번호가 변경되었습니다.' };
+    } catch (error) {
+      console.error('Password change failed:', error.message);
+      return { success: false, error: '비밀번호 변경 중 오류가 발생했습니다.' };
     }
   }
 }

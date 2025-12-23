@@ -229,6 +229,14 @@ class ApiService {
       method: 'POST',
     });
   }
+
+  // Auth - 비밀번호 변경
+  async changePassword(currentPassword, newPassword) {
+    return this.request('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
 }
 
 export default new ApiService();

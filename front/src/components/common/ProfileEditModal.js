@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,13 +17,25 @@ export default function ProfileEditModal({
   visible,
   onClose,
   onSave,
+  onChangePassword,
   initialData = {},
   loading = false,
+  isOAuthUser = false,
 }) {
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editGender, setEditGender] = useState('');
   const [editPartnerName, setEditPartnerName] = useState('');
+
+  // 비밀번호 변경 관련 상태
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -31,6 +43,12 @@ export default function ProfileEditModal({
       setEditEmail(initialData.email || '');
       setEditGender(initialData.gender || '');
       setEditPartnerName(initialData.partnerName || '');
+      // 비밀번호 관련 초기화
+      setShowPasswordSection(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordError('');
     }
   }, [visible, initialData]);
 
@@ -44,6 +62,40 @@ export default function ProfileEditModal({
       gender: editGender,
       partnerName: editPartnerName.trim(),
     });
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+
+    if (!currentPassword) {
+      setPasswordError('현재 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (!newPassword) {
+      setPasswordError('새 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError('비밀번호는 6자 이상이어야 합니다.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('새 비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      await onChangePassword(currentPassword, newPassword);
+      setShowPasswordSection(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setPasswordError(error.message || '비밀번호 변경에 실패했습니다.');
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -146,6 +198,106 @@ export default function ProfileEditModal({
                 placeholderTextColor={COLORS.textMuted}
               />
             </View>
+
+            {/* 비밀번호 변경 섹션 - OAuth 사용자는 표시 안함 */}
+            {!isOAuthUser && (
+              <View style={styles.passwordSection}>
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowPasswordSection(!showPasswordSection)}
+                >
+                  <Text style={styles.passwordToggleText}>비밀번호 변경</Text>
+                  <Icon
+                    name={showPasswordSection ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                </TouchableOpacity>
+
+                {showPasswordSection && (
+                  <View style={styles.passwordInputs}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>현재 비밀번호</Text>
+                      <View style={styles.passwordInputWrapper}>
+                        <TextInput
+                          style={styles.passwordInput}
+                          value={currentPassword}
+                          onChangeText={setCurrentPassword}
+                          placeholder="현재 비밀번호"
+                          placeholderTextColor={COLORS.textMuted}
+                          secureTextEntry={!showCurrentPassword}
+                        />
+                        <TouchableOpacity
+                          onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                          style={styles.eyeButton}
+                        >
+                          <Icon
+                            name={showCurrentPassword ? 'eye-off' : 'eye'}
+                            size={20}
+                            color={COLORS.textMuted}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>새 비밀번호</Text>
+                      <View style={styles.passwordInputWrapper}>
+                        <TextInput
+                          style={styles.passwordInput}
+                          value={newPassword}
+                          onChangeText={setNewPassword}
+                          placeholder="새 비밀번호 (6자 이상)"
+                          placeholderTextColor={COLORS.textMuted}
+                          secureTextEntry={!showNewPassword}
+                        />
+                        <TouchableOpacity
+                          onPress={() => setShowNewPassword(!showNewPassword)}
+                          style={styles.eyeButton}
+                        >
+                          <Icon
+                            name={showNewPassword ? 'eye-off' : 'eye'}
+                            size={20}
+                            color={COLORS.textMuted}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>새 비밀번호 확인</Text>
+                      <TextInput
+                        style={styles.textInput}
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        placeholder="새 비밀번호 확인"
+                        placeholderTextColor={COLORS.textMuted}
+                        secureTextEntry={true}
+                      />
+                    </View>
+
+                    {passwordError ? (
+                      <Text style={styles.errorText}>{passwordError}</Text>
+                    ) : null}
+
+                    <TouchableOpacity
+                      style={[
+                        styles.changePasswordButton,
+                        passwordLoading && styles.changePasswordButtonDisabled,
+                      ]}
+                      onPress={handleChangePassword}
+                      disabled={passwordLoading}
+                    >
+                      {passwordLoading ? (
+                        <ActivityIndicator size="small" color={COLORS.surface} />
+                      ) : (
+                        <Text style={styles.changePasswordButtonText}>비밀번호 변경</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
 
           <View style={styles.modalButtons}>
@@ -285,6 +437,68 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.surface,
+  },
+
+  // 비밀번호 변경 섹션
+  passwordSection: {
+    marginTop: SPACING.sm,
+    paddingTop: SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderLight,
+  },
+  passwordToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SPACING.xs,
+  },
+  passwordToggleText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.primary,
+  },
+  passwordInputs: {
+    marginTop: SPACING.md,
+  },
+  passwordInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.backgroundLight,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    paddingRight: SPACING.xs,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingLeft: SPACING.md,
+    paddingRight: 0,
+    paddingVertical: SPACING.sm + 2,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+  },
+  eyeButton: {
+    padding: SPACING.sm,
+  },
+  errorText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.error,
+    marginBottom: SPACING.sm,
+  },
+  changePasswordButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.sm + 2,
+    alignItems: 'center',
+    marginTop: SPACING.xs,
+  },
+  changePasswordButtonDisabled: {
+    opacity: 0.6,
+  },
+  changePasswordButtonText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.surface,
   },
 });

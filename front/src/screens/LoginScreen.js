@@ -12,10 +12,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Logo, Icon } from '../components/ui';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Logo, Icon, Modal } from '../components/ui';
+import { COLORS, SPACING, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/auth';
+import api from '../services/api';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
@@ -23,7 +24,17 @@ export default function LoginScreen({ navigation }) {
   const [loadingProvider, setLoadingProvider] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+
+  // 회원가입 모달 상태
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
+  const [registerName, setRegisterName] = useState('');
+  const [registerGender, setRegisterGender] = useState(''); // 'male' or 'female'
+  const [registerPartnerName, setRegisterPartnerName] = useState('');
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Google OAuth hook
   const { response: googleResponse, promptAsync: googlePromptAsync } = authService.useGoogleAuth();
@@ -143,6 +154,87 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // 회원가입 모달 초기화
+  const resetRegisterForm = () => {
+    setRegisterEmail('');
+    setRegisterPassword('');
+    setRegisterPasswordConfirm('');
+    setRegisterName('');
+    setRegisterGender('');
+    setRegisterPartnerName('');
+    setShowRegisterPassword(false);
+  };
+
+  // 회원가입 처리
+  const handleRegister = async () => {
+    if (!registerName.trim()) {
+      Alert.alert('알림', '이름을 입력해주세요.');
+      return;
+    }
+    if (!registerGender) {
+      Alert.alert('알림', '성별을 선택해주세요.');
+      return;
+    }
+    if (!registerPartnerName.trim()) {
+      Alert.alert('알림', '상대방 이름을 입력해주세요.');
+      return;
+    }
+    if (!registerEmail.trim()) {
+      Alert.alert('알림', '이메일을 입력해주세요.');
+      return;
+    }
+    if (!registerPassword.trim()) {
+      Alert.alert('알림', '비밀번호를 입력해주세요.');
+      return;
+    }
+    if (registerPassword.length < 6) {
+      Alert.alert('알림', '비밀번호는 6자 이상이어야 합니다.');
+      return;
+    }
+    if (registerPassword !== registerPasswordConfirm) {
+      Alert.alert('알림', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setIsRegistering(true);
+    try {
+      const response = await api.request('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: registerEmail,
+          password: registerPassword,
+          name: registerName,
+          gender: registerGender,
+          partnerName: registerPartnerName,
+        }),
+      });
+
+      if (response.token && response.user) {
+        Alert.alert('성공', '회원가입이 완료되었습니다.', [
+          {
+            text: '확인',
+            onPress: async () => {
+              setShowRegisterModal(false);
+              resetRegisterForm();
+              // 자동 로그인
+              const result = await login('email', null, {
+                email: registerEmail,
+                password: registerPassword
+              });
+              if (result.success) {
+                navigation.replace('MainTabs');
+              }
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert('회원가입 실패', error.message || '회원가입 중 오류가 발생했습니다.');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
   const renderSocialButton = (provider, onPress, style, iconContent) => {
     const isCurrentLoading = loadingProvider === provider;
     const getLoaderColor = () => {
@@ -235,18 +327,8 @@ export default function LoginScreen({ navigation }) {
                     placeholderTextColor={COLORS.textMuted}
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
+                    secureTextEntry={true}
                   />
-                  <TouchableOpacity
-                    style={styles.eyeButton}
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Icon
-                      name={showPassword ? 'visibility' : 'visibility-off'}
-                      size={18}
-                      color={COLORS.textMuted}
-                    />
-                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -307,14 +389,175 @@ export default function LoginScreen({ navigation }) {
               로그인 시 <Text style={styles.linkText}>이용약관</Text> 및{'\n'}
               <Text style={styles.linkText}>개인정보처리방침</Text>에 동의하게 됩니다.
             </Text>
-          </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
+            {/* Register Link */}
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>아직 계정이 없으신가요?</Text>
+              <TouchableOpacity onPress={() => setShowRegisterModal(true)}>
+                <Text style={styles.registerLink}>회원가입</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* 회원가입 모달 */}
+      <Modal
+        visible={showRegisterModal}
+        onClose={() => {
+          setShowRegisterModal(false);
+          resetRegisterForm();
+        }}
+        title="회원가입"
+      >
+        <View style={styles.modalContent}>
+          {/* 이름 입력 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>이름 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={styles.modalInputWrapper}>
+              <Icon name="person" size={18} color={COLORS.textMuted} />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="이름을 입력해주세요"
+                placeholderTextColor={COLORS.textMuted}
+                value={registerName}
+                onChangeText={setRegisterName}
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+
+          {/* 성별 선택 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>성별 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  registerGender === 'male' && styles.genderButtonSelected,
+                ]}
+                onPress={() => setRegisterGender('male')}
+              >
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    registerGender === 'male' && styles.genderButtonTextSelected,
+                  ]}
+                >
+                  남
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  registerGender === 'female' && styles.genderButtonSelected,
+                ]}
+                onPress={() => setRegisterGender('female')}
+              >
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    registerGender === 'female' && styles.genderButtonTextSelected,
+                  ]}
+                >
+                  여
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 상대방 이름 입력 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>상대방 이름 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={styles.modalInputWrapper}>
+              <Icon name="favorite" size={18} color={COLORS.textMuted} />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="배우자/파트너의 이름을 입력해주세요"
+                placeholderTextColor={COLORS.textMuted}
+                value={registerPartnerName}
+                onChangeText={setRegisterPartnerName}
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+
+          {/* 이메일 입력 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>이메일</Text>
+            <View style={styles.modalInputWrapper}>
+              <Icon name="mail" size={18} color={COLORS.textMuted} />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="이메일을 입력해주세요"
+                placeholderTextColor={COLORS.textMuted}
+                value={registerEmail}
+                onChangeText={setRegisterEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+          </View>
+
+          {/* 비밀번호 입력 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>비밀번호</Text>
+            <View style={styles.modalInputWrapper}>
+              <Icon name="lock" size={18} color={COLORS.textMuted} />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="비밀번호 (6자 이상)"
+                placeholderTextColor={COLORS.textMuted}
+                value={registerPassword}
+                onChangeText={setRegisterPassword}
+                secureTextEntry={!showRegisterPassword}
+              />
+              <TouchableOpacity onPress={() => setShowRegisterPassword(!showRegisterPassword)}>
+                <Icon
+                  name={showRegisterPassword ? 'visibility' : 'visibility-off'}
+                  size={18}
+                  color={COLORS.textMuted}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 비밀번호 확인 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>비밀번호 확인</Text>
+            <View style={styles.modalInputWrapper}>
+              <Icon name="lock" size={18} color={COLORS.textMuted} />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="비밀번호를 다시 입력해주세요"
+                placeholderTextColor={COLORS.textMuted}
+                value={registerPasswordConfirm}
+                onChangeText={setRegisterPasswordConfirm}
+                secureTextEntry={!showRegisterPassword}
+              />
+            </View>
+          </View>
+
+          {/* 회원가입 버튼 */}
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={handleRegister}
+            disabled={isRegistering}
+          >
+            {isRegistering ? (
+              <ActivityIndicator size="small" color={COLORS.surface} />
+            ) : (
+              <Text style={styles.modalButtonText}>회원가입</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -454,6 +697,8 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
     paddingVertical: SPACING.sm,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
   },
   eyeButton: {
     padding: SPACING.xs,
@@ -562,7 +807,7 @@ const styles = StyleSheet.create({
 
   // Footer
   footer: {
-    paddingTop: SPACING.xs,
+    marginTop: SPACING.xl,
     paddingBottom: SPACING.sm,
     alignItems: 'center',
   },
@@ -570,5 +815,134 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILY.base,
     fontSize: 11,
     color: COLORS.textMuted,
+  },
+
+  // Register Link
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: SPACING.lg,
+  },
+  registerText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  registerLink: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.semiBold,
+    marginLeft: SPACING.xs,
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  modalContent: {
+    backgroundColor: COLORS.surface,
+    borderRadius: SPACING.lg,
+    padding: SPACING.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  modalTitle: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 18,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textPrimary,
+  },
+  modalCloseButton: {
+    padding: SPACING.xs,
+  },
+  modalCloseText: {
+    fontSize: 20,
+    color: COLORS.textMuted,
+  },
+  modalInputGroup: {
+    marginBottom: SPACING.md,
+  },
+  modalInputLabel: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+  },
+  modalInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+    borderRadius: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingLeft: SPACING.md,
+    paddingRight: SPACING.xs,
+  },
+  modalInput: {
+    flex: 1,
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+    paddingVertical: SPACING.sm,
+  },
+  modalButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: SPACING.sm,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+    marginTop: SPACING.md,
+  },
+  modalButtonDisabled: {
+    backgroundColor: COLORS.textMuted,
+  },
+  modalButtonText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 15,
+    fontWeight: FONT_WEIGHT.semiBold,
+    color: COLORS.surface,
+  },
+  requiredMark: {
+    color: COLORS.error || '#E53935',
+    fontWeight: FONT_WEIGHT.bold,
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  genderButton: {
+    flex: 1,
+    paddingVertical: SPACING.sm,
+    borderRadius: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.background,
+    alignItems: 'center',
+  },
+  genderButtonSelected: {
+    borderColor: COLORS.primary,
+    backgroundColor: `${COLORS.primary}15`,
+  },
+  genderButtonText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 14,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textSecondary,
+  },
+  genderButtonTextSelected: {
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.bold,
   },
 });
