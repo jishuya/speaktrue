@@ -16,6 +16,8 @@ const ICON_MAP = {
   'more-vert': { set: 'mat', iconName: 'more-vert' },
   'expand-more': { set: 'mat', iconName: 'expand-more' },
   'expand-less': { set: 'mat', iconName: 'expand-less' },
+  'chevron-up': { set: 'ion', iconName: 'chevron-up' },
+  'chevron-down': { set: 'ion', iconName: 'chevron-down' },
 
   // Actions
   'edit': { set: 'mat', iconName: 'edit' },

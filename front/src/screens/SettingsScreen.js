@@ -31,9 +31,21 @@ const genderToEnglish = (gender) => {
   return gender || '';
 };
 
+// 역할 변환 함수
+const typeToKorean = (type) => {
+  if (type === 'husband') return '남편';
+  if (type === 'wife') return '아내';
+  return type || '';
+};
+
+const typeToEnglish = (type) => {
+  if (type === '남편') return 'husband';
+  if (type === '아내') return 'wife';
+  return type || '';
+};
+
 export default function SettingsScreen({ navigation }) {
   const { user, logout } = useAuth();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [comingSoonModalVisible, setComingSoonModalVisible] = useState(false);
@@ -41,6 +53,7 @@ export default function SettingsScreen({ navigation }) {
     name: '',
     email: '',
     gender: '',
+    type: '',
     partnerName: '',
   });
   const [loading, setLoading] = useState(true);
@@ -61,6 +74,7 @@ export default function SettingsScreen({ navigation }) {
         name: data.name || '',
         email: data.email || '',
         gender: genderToKorean(data.gender),
+        type: typeToKorean(data.type),
         partnerName: data.partnerName || '',
       });
     } catch {
@@ -80,11 +94,13 @@ export default function SettingsScreen({ navigation }) {
       const data = await api.updateProfile(user.id, {
         ...updatedProfile,
         gender: genderToEnglish(updatedProfile.gender),
+        type: typeToEnglish(updatedProfile.type),
       });
       setProfile({
         name: data.name || '',
         email: data.email || '',
         gender: genderToKorean(data.gender),
+        type: typeToKorean(data.type),
         partnerName: data.partnerName || '',
       });
       setProfileModalVisible(false);
@@ -176,9 +192,7 @@ export default function SettingsScreen({ navigation }) {
             iconColor="#F57C00"
             title="알림 설정"
             subtitle="파트너 메시지 및 코칭 알림"
-            showSwitch
-            switchValue={notificationsEnabled}
-            onSwitchChange={setNotificationsEnabled}
+            onPress={() => setComingSoonModalVisible(true)}
           />
           <MenuItem
             icon="language"

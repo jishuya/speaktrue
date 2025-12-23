@@ -9,6 +9,7 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Icon } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
@@ -25,6 +26,7 @@ export default function ProfileEditModal({
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editGender, setEditGender] = useState('');
+  const [editType, setEditType] = useState('');
   const [editPartnerName, setEditPartnerName] = useState('');
 
   // 비밀번호 변경 관련 상태
@@ -42,6 +44,7 @@ export default function ProfileEditModal({
       setEditName(initialData.name || '');
       setEditEmail(initialData.email || '');
       setEditGender(initialData.gender || '');
+      setEditType(initialData.type || '');
       setEditPartnerName(initialData.partnerName || '');
       // 비밀번호 관련 초기화
       setShowPasswordSection(false);
@@ -60,6 +63,7 @@ export default function ProfileEditModal({
       name: editName.trim(),
       email: editEmail.trim(),
       gender: editGender,
+      type: editType,
       partnerName: editPartnerName.trim(),
     });
   };
@@ -125,7 +129,12 @@ export default function ProfileEditModal({
             </TouchableOpacity>
           </View>
 
-          <View style={styles.modalContent}>
+          <ScrollView
+            style={styles.modalScrollView}
+            contentContainerStyle={styles.modalContent}
+            showsVerticalScrollIndicator={true}
+            keyboardShouldPersistTaps="handled"
+          >
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>이름</Text>
               <TextInput
@@ -183,6 +192,44 @@ export default function ProfileEditModal({
                     ]}
                   >
                     여
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>역할</Text>
+              <View style={styles.genderSelector}>
+                <TouchableOpacity
+                  style={[
+                    styles.genderOption,
+                    editType === '남편' && styles.genderOptionSelected,
+                  ]}
+                  onPress={() => setEditType('남편')}
+                >
+                  <Text
+                    style={[
+                      styles.genderOptionText,
+                      editType === '남편' && styles.genderOptionTextSelected,
+                    ]}
+                  >
+                    남편
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.genderOption,
+                    editType === '아내' && styles.genderOptionSelected,
+                  ]}
+                  onPress={() => setEditType('아내')}
+                >
+                  <Text
+                    style={[
+                      styles.genderOptionText,
+                      editType === '아내' && styles.genderOptionTextSelected,
+                    ]}
+                  >
+                    아내
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -298,7 +345,7 @@ export default function ProfileEditModal({
                 )}
               </View>
             )}
-          </View>
+          </ScrollView>
 
           <View style={styles.modalButtons}>
             <TouchableOpacity
@@ -338,10 +385,14 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '85%',
+    maxHeight: '80%',
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.lg,
     overflow: 'hidden',
+  },
+  modalScrollView: {
+    flexGrow: 0,
   },
   modalHeader: {
     flexDirection: 'row',

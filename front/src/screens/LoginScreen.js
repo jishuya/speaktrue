@@ -102,10 +102,10 @@ export default function LoginScreen({ navigation }) {
       if (result.success) {
         navigation.replace('MainTabs');
       } else {
-        Alert.alert('로그인 실패', result.error || '로그인에 실패했습니다.');
+        showAlert('로그인 실패', result.error || '로그인에 실패했습니다.', 'error');
       }
     } catch (error) {
-      Alert.alert('오류', '로그인 중 오류가 발생했습니다.');
+      showAlert('오류', '로그인 중 오류가 발생했습니다.', 'error');
     } finally {
       setIsLoading(false);
       setLoadingProvider(null);
@@ -119,7 +119,7 @@ export default function LoginScreen({ navigation }) {
     try {
       await googlePromptAsync();
     } catch (error) {
-      Alert.alert('오류', '구글 로그인 중 오류가 발생했습니다.');
+      showAlert('오류', '구글 로그인 중 오류가 발생했습니다.', 'error');
       setIsLoading(false);
       setLoadingProvider(null);
     }
@@ -134,12 +134,12 @@ export default function LoginScreen({ navigation }) {
       if (result.success) {
         await handleLoginWithToken('kakao', result.accessToken);
       } else {
-        Alert.alert('로그인 취소', '카카오 로그인이 취소되었습니다.');
+        showAlert('로그인 취소', '카카오 로그인이 취소되었습니다.', 'warning');
         setIsLoading(false);
         setLoadingProvider(null);
       }
     } catch (error) {
-      Alert.alert('오류', '카카오 로그인 중 오류가 발생했습니다.');
+      showAlert('오류', '카카오 로그인 중 오류가 발생했습니다.', 'error');
       setIsLoading(false);
       setLoadingProvider(null);
     }
@@ -154,12 +154,12 @@ export default function LoginScreen({ navigation }) {
       if (result.success) {
         await handleLoginWithToken('naver', result.accessToken);
       } else {
-        Alert.alert('로그인 취소', '네이버 로그인이 취소되었습니다.');
+        showAlert('로그인 취소', '네이버 로그인이 취소되었습니다.', 'warning');
         setIsLoading(false);
         setLoadingProvider(null);
       }
     } catch (error) {
-      Alert.alert('오류', '네이버 로그인 중 오류가 발생했습니다.');
+      showAlert('오류', '네이버 로그인 중 오류가 발생했습니다.', 'error');
       setIsLoading(false);
       setLoadingProvider(null);
     }
@@ -168,11 +168,11 @@ export default function LoginScreen({ navigation }) {
   // 일반 로그인
   const handleEmailLogin = async () => {
     if (!email.trim()) {
-      Alert.alert('알림', '이메일을 입력해주세요.');
+      showAlert('알림', '이메일을 입력해주세요.', 'warning');
       return;
     }
     if (!password.trim()) {
-      Alert.alert('알림', '비밀번호를 입력해주세요.');
+      showAlert('알림', '비밀번호를 입력해주세요.', 'warning');
       return;
     }
 
@@ -183,10 +183,10 @@ export default function LoginScreen({ navigation }) {
       if (result.success) {
         navigation.replace('MainTabs');
       } else {
-        Alert.alert('로그인 실패', result.error || '이메일 또는 비밀번호를 확인해주세요.');
+        showAlert('로그인 실패', result.error || '이메일 또는 비밀번호를 확인해주세요.', 'error');
       }
     } catch (error) {
-      Alert.alert('오류', '로그인 중 오류가 발생했습니다.');
+      showAlert('오류', '로그인 중 오류가 발생했습니다.', 'error');
     } finally {
       setIsLoading(false);
       setLoadingProvider(null);
@@ -218,7 +218,7 @@ export default function LoginScreen({ navigation }) {
   // 비밀번호 재설정 이메일 발송
   const handleSendResetEmail = async () => {
     if (!forgotEmail.trim()) {
-      Alert.alert('알림', '이메일을 입력해주세요.');
+      showAlert('알림', '이메일을 입력해주세요.', 'warning');
       return;
     }
 
@@ -228,10 +228,11 @@ export default function LoginScreen({ navigation }) {
         method: 'POST',
         body: JSON.stringify({ email: forgotEmail }),
       });
-      Alert.alert('성공', '인증 코드가 이메일로 발송되었습니다.\n15분 내에 입력해주세요.');
-      setForgotPasswordStep(2);
+      showAlert('성공', '인증 코드가 이메일로 발송되었습니다.\n15분 내에 입력해주세요.', 'success', () => {
+        setForgotPasswordStep(2);
+      });
     } catch (error) {
-      Alert.alert('오류', error.message || '이메일 발송에 실패했습니다.');
+      showAlert('오류', error.message || '이메일 발송에 실패했습니다.', 'error');
     } finally {
       setIsSendingResetEmail(false);
     }
@@ -240,19 +241,19 @@ export default function LoginScreen({ navigation }) {
   // 비밀번호 재설정
   const handleResetPassword = async () => {
     if (!resetToken.trim()) {
-      Alert.alert('알림', '인증 코드를 입력해주세요.');
+      showAlert('알림', '인증 코드를 입력해주세요.', 'warning');
       return;
     }
     if (!newPassword.trim()) {
-      Alert.alert('알림', '새 비밀번호를 입력해주세요.');
+      showAlert('알림', '새 비밀번호를 입력해주세요.', 'warning');
       return;
     }
     if (newPassword.length < 6) {
-      Alert.alert('알림', '비밀번호는 6자 이상이어야 합니다.');
+      showAlert('알림', '비밀번호는 6자 이상이어야 합니다.', 'warning');
       return;
     }
     if (newPassword !== newPasswordConfirm) {
-      Alert.alert('알림', '비밀번호가 일치하지 않습니다.');
+      showAlert('알림', '비밀번호가 일치하지 않습니다.', 'warning');
       return;
     }
 
@@ -266,17 +267,12 @@ export default function LoginScreen({ navigation }) {
           newPassword: newPassword,
         }),
       });
-      Alert.alert('성공', '비밀번호가 재설정되었습니다.\n새 비밀번호로 로그인해주세요.', [
-        {
-          text: '확인',
-          onPress: () => {
-            setShowForgotPasswordModal(false);
-            resetForgotPasswordForm();
-          },
-        },
-      ]);
+      showAlert('성공', '비밀번호가 재설정되었습니다.\n새 비밀번호로 로그인해주세요.', 'success', () => {
+        setShowForgotPasswordModal(false);
+        resetForgotPasswordForm();
+      });
     } catch (error) {
-      Alert.alert('오류', error.message || '비밀번호 재설정에 실패했습니다.');
+      showAlert('오류', error.message || '비밀번호 재설정에 실패했습니다.', 'error');
     } finally {
       setIsResettingPassword(false);
     }
@@ -306,39 +302,39 @@ export default function LoginScreen({ navigation }) {
   // 회원가입 처리
   const handleRegister = async () => {
     if (!registerName.trim()) {
-      Alert.alert('알림', '이름을 입력해주세요.');
+      showAlert('알림', '이름을 입력해주세요.', 'warning');
       return;
     }
     if (!registerGender) {
-      Alert.alert('알림', '성별을 선택해주세요.');
+      showAlert('알림', '성별을 선택해주세요.', 'warning');
       return;
     }
     if (!registerType) {
-      Alert.alert('알림', '역할을 선택해주세요.');
+      showAlert('알림', '역할을 선택해주세요.', 'warning');
       return;
     }
     if (!registerPartnerName.trim()) {
-      Alert.alert('알림', '상대방 이름을 입력해주세요.');
+      showAlert('알림', '상대방 이름을 입력해주세요.', 'warning');
       return;
     }
     if (!registerEmail.trim()) {
-      Alert.alert('알림', '이메일을 입력해주세요.');
+      showAlert('알림', '이메일을 입력해주세요.', 'warning');
       return;
     }
     if (!isValidEmail(registerEmail)) {
-      Alert.alert('알림', '올바른 이메일 형식을 입력해주세요.');
+      showAlert('알림', '올바른 이메일 형식을 입력해주세요.', 'warning');
       return;
     }
     if (!registerPassword.trim()) {
-      Alert.alert('알림', '비밀번호를 입력해주세요.');
+      showAlert('알림', '비밀번호를 입력해주세요.', 'warning');
       return;
     }
     if (registerPassword.length < 6) {
-      Alert.alert('알림', '비밀번호는 6자 이상이어야 합니다.');
+      showAlert('알림', '비밀번호는 6자 이상이어야 합니다.', 'warning');
       return;
     }
     if (registerPassword !== registerPasswordConfirm) {
-      Alert.alert('알림', '비밀번호가 일치하지 않습니다.');
+      showAlert('알림', '비밀번호가 일치하지 않습니다.', 'warning');
       return;
     }
 

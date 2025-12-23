@@ -13,7 +13,7 @@ router.get('/profile', async (req, res) => {
     }
 
     const query = `
-      SELECT id, name, email, gender, partner_name, created_at, updated_at
+      SELECT id, name, email, gender, type, partner_name, created_at, updated_at
       FROM users
       WHERE id = $1
     `;
@@ -30,6 +30,7 @@ router.get('/profile', async (req, res) => {
       name: user.name,
       email: user.email,
       gender: user.gender,
+      type: user.type,
       partnerName: user.partner_name,
       createdAt: user.created_at,
       updatedAt: user.updated_at,
@@ -50,7 +51,7 @@ router.patch('/profile', async (req, res) => {
       return res.status(400).json({ error: 'userId가 필요합니다' });
     }
 
-    const { name, email, gender, partnerName } = req.body;
+    const { name, email, gender, type, partnerName } = req.body;
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: '이름은 필수입니다' });
@@ -58,15 +59,16 @@ router.patch('/profile', async (req, res) => {
 
     const query = `
       UPDATE users
-      SET name = $1, email = $2, gender = $3, partner_name = $4, updated_at = NOW()
-      WHERE id = $5
-      RETURNING id, name, email, gender, partner_name, created_at, updated_at
+      SET name = $1, email = $2, gender = $3, type = $4, partner_name = $5, updated_at = NOW()
+      WHERE id = $6
+      RETURNING id, name, email, gender, type, partner_name, created_at, updated_at
     `;
 
     const result = await db.query(query, [
       name.trim(),
       email?.trim() || null,
       gender || null,
+      type || null,
       partnerName?.trim() || null,
       userId,
     ]);
@@ -81,6 +83,7 @@ router.patch('/profile', async (req, res) => {
       name: user.name,
       email: user.email,
       gender: user.gender,
+      type: user.type,
       partnerName: user.partner_name,
       createdAt: user.created_at,
       updatedAt: user.updated_at,

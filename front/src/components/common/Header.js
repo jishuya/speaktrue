@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Icon, Logo } from '../ui';
 import { COLORS, UI_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
+import { useAuth } from '../../store/AuthContext';
 
-const PROFILE_IMAGE = require('../../assets/images/profile_female.png');
+const PROFILE_FEMALE = require('../../assets/images/profile_female.png');
+const PROFILE_MALE = require('../../assets/images/profile_male.png');
 
 export default function Header({
   title,
@@ -65,6 +67,9 @@ export default function Header({
     );
   };
 
+  const { user } = useAuth();
+  const profileImage = user?.gender === 'male' ? PROFILE_MALE : PROFILE_FEMALE;
+
   const renderRightSection = () => (
     <View style={styles.rightSection}>
       {rightIcon && (
@@ -80,7 +85,7 @@ export default function Header({
       )}
       {showProfile && (
         <TouchableOpacity style={styles.profileButton} onPress={onProfilePress}>
-          <Image source={PROFILE_IMAGE} style={styles.profileImage} />
+          <Image source={profileImage} style={styles.profileImage} />
         </TouchableOpacity>
       )}
     </View>

@@ -28,10 +28,29 @@ export function AuthProvider({ children }) {
       ]);
 
       if (storedToken && storedUser) {
+        const parsedUser = JSON.parse(storedUser);
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        setUser(parsedUser);
         setIsAuthenticated(true);
         api.setAuthToken(storedToken);
+
+        // 서버에서 최신 사용자 정보 가져오기 (gender, type 등)
+        try {
+          const profileData = await api.getProfile(parsedUser.id);
+          if (profileData) {
+            const updatedUser = {
+              ...parsedUser,
+              gender: profileData.gender,
+              type: profileData.type,
+              name: profileData.name,
+              partnerName: profileData.partnerName,
+            };
+            setUser(updatedUser);
+            await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(updatedUser));
+          }
+        } catch (profileError) {
+          console.error('Failed to fetch latest profile:', profileError);
+        }
       }
     } catch (error) {
       console.error('Failed to load stored auth:', error);
