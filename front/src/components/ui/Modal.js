@@ -183,7 +183,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderLight,
   },
@@ -197,7 +198,8 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   content: {
-    padding: SPACING.lg,
+    padding: SPACING.md,
+    paddingTop: SPACING.sm,
   },
 
   // Alert & Confirm

@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import profileFemaleImage from '../assets/images/profile_female.png';
 import profileMaleImage from '../assets/images/profile_male.png';
 import { Header, MenuItem, MenuGroup, ProfileEditModal } from '../components/common';
+import { ConfirmModal, AlertModal } from '../components/ui/Modal';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
 import { useAuth } from '../store/AuthContext';
@@ -37,6 +38,8 @@ export default function SettingsScreen({ navigation }) {
   const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [comingSoonModalVisible, setComingSoonModalVisible] = useState(false);
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -101,20 +104,18 @@ export default function SettingsScreen({ navigation }) {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      '로그아웃',
-      '정말 로그아웃 하시겠습니까?',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '로그아웃',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-          },
-        },
-      ]
-    );
+    console.log('=== handleLogout called ===');
+    setLogoutModalVisible(true);
+  };
+
+  const confirmLogout = async () => {
+    console.log('=== Logout confirmed ===');
+    try {
+      await logout();
+      console.log('=== logout() finished ===');
+    } catch (error) {
+      console.error('=== handleLogout error ===', error);
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -184,7 +185,7 @@ export default function SettingsScreen({ navigation }) {
             iconColor="#1976D2"
             title="언어 설정"
             value="한국어"
-            onPress={() => {}}
+            onPress={() => setComingSoonModalVisible(true)}
           />
         </MenuGroup>
 
@@ -252,6 +253,28 @@ export default function SettingsScreen({ navigation }) {
         initialData={profile}
         loading={saving}
         isOAuthUser={isOAuthUser}
+      />
+
+      {/* Logout Confirm Modal */}
+      <ConfirmModal
+        visible={logoutModalVisible}
+        onClose={() => setLogoutModalVisible(false)}
+        onConfirm={confirmLogout}
+        title="로그아웃"
+        message="정말 로그아웃 하시겠습니까?"
+        confirmText="로그아웃"
+        cancelText="취소"
+        confirmType="danger"
+      />
+
+      {/* Coming Soon Alert Modal */}
+      <AlertModal
+        visible={comingSoonModalVisible}
+        onClose={() => setComingSoonModalVisible(false)}
+        title="알림"
+        message="준비 중입니다"
+        confirmText="확인"
+        type="info"
       />
     </SafeAreaView>
   );

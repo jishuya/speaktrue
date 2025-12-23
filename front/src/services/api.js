@@ -209,10 +209,20 @@ class ApiService {
   }
 
   async logout(oauthToken = null, oauthProvider = null) {
-    return this.request('/api/auth/logout', {
-      method: 'POST',
-      body: JSON.stringify({ oauthToken, oauthProvider }),
-    });
+    console.log('=== API logout called ===');
+    console.log('oauthProvider:', oauthProvider);
+    console.log('oauthToken exists:', !!oauthToken);
+    try {
+      const result = await this.request('/api/auth/logout', {
+        method: 'POST',
+        body: JSON.stringify({ oauthToken, oauthProvider }),
+      });
+      console.log('=== API logout response ===', result);
+      return result;
+    } catch (error) {
+      console.error('=== API logout error ===', error);
+      throw error;
+    }
   }
 
   async getCurrentUser() {

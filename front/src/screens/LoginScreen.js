@@ -8,11 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Logo, Icon, Modal } from '../components/ui';
+import { Logo, Icon, Modal, AlertModal } from '../components/ui';
 import { COLORS, SPACING, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/auth';
@@ -46,6 +45,34 @@ export default function LoginScreen({ navigation }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+
+  // 커스텀 Alert 모달 상태
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'info',
+    onClose: null,
+  });
+
+  // Alert 표시 헬퍼 함수
+  const showAlert = (title, message, type = 'info', onClose = null) => {
+    setAlertModal({
+      visible: true,
+      title,
+      message,
+      type,
+      onClose,
+    });
+  };
+
+  const hideAlert = () => {
+    const callback = alertModal.onClose;
+    setAlertModal(prev => ({ ...prev, visible: false }));
+    if (callback) {
+      callback();
+    }
+  };
 
   // Google OAuth hook
   const { response: googleResponse, promptAsync: googlePromptAsync } = authService.useGoogleAuth();
@@ -253,6 +280,26 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // 이메일 유효성 검사
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // 회원가입 폼 유효성 검사
+  const isRegisterFormValid = () => {
+    return (
+      registerName.trim() &&
+      registerGender &&
+      registerPartnerName.trim() &&
+      registerEmail.trim() &&
+      isValidEmail(registerEmail) &&
+      registerPassword.trim() &&
+      registerPassword.length >= 6 &&
+      registerPassword === registerPasswordConfirm
+    );
+  };
+
   // 회원가입 처리
   const handleRegister = async () => {
     if (!registerName.trim()) {
@@ -269,6 +316,10 @@ export default function LoginScreen({ navigation }) {
     }
     if (!registerEmail.trim()) {
       Alert.alert('알림', '이메일을 입력해주세요.');
+      return;
+    }
+    if (!isValidEmail(registerEmail)) {
+      Alert.alert('알림', '올바른 이메일 형식을 입력해주세요.');
       return;
     }
     if (!registerPassword.trim()) {
@@ -298,28 +349,47 @@ export default function LoginScreen({ navigation }) {
       });
 
       if (response.token && response.user) {
-        Alert.alert('성공', '회원가입이 완료되었습니다.', [
-          {
-            text: '확인',
-            onPress: async () => {
-              setShowRegisterModal(false);
-              resetRegisterForm();
-              // 자동 로그인
-              const result = await login('email', null, {
-                email: registerEmail,
-                password: registerPassword
-              });
-              if (result.success) {
-                navigation.replace('MainTabs');
-              }
-            },
-          },
-        ]);
+        // 이메일/비밀번호 저장
+        const savedEmail = registerEmail;
+        const savedPassword = registerPassword;
+
+        // 로딩 상태 해제
+        setIsRegistering(false);
+
+        // 성공 알림 표시 (확인 버튼 누르면 모달 닫고 자동 로그인)
+        showAlert(
+          '회원가입 완료',
+          '회원가입이 성공적으로 \n완료되었습니다.\n자동으로 로그인됩니다.',
+          'success',
+          async () => {
+            setShowRegisterModal(false);
+            resetRegisterForm();
+            // 자동 로그인
+            const result = await login('email', null, {
+              email: savedEmail,
+              password: savedPassword
+            });
+            if (result.success) {
+              navigation.replace('MainTabs');
+            }
+          }
+        );
       }
     } catch (error) {
-      Alert.alert('회원가입 실패', error.message || '회원가입 중 오류가 발생했습니다.');
-    } finally {
+      console.log('회원가입 에러:', error);
+      // 에러 메시지 분류
+      const errorMessage = error.message || '회원가입 중 오류가 발생했습니다.';
+      const isEmailDuplicate = errorMessage.includes('이미 사용 중인 이메일') || errorMessage.includes('already');
+
+      // 로딩 상태 해제
       setIsRegistering(false);
+
+      // 커스텀 Alert 표시
+      showAlert(
+        isEmailDuplicate ? '이메일 중복' : '회원가입 실패',
+        errorMessage,
+        'error'
+      );
     }
   };
 
@@ -577,8 +647,11 @@ export default function LoginScreen({ navigation }) {
 
           {/* 이메일 입력 */}
           <View style={styles.modalInputGroup}>
-            <Text style={styles.modalInputLabel}>이메일</Text>
-            <View style={styles.modalInputWrapper}>
+            <Text style={styles.modalInputLabel}>이메일 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={[
+              styles.modalInputWrapper,
+              registerEmail.length > 0 && !isValidEmail(registerEmail) && styles.modalInputError,
+            ]}>
               <Icon name="mail" size={18} color={COLORS.textMuted} />
               <TextInput
                 style={styles.modalInput}
@@ -591,12 +664,18 @@ export default function LoginScreen({ navigation }) {
                 autoCorrect={false}
               />
             </View>
+            {registerEmail.length > 0 && !isValidEmail(registerEmail) ? (
+              <Text style={styles.errorText}>올바른 이메일 형식을 입력해주세요</Text>
+            ) : null}
           </View>
 
           {/* 비밀번호 입력 */}
           <View style={styles.modalInputGroup}>
-            <Text style={styles.modalInputLabel}>비밀번호</Text>
-            <View style={styles.modalInputWrapper}>
+            <Text style={styles.modalInputLabel}>비밀번호 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={[
+              styles.modalInputWrapper,
+              registerPassword.length > 0 && registerPassword.length < 6 && styles.modalInputError,
+            ]}>
               <Icon name="lock" size={18} color={COLORS.textMuted} />
               <TextInput
                 style={styles.modalInput}
@@ -614,12 +693,18 @@ export default function LoginScreen({ navigation }) {
                 />
               </TouchableOpacity>
             </View>
+            {registerPassword.length > 0 && registerPassword.length < 6 ? (
+              <Text style={styles.errorText}>비밀번호는 6자 이상이어야 합니다</Text>
+            ) : null}
           </View>
 
           {/* 비밀번호 확인 */}
           <View style={styles.modalInputGroup}>
-            <Text style={styles.modalInputLabel}>비밀번호 확인</Text>
-            <View style={styles.modalInputWrapper}>
+            <Text style={styles.modalInputLabel}>비밀번호 확인 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={[
+              styles.modalInputWrapper,
+              registerPasswordConfirm.length > 0 && registerPassword !== registerPasswordConfirm && styles.modalInputError,
+            ]}>
               <Icon name="lock" size={18} color={COLORS.textMuted} />
               <TextInput
                 style={styles.modalInput}
@@ -630,13 +715,19 @@ export default function LoginScreen({ navigation }) {
                 secureTextEntry={!showRegisterPassword}
               />
             </View>
+            {registerPasswordConfirm.length > 0 && registerPassword !== registerPasswordConfirm ? (
+              <Text style={styles.errorText}>비밀번호가 일치하지 않습니다</Text>
+            ) : null}
           </View>
 
           {/* 회원가입 버튼 */}
           <TouchableOpacity
-            style={styles.modalButton}
+            style={[
+              styles.modalButton,
+              (!isRegisterFormValid() || isRegistering) && styles.modalButtonDisabled,
+            ]}
             onPress={handleRegister}
-            disabled={isRegistering}
+            disabled={!isRegisterFormValid() || isRegistering}
           >
             {isRegistering ? (
               <ActivityIndicator size="small" color={COLORS.surface} />
@@ -780,6 +871,15 @@ export default function LoginScreen({ navigation }) {
           )}
         </View>
       </Modal>
+
+      {/* 커스텀 Alert 모달 */}
+      <AlertModal
+        visible={alertModal.visible}
+        onClose={hideAlert}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+      />
     </SafeAreaView>
   );
 }
@@ -1071,7 +1171,6 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: COLORS.surface,
     borderRadius: SPACING.lg,
-    padding: SPACING.lg,
     width: '100%',
     maxWidth: 400,
   },
@@ -1095,7 +1194,7 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   modalInputGroup: {
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   modalInputLabel: {
     fontFamily: FONT_FAMILY.base,
@@ -1114,6 +1213,16 @@ const styles = StyleSheet.create({
     paddingLeft: SPACING.md,
     paddingRight: SPACING.xs,
   },
+  modalInputError: {
+    borderColor: COLORS.error || '#E53935',
+  },
+  errorText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 11,
+    color: COLORS.error || '#E53935',
+    marginTop: 2,
+    marginLeft: SPACING.xs,
+  },
   modalInput: {
     flex: 1,
     fontFamily: FONT_FAMILY.base,
@@ -1124,9 +1233,9 @@ const styles = StyleSheet.create({
   modalButton: {
     backgroundColor: COLORS.primary,
     borderRadius: SPACING.sm,
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.sm,
     alignItems: 'center',
-    marginTop: SPACING.md,
+    marginTop: SPACING.sm,
   },
   modalButtonDisabled: {
     backgroundColor: COLORS.textMuted,
@@ -1147,7 +1256,7 @@ const styles = StyleSheet.create({
   },
   genderButton: {
     flex: 1,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderRadius: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
