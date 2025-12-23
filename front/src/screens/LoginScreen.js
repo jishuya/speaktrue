@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Logo, Icon, Modal, AlertModal } from '../components/ui';
@@ -17,7 +18,7 @@ import { useAuth } from '../store/AuthContext';
 import authService from '../services/auth';
 import api from '../services/api';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState(null);
@@ -35,6 +36,8 @@ export default function LoginScreen({ navigation }) {
   const [registerPartnerName, setRegisterPartnerName] = useState('');
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
 
   // 비밀번호 찾기 모달 상태
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -99,11 +102,11 @@ export default function LoginScreen({ navigation }) {
   const handleLoginWithToken = async (provider, accessToken) => {
     try {
       const result = await login(provider, accessToken);
-      if (result.success) {
-        navigation.replace('MainTabs');
-      } else {
+      if (!result.success) {
         showAlert('로그인 실패', result.error || '로그인에 실패했습니다.', 'error');
       }
+      // 로그인 성공 시 AuthContext의 isAuthenticated가 true로 변경되면
+      // AppNavigator가 자동으로 MainTabs를 렌더링합니다
     } catch (error) {
       showAlert('오류', '로그인 중 오류가 발생했습니다.', 'error');
     } finally {
@@ -180,11 +183,11 @@ export default function LoginScreen({ navigation }) {
     setLoadingProvider('email');
     try {
       const result = await login('email', null, { email, password });
-      if (result.success) {
-        navigation.replace('MainTabs');
-      } else {
+      if (!result.success) {
         showAlert('로그인 실패', result.error || '이메일 또는 비밀번호를 확인해주세요.', 'error');
       }
+      // 로그인 성공 시 AuthContext의 isAuthenticated가 true로 변경되면
+      // AppNavigator가 자동으로 MainTabs를 렌더링합니다
     } catch (error) {
       showAlert('오류', '로그인 중 오류가 발생했습니다.', 'error');
     } finally {
@@ -203,6 +206,8 @@ export default function LoginScreen({ navigation }) {
     setRegisterType('');
     setRegisterPartnerName('');
     setShowRegisterPassword(false);
+    setAgreeTerms(false);
+    setAgreePrivacy(false);
   };
 
   // 비밀번호 찾기 모달 초기화
@@ -295,7 +300,9 @@ export default function LoginScreen({ navigation }) {
       isValidEmail(registerEmail) &&
       registerPassword.trim() &&
       registerPassword.length >= 6 &&
-      registerPassword === registerPasswordConfirm
+      registerPassword === registerPasswordConfirm &&
+      agreeTerms &&
+      agreePrivacy
     );
   };
 
@@ -337,6 +344,10 @@ export default function LoginScreen({ navigation }) {
       showAlert('알림', '비밀번호가 일치하지 않습니다.', 'warning');
       return;
     }
+    if (!agreeTerms || !agreePrivacy) {
+      showAlert('알림', '이용약관 및 개인정보처리방침에 동의해주세요.', 'warning');
+      return;
+    }
 
     setIsRegistering(true);
     try {
@@ -370,13 +381,12 @@ export default function LoginScreen({ navigation }) {
           () => {
             // 모달이 완전히 닫힌 후 로그인 실행
             setTimeout(async () => {
-              const result = await login('email', null, {
+              await login('email', null, {
                 email: savedEmail,
                 password: savedPassword
               });
-              if (result.success) {
-                navigation.replace('MainTabs');
-              }
+              // 로그인 성공 시 AuthContext의 isAuthenticated가 true로 변경되면
+              // AppNavigator가 자동으로 MainTabs를 렌더링합니다
             }, 100);
           }
         );
@@ -764,6 +774,47 @@ export default function LoginScreen({ navigation }) {
             {registerPasswordConfirm.length > 0 && registerPassword !== registerPasswordConfirm ? (
               <Text style={styles.errorText}>비밀번호가 일치하지 않습니다</Text>
             ) : null}
+          </View>
+
+          {/* 약관 동의 */}
+          <View style={styles.agreementContainer}>
+            <TouchableOpacity
+              style={styles.agreementRow}
+              onPress={() => setAgreeTerms(!agreeTerms)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
+                {agreeTerms && <Icon name="check" size={14} color={COLORS.surface} />}
+              </View>
+              <Text style={styles.agreementText}>
+                <Text style={styles.requiredMark}>[필수]</Text> 이용약관에 동의합니다
+              </Text>
+              <TouchableOpacity
+                onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/terms.html')}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.agreementLink}>보기</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.agreementRow}
+              onPress={() => setAgreePrivacy(!agreePrivacy)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, agreePrivacy && styles.checkboxChecked]}>
+                {agreePrivacy && <Icon name="check" size={14} color={COLORS.surface} />}
+              </View>
+              <Text style={styles.agreementText}>
+                <Text style={styles.requiredMark}>[필수]</Text> 개인정보처리방침에 동의합니다
+              </Text>
+              <TouchableOpacity
+                onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/privacy.html')}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.agreementLink}>보기</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
           </View>
 
           {/* 회원가입 버튼 */}
@@ -1348,5 +1399,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.primary,
     fontWeight: FONT_WEIGHT.medium,
+  },
+  agreementContainer: {
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  agreementRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.xs,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
+  },
+  checkboxChecked: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  agreementText: {
+    flex: 1,
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  agreementLink: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 12,
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.medium,
+    marginLeft: SPACING.xs,
   },
 });

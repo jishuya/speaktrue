@@ -12,7 +12,7 @@ import { Audio } from 'expo-av';
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import { Icon, AlertModal, ConfirmModal } from '../components/ui';
 import { Header, EmotionBadge } from '../components/common';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { API_URL } from '../constants/config';
 import { api } from '../services';
 
@@ -593,9 +593,8 @@ const styles = StyleSheet.create({
 
   // Date
   dateText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.medium,
     fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.medium,
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: SPACING.sm,
@@ -647,15 +646,13 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.md,
   },
   audioTitle: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.base,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   audioMeta: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.semiBold,
     fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
     marginTop: 2,
   },
@@ -697,9 +694,8 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   uploadButtonText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
   },
   buttonDisabled: {
@@ -717,9 +713,8 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   countBadge: {
@@ -729,7 +724,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
   },
   countText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
   },
@@ -742,7 +737,7 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   loadingText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.md,
     color: COLORS.textMuted,
   },
@@ -765,9 +760,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textMuted,
   },
   messageContent: {
@@ -784,13 +778,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   messageText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
     lineHeight: 22,
   },
   messageTime: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
@@ -818,9 +812,8 @@ const styles = StyleSheet.create({
     borderColor: `${COLORS.primary}10`,
   },
   myMessageText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.medium,
     fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
     lineHeight: 22,
   },
@@ -833,13 +826,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   myAvatarText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
   myMessageTime: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
@@ -859,9 +851,8 @@ const styles = StyleSheet.create({
     ...SHADOWS.md,
   },
   analyzeButtonText: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.base,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
   },
 
@@ -892,15 +883,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   insightLabel: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.bold,
     fontSize: FONT_SIZE.xs,
-    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   insightContent: {
-    fontFamily: FONT_FAMILY.base,
+    fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
     lineHeight: 24,

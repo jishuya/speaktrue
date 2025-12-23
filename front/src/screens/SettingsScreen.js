@@ -137,8 +137,28 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDeleteAccount = () => {
     setDeleteAccountModalVisible(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await api.withdraw();
+      setDeleteAccountModalVisible(false);
+      await logout();
+    } catch (error) {
+      setAlertModal({
+        visible: true,
+        title: '오류',
+        message: '계정 삭제에 실패했습니다. 다시 시도해주세요.',
+        type: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -291,12 +311,13 @@ export default function SettingsScreen({ navigation }) {
       <ConfirmModal
         visible={deleteAccountModalVisible}
         onClose={() => setDeleteAccountModalVisible(false)}
-        onConfirm={() => {}}
+        onConfirm={confirmDeleteAccount}
         title="계정 삭제"
         message="계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 정말 삭제하시겠습니까?"
         confirmText="삭제"
         cancelText="취소"
         confirmType="danger"
+        loading={isDeleting}
       />
 
       {/* General Alert Modal */}

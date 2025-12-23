@@ -12,8 +12,13 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    'NotoSansKR': require('./src/assets/fonts/Noto_Sans_KR/NotoSansKR-VariableFont_wght.ttf'),
-    'GamjaFlower': require('./src/assets/fonts/Noto_Sans/Gamja_Flower/GamjaFlower-Regular.ttf'),
+    // NotoSansKR Static 폰트 (각 weight별)
+    'NotoSansKR-Regular': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Regular.ttf'),
+    'NotoSansKR-Medium': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Medium.ttf'),
+    'NotoSansKR-SemiBold': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-SemiBold.ttf'),
+    'NotoSansKR-Bold': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Bold.ttf'),
+    // 기타 폰트
+    'GamjaFlower': require('./src/assets/fonts/Gamja_Flower/GamjaFlower-Regular.ttf'),
   });
 
   const onLayoutRootView = useCallback(async () => {
