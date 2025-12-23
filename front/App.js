@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation';
+import { AuthProvider } from './src/store/AuthContext';
 
 // 폰트 로딩 전 스플래시 화면 유지
 SplashScreen.preventAutoHideAsync();
@@ -26,11 +27,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <StatusBar style="auto" />
-        <AppNavigator />
-      </View>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <SafeAreaProvider>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <StatusBar style="auto" />
+          <AppNavigator />
+        </View>
+      </SafeAreaProvider>
+    </AuthProvider>
   );
 }

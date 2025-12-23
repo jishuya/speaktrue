@@ -1,13 +1,29 @@
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:9502';
 
 class ApiService {
+  constructor() {
+    this.authToken = null;
+  }
+
+  // 인증 토큰 설정
+  setAuthToken(token) {
+    this.authToken = token;
+  }
+
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // 인증 토큰이 있으면 헤더에 추가
+    if (this.authToken) {
+      headers.Authorization = `Bearer ${this.authToken}`;
+    }
+
     const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       ...options,
     };
 
@@ -176,11 +192,11 @@ class ApiService {
     });
   }
 
-  // Auth
-  async login(credentials) {
-    return this.request('/api/auth/login', {
+  // Auth - OAuth 로그인
+  async oauthLogin(provider, accessToken) {
+    return this.request(`/api/auth/${provider}`, {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      body: JSON.stringify({ accessToken }),
     });
   }
 
@@ -192,6 +208,18 @@ class ApiService {
 
   async getCurrentUser() {
     return this.request('/api/auth/me');
+  }
+
+  async withdraw() {
+    return this.request('/api/auth/withdraw', {
+      method: 'DELETE',
+    });
+  }
+
+  async refreshToken() {
+    return this.request('/api/auth/refresh', {
+      method: 'POST',
+    });
   }
 }
 

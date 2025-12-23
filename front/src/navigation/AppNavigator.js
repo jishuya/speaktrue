@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Animated, PanResponder } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Animated, PanResponder, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -17,6 +17,7 @@ import {
 } from '../screens';
 import { Icon } from '../components/ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { useAuth } from '../store/AuthContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -218,10 +219,21 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // 인증 상태 로딩 중
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MainTabs"
+        initialRouteName={isAuthenticated ? 'MainTabs' : 'Login'}
         screenOptions={{
           headerShown: false,
           contentStyle: {
@@ -230,51 +242,62 @@ export default function AppNavigator() {
           animation: 'slide_from_right',
         }}
       >
-        {/* Main Tabs */}
-        <Stack.Screen name="MainTabs" component={MainTabs} />
+        {!isAuthenticated ? (
+          // 비로그인 상태: 로그인 화면만 표시
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ animation: 'fade' }}
+          />
+        ) : (
+          // 로그인 상태: 메인 화면들 표시
+          <>
+            {/* Main Tabs */}
+            <Stack.Screen name="MainTabs" component={MainTabs} />
 
-        {/* Chat Screens */}
-        <Stack.Screen
-          name="Empathy"
-          component={EmpathyScreen}
-          options={{ animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen
-          name="Perspective"
-          component={PerspectiveScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
+            {/* Chat Screens */}
+            <Stack.Screen
+              name="Empathy"
+              component={EmpathyScreen}
+              options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+              name="Perspective"
+              component={PerspectiveScreen}
+              options={{
+                presentation: 'modal',
+                animation: 'slide_from_bottom',
+              }}
+            />
 
-        {/* Settings Screen */}
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+            {/* Settings Screen */}
+            <Stack.Screen name="Settings" component={SettingsScreen} />
 
-        {/* Auth Screens */}
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ animation: 'fade' }}
-        />
+            {/* Recording Screen */}
+            <Stack.Screen name="Recording" component={RecordingScreen} />
 
-        {/* Recording Screen */}
-        <Stack.Screen name="Recording" component={RecordingScreen} />
+            {/* Transform Screen (NVC 변환) */}
+            <Stack.Screen name="Transform" component={TransformScreen} />
 
-        {/* Transform Screen (NVC 변환) */}
-        <Stack.Screen name="Transform" component={TransformScreen} />
+            {/* History Screen */}
+            <Stack.Screen name="History" component={HistoryScreen} />
 
-        {/* History Screen */}
-        <Stack.Screen name="History" component={HistoryScreen} />
-
-        {/* Patterns Screen */}
-        <Stack.Screen name="Patterns" component={PatternsScreen} />
+            {/* Patterns Screen */}
+            <Stack.Screen name="Patterns" component={PatternsScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.backgroundLight,
+  },
   tabBarContainer: {
     position: 'absolute',
     bottom: 0,

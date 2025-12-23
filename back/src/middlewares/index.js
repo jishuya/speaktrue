@@ -1,4 +1,5 @@
 // Middlewares barrel file
+const { authenticate, optionalAuth } = require('./auth');
 
 const errorHandler = (err, req, res, next) => {
   console.error(err.stack);
@@ -14,4 +15,6 @@ const asyncHandler = (fn) => (req, res, next) => {
 module.exports = {
   errorHandler,
   asyncHandler,
+  authenticate,
+  optionalAuth,
 };

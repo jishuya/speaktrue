@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,30 +7,132 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Icon, Input, Button } from '../components/ui';
+import { Logo, Icon } from '../components/ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { useAuth } from '../store/AuthContext';
+import authService from '../services/auth';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState(null);
 
-  const handleLogin = () => {
-    // TODO: 로그인 로직 구현
-    navigation.replace('Main');
+  // Google OAuth hook
+  const { response: googleResponse, promptAsync: googlePromptAsync } = authService.useGoogleAuth();
+
+  // Google 로그인 응답 처리
+  useEffect(() => {
+    if (googleResponse) {
+      handleGoogleResponse();
+    }
+  }, [googleResponse]);
+
+  const handleGoogleResponse = async () => {
+    const result = await authService.handleGoogleLogin(googleResponse);
+    if (result.success) {
+      await handleLoginWithToken('google', result.accessToken);
+    } else {
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
   };
 
-  const handleSocialLogin = () => {
-    // TODO: 소셜 로그인 구현
+  // 토큰으로 백엔드 로그인
+  const handleLoginWithToken = async (provider, accessToken) => {
+    try {
+      const result = await login(provider, accessToken);
+      if (result.success) {
+        navigation.replace('MainTabs');
+      } else {
+        Alert.alert('로그인 실패', result.error || '로그인에 실패했습니다.');
+      }
+    } catch (error) {
+      Alert.alert('오류', '로그인 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
   };
 
-  const handleForgotPassword = () => {
-    // TODO: 비밀번호 찾기 화면으로 이동
+  // 구글 로그인
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setLoadingProvider('google');
+    try {
+      await googlePromptAsync();
+    } catch (error) {
+      Alert.alert('오류', '구글 로그인 중 오류가 발생했습니다.');
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
   };
 
-  const handleSignUp = () => {
-    // TODO: 회원가입 화면으로 이동
+  // 카카오 로그인
+  const handleKakaoLogin = async () => {
+    setIsLoading(true);
+    setLoadingProvider('kakao');
+    try {
+      const result = await authService.loginWithKakao();
+      if (result.success) {
+        await handleLoginWithToken('kakao', result.accessToken);
+      } else {
+        Alert.alert('로그인 취소', '카카오 로그인이 취소되었습니다.');
+        setIsLoading(false);
+        setLoadingProvider(null);
+      }
+    } catch (error) {
+      Alert.alert('오류', '카카오 로그인 중 오류가 발생했습니다.');
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
+  };
+
+  // 네이버 로그인
+  const handleNaverLogin = async () => {
+    setIsLoading(true);
+    setLoadingProvider('naver');
+    try {
+      const result = await authService.loginWithNaver();
+      if (result.success) {
+        await handleLoginWithToken('naver', result.accessToken);
+      } else {
+        Alert.alert('로그인 취소', '네이버 로그인이 취소되었습니다.');
+        setIsLoading(false);
+        setLoadingProvider(null);
+      }
+    } catch (error) {
+      Alert.alert('오류', '네이버 로그인 중 오류가 발생했습니다.');
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
+  };
+
+  const renderSocialButton = (provider, onPress, style, iconContent) => {
+    const isCurrentLoading = loadingProvider === provider;
+    const getLoaderColor = () => {
+      if (provider === 'kakao') return '#3B1E1E';
+      if (provider === 'google') return COLORS.textSecondary;
+      return COLORS.surface;
+    };
+
+    return (
+      <TouchableOpacity
+        style={[styles.socialButton, style]}
+        onPress={onPress}
+        activeOpacity={0.7}
+        disabled={isLoading}
+      >
+        {isCurrentLoading ? (
+          <ActivityIndicator size="small" color={getLoaderColor()} />
+        ) : (
+          iconContent
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -40,106 +142,76 @@ export default function LoginScreen({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={true}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Background decorations */}
-        <View style={styles.bgDecoration1} />
-        <View style={styles.bgDecoration2} />
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Background gradient effect */}
+          <View style={styles.bgGradient} />
+          {/* Background decorations */}
+          <View style={styles.bgDecoration1} />
+          <View style={styles.bgDecoration2} />
 
-        {/* Logo Section */}
-        <View style={styles.logoSection}>
-          <View style={styles.logoContainer}>
-            <Icon name="spa" size={48} color={COLORS.surface} />
+          {/* Main Content */}
+          <View style={styles.mainContent}>
+            {/* Logo Section */}
+            <View style={styles.logoSection}>
+              <View style={styles.logoContainer}>
+                <Logo size={56} color={COLORS.surface} />
+              </View>
+              <Text style={styles.title}>
+                <Text style={styles.titleBold}>SpeakTrue</Text>
+              </Text>
+              <Text style={styles.subtitle}>
+                서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
+              </Text>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>SNS 계정으로 시작하기</Text>
+              <View style={styles.divider} />
+            </View>
+
+            {/* Social Login Buttons */}
+            <View style={styles.socialButtons}>
+              {/* Google */}
+              {renderSocialButton(
+                'google',
+                handleGoogleLogin,
+                styles.googleButton,
+                <Text style={styles.googleIcon}>G</Text>
+              )}
+
+              {/* Naver */}
+              {renderSocialButton(
+                'naver',
+                handleNaverLogin,
+                styles.naverButton,
+                <Text style={styles.naverIcon}>N</Text>
+              )}
+
+              {/* Kakao */}
+              {renderSocialButton(
+                'kakao',
+                handleKakaoLogin,
+                styles.kakaoButton,
+                <Icon name="chat-bubble" size={22} color="#3B1E1E" />
+              )}
+            </View>
+
+            {/* Privacy Text */}
+            <Text style={styles.privacyText}>
+              로그인 시 <Text style={styles.linkText}>이용약관</Text> 및{'\n'}
+              <Text style={styles.linkText}>개인정보처리방침</Text>에 동의하게 됩니다.
+            </Text>
           </View>
-          <Text style={styles.title}>SpeakTrue</Text>
-          <Text style={styles.subtitle}>
-            서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
-          </Text>
-        </View>
 
-        {/* Form Section */}
-        <View style={styles.formSection}>
-          <Input
-            label="아이디 또는 이메일"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="이메일을 입력해주세요"
-            keyboardType="email-address"
-            leftIcon="mail"
-            autoCapitalize="none"
-          />
-
-          <View style={styles.passwordLabelRow}>
-            <Text style={styles.inputLabel}>비밀번호</Text>
-            <TouchableOpacity onPress={handleForgotPassword}>
-              <Text style={styles.forgotPassword}>비밀번호 찾기</Text>
-            </TouchableOpacity>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
           </View>
-          <Input
-            value={password}
-            onChangeText={setPassword}
-            placeholder="비밀번호를 입력해주세요"
-            secureTextEntry
-            leftIcon="lock"
-            style={styles.passwordInput}
-          />
-
-          <Button
-            title="로그인"
-            onPress={handleLogin}
-            size="lg"
-            rightIcon="arrow-forward"
-            style={styles.loginButton}
-          />
-        </View>
-
-        {/* Social Login Section */}
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={styles.dividerText}>SNS 계정으로 시작하기</Text>
-          <View style={styles.divider} />
-        </View>
-
-        <View style={styles.socialButtons}>
-          <TouchableOpacity
-            style={styles.socialButton}
-            onPress={() => handleSocialLogin('google')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.googleIcon}>G</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.socialButton, styles.appleButton]}
-            onPress={() => handleSocialLogin('apple')}
-            activeOpacity={0.7}
-          >
-            <Icon name="apple" size={22} color={COLORS.surface} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.socialButton, styles.kakaoButton]}
-            onPress={() => handleSocialLogin('kakao')}
-            activeOpacity={0.7}
-          >
-            <Icon name="chat-bubble" size={22} color="#3B1E1E" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Sign Up Link */}
-        <View style={styles.signUpContainer}>
-          <Text style={styles.signUpText}>아직 계정이 없으신가요?</Text>
-          <TouchableOpacity onPress={handleSignUp}>
-            <Text style={styles.signUpLink}>회원가입</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
-        </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -154,8 +226,15 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xxxl,
-    paddingBottom: SPACING.xl,
+  },
+  bgGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 384,
+    backgroundColor: `${COLORS.secondary}50`,
+    opacity: 0.5,
   },
   bgDecoration1: {
     position: 'absolute',
@@ -164,7 +243,8 @@ const styles = StyleSheet.create({
     width: 256,
     height: 256,
     borderRadius: 128,
-    backgroundColor: `${COLORS.primary}10`,
+    backgroundColor: COLORS.primary,
+    opacity: 0.1,
   },
   bgDecoration2: {
     position: 'absolute',
@@ -173,68 +253,55 @@ const styles = StyleSheet.create({
     width: 256,
     height: 256,
     borderRadius: 128,
-    backgroundColor: `${COLORS.primary}05`,
+    backgroundColor: COLORS.primary,
+    opacity: 0.05,
   },
 
-  // Logo
+  // Main Content
+  mainContent: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: SPACING.xl,
+  },
+
+  // Logo Section
   logoSection: {
     alignItems: 'center',
-    marginBottom: SPACING.xxxl,
+    marginBottom: SPACING.xl,
+    marginTop: SPACING.lg,
   },
   logoContainer: {
     width: 80,
     height: 80,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: 24,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.lg,
     transform: [{ rotate: '3deg' }],
-    ...SHADOWS.lg,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
   title: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: FONT_WEIGHT.extraBold,
-    color: COLORS.textPrimary,
+    fontSize: 36,
     letterSpacing: -0.5,
+    color: COLORS.textPrimary,
+  },
+  titleBold: {
+    fontFamily: FONT_FAMILY.base,
+    fontWeight: '800',
   },
   subtitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
+    fontSize: 16,
+    fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textMuted,
     textAlign: 'center',
     marginTop: SPACING.sm,
-    lineHeight: 22,
-  },
-
-  // Form
-  formSection: {
-    width: '100%',
-  },
-  passwordLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.xs,
-  },
-  inputLabel: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  forgotPassword: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
-    fontWeight: FONT_WEIGHT.semiBold,
-    color: COLORS.primary,
-  },
-  passwordInput: {
-    marginBottom: 0,
-  },
-  loginButton: {
-    marginTop: SPACING.lg,
+    lineHeight: 24,
   },
 
   // Divider
@@ -251,7 +318,8 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,  // 12px - 캡션
+    fontSize: 14,
+    fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
     paddingHorizontal: SPACING.md,
   },
@@ -260,64 +328,71 @@ const styles = StyleSheet.create({
   socialButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: SPACING.md,
+    gap: SPACING.lg,
+    marginTop: SPACING.md,
   },
   socialButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: COLORS.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.borderLight,
-    ...SHADOWS.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  googleButton: {
+    backgroundColor: COLORS.surface,
   },
   googleIcon: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
+    fontSize: 22,
+    fontWeight: '700',
     color: COLORS.textSecondary,
   },
-  appleButton: {
-    backgroundColor: '#000000',
-    borderColor: '#000000',
+  naverButton: {
+    backgroundColor: '#03C75A',
+    borderColor: '#03C75A',
+  },
+  naverIcon: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 22,
+    fontWeight: '700',
+    color: COLORS.surface,
   },
   kakaoButton: {
     backgroundColor: '#FEE500',
     borderColor: '#FEE500',
   },
 
-  // Sign Up
-  signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: SPACING.xxxl,
-  },
-  signUpText: {
+  // Privacy Text
+  privacyText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.md,  // 14px - 본문 최소 크기
+    fontSize: 13,
     color: COLORS.textMuted,
+    textAlign: 'center',
+    marginTop: SPACING.xl,
+    lineHeight: 20,
   },
-  signUpLink: {
-    fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.md,  // 14px - 터치 가능 텍스트
-    fontWeight: FONT_WEIGHT.bold,
+  linkText: {
     color: COLORS.primary,
-    marginLeft: SPACING.xs,
-    textDecorationLine: 'underline',
+    fontWeight: FONT_WEIGHT.medium,
   },
 
   // Footer
   footer: {
-    marginTop: 'auto',
-    paddingTop: SPACING.xl,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
     alignItems: 'center',
   },
   footerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.borderLight,
+    fontSize: 13,
+    color: COLORS.textMuted,
   },
 });

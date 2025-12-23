@@ -1,19 +1,182 @@
 // OAuth 및 인증 관련 서비스
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const db = require('./db');
 
 class AuthService {
-  async validateToken(token) {
-    // TODO: JWT 토큰 검증 로직
-    return { valid: true, userId: null };
+  constructor() {
+    this.JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+    this.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
   }
 
-  async createSession(userId) {
-    // TODO: 세션 생성 로직
-    return { sessionId: null };
+  // JWT 토큰 생성
+  generateToken(userId) {
+    return jwt.sign({ userId }, this.JWT_SECRET, {
+      expiresIn: this.JWT_EXPIRES_IN,
+    });
   }
 
-  async destroySession(sessionId) {
-    // TODO: 세션 삭제 로직
-    return { success: true };
+  // JWT 토큰 검증
+  verifyToken(token) {
+    try {
+      const decoded = jwt.verify(token, this.JWT_SECRET);
+      return { valid: true, userId: decoded.userId };
+    } catch (error) {
+      return { valid: false, userId: null, error: error.message };
+    }
+  }
+
+  // 사용자 조회 또는 생성 (OAuth용)
+  async findOrCreateUser({ oauthProvider, oauthId, email, name, profileImage }) {
+    // 기존 사용자 조회
+    const existingUser = await db.query(
+      'SELECT * FROM users WHERE oauth_provider = $1 AND oauth_id = $2',
+      [oauthProvider, oauthId]
+    );
+
+    if (existingUser.rows.length > 0) {
+      // 기존 사용자 정보 업데이트
+      const updateResult = await db.query(
+        `UPDATE users SET
+          email = COALESCE($1, email),
+          name = COALESCE($2, name),
+          profile_image = COALESCE($3, profile_image),
+          updated_at = NOW()
+        WHERE oauth_provider = $4 AND oauth_id = $5
+        RETURNING *`,
+        [email, name, profileImage, oauthProvider, oauthId]
+      );
+      return updateResult.rows[0];
+    }
+
+    // 새 사용자 생성
+    const newUser = await db.query(
+      `INSERT INTO users (email, name, profile_image, oauth_provider, oauth_id)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [email, name, profileImage, oauthProvider, oauthId]
+    );
+
+    return newUser.rows[0];
+  }
+
+  // 사용자 ID로 조회
+  async getUserById(userId) {
+    const result = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+    return result.rows[0] || null;
+  }
+
+  // Google OAuth 토큰 검증 및 사용자 정보 조회
+  async verifyGoogleToken(accessToken) {
+    try {
+      const response = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      const { sub: oauthId, email, name, picture: profileImage } = response.data;
+
+      return {
+        success: true,
+        userData: { oauthProvider: 'google', oauthId, email, name, profileImage },
+      };
+    } catch (error) {
+      console.error('Google token verification failed:', error.message);
+      return { success: false, error: 'Invalid Google token' };
+    }
+  }
+
+  // Kakao OAuth 토큰 검증 및 사용자 정보 조회
+  async verifyKakaoToken(accessToken) {
+    try {
+      const response = await axios.get('https://kapi.kakao.com/v2/user/me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      const { id: oauthId, kakao_account, properties } = response.data;
+      const email = kakao_account?.email || null;
+      const name = properties?.nickname || kakao_account?.profile?.nickname || '카카오 사용자';
+      const profileImage = properties?.profile_image || kakao_account?.profile?.profile_image_url || null;
+
+      return {
+        success: true,
+        userData: { oauthProvider: 'kakao', oauthId: String(oauthId), email, name, profileImage },
+      };
+    } catch (error) {
+      console.error('Kakao token verification failed:', error.message);
+      return { success: false, error: 'Invalid Kakao token' };
+    }
+  }
+
+  // Naver OAuth 토큰 검증 및 사용자 정보 조회
+  async verifyNaverToken(accessToken) {
+    try {
+      const response = await axios.get('https://openapi.naver.com/v1/nid/me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      const { id: oauthId, email, name, nickname, profile_image: profileImage } = response.data.response;
+      const displayName = name || nickname || '네이버 사용자';
+
+      return {
+        success: true,
+        userData: { oauthProvider: 'naver', oauthId, email, name: displayName, profileImage },
+      };
+    } catch (error) {
+      console.error('Naver token verification failed:', error.message);
+      return { success: false, error: 'Invalid Naver token' };
+    }
+  }
+
+  // 통합 OAuth 로그인 처리
+  async handleOAuthLogin(provider, accessToken) {
+    let verifyResult;
+
+    switch (provider) {
+      case 'google':
+        verifyResult = await this.verifyGoogleToken(accessToken);
+        break;
+      case 'kakao':
+        verifyResult = await this.verifyKakaoToken(accessToken);
+        break;
+      case 'naver':
+        verifyResult = await this.verifyNaverToken(accessToken);
+        break;
+      default:
+        return { success: false, error: 'Unsupported OAuth provider' };
+    }
+
+    if (!verifyResult.success) {
+      return verifyResult;
+    }
+
+    // 사용자 생성 또는 조회
+    const user = await this.findOrCreateUser(verifyResult.userData);
+
+    // JWT 토큰 발급
+    const token = this.generateToken(user.id);
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        profileImage: user.profile_image,
+        gender: user.gender,
+        type: user.type,
+        partnerName: user.partner_name,
+      },
+      token,
+    };
+  }
+
+  // 회원 탈퇴
+  async deleteUser(userId) {
+    const result = await db.query('DELETE FROM users WHERE id = $1 RETURNING id', [userId]);
+    return result.rows.length > 0;
   }
 }
 
