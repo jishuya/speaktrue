@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Animated,
   Modal,
   ActivityIndicator,
@@ -15,7 +14,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { Icon } from '../components/ui';
+import { Icon, AlertModal } from '../components/ui';
 import { Header, HeaderWithIcon, HistoryDetailModal } from '../components/common';
 import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
@@ -43,6 +42,9 @@ export default function TransformScreen({ navigation, route }) {
 
   // 세션 검색 상태
   const [sessionSearchQuery, setSessionSearchQuery] = useState('');
+
+  // 알림 모달 상태
+  const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'info' });
 
   // route params에서 전달받은 sessionId
   const passedSessionId = route?.params?.sessionId;
@@ -132,7 +134,7 @@ export default function TransformScreen({ navigation, route }) {
 
       setSessions(sessionList);
     } catch {
-      Alert.alert('오류', '상담 기록을 불러오지 못했습니다.');
+      setAlertModal({ visible: true, title: '오류', message: '상담 기록을 불러오지 못했습니다.', type: 'error' });
     } finally {
       setSessionsLoading(false);
     }
@@ -169,7 +171,7 @@ export default function TransformScreen({ navigation, route }) {
       const data = await api.getHistoryDetail(sessionId, user.id);
       setDetailSession(data);
     } catch {
-      Alert.alert('오류', '상세 정보를 불러오지 못했습니다.');
+      setAlertModal({ visible: true, title: '오류', message: '상세 정보를 불러오지 못했습니다.', type: 'error' });
       setShowDetailModal(false);
     } finally {
       setDetailLoading(false);
@@ -200,7 +202,7 @@ export default function TransformScreen({ navigation, route }) {
         tip: response.tip,
       });
     } catch {
-      Alert.alert('변환 실패', '메시지 변환 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setAlertModal({ visible: true, title: '변환 실패', message: '메시지 변환 중 오류가 발생했습니다. 다시 시도해주세요.', type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -209,12 +211,12 @@ export default function TransformScreen({ navigation, route }) {
   const handleCopy = async () => {
     if (result) {
       await Clipboard.setStringAsync(result.converted);
-      Alert.alert('복사 완료', '메시지가 클립보드에 복사되었습니다.');
+      setAlertModal({ visible: true, title: '복사 완료', message: '메시지가 클립보드에 복사되었습니다.', type: 'success' });
     }
   };
 
   const handleKakaoShare = () => {
-    Alert.alert('카카오톡 공유', '카카오톡 공유 기능은 준비 중입니다.');
+    setAlertModal({ visible: true, title: '카카오톡 공유', message: '카카오톡 공유 기능은 준비 중입니다.', type: 'info' });
   };
 
   return (
@@ -595,6 +597,15 @@ export default function TransformScreen({ navigation, route }) {
         showResolveButtons={false}
         showSelectButton={true}
         onSelect={handleSelectFromDetail}
+      />
+
+      {/* Alert Modal */}
+      <AlertModal
+        visible={alertModal.visible}
+        onClose={() => setAlertModal({ ...alertModal, visible: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
       />
     </SafeAreaView>
   );

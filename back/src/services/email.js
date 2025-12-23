@@ -26,22 +26,22 @@ class EmailService {
       subject: '[SpeakTrue] 비밀번호 재설정 안내',
       html: `
         <div style="max-width: 600px; margin: 0 auto; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;">
-          <div style="background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%); padding: 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #6A8D73 0%, #5D7A69 100%); padding: 30px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">SpeakTrue</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">서로의 마음을 잇는 따뜻한 대화의 시작</p>
           </div>
 
           <div style="padding: 40px 30px; background: #f9f9f9;">
-            <h2 style="color: #333; margin: 0 0 20px 0;">비밀번호 재설정 요청</h2>
+            <h2 style="color: #2C3E33; margin: 0 0 20px 0;">비밀번호 재설정 요청</h2>
             <p style="color: #666; line-height: 1.6;">
               안녕하세요,<br><br>
               비밀번호 재설정을 요청하셨습니다.<br>
               아래 인증 코드를 앱에 입력해주세요.
             </p>
 
-            <div style="background: white; border: 2px solid #6B73FF; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;">
+            <div style="background: white; border: 2px solid #6A8D73; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;">
               <p style="color: #999; margin: 0 0 10px 0; font-size: 14px;">인증 코드</p>
-              <p style="color: #6B73FF; font-size: 32px; font-weight: bold; margin: 0; letter-spacing: 8px;">${resetToken}</p>
+              <p style="color: #6A8D73; font-size: 32px; font-weight: bold; margin: 0; letter-spacing: 8px;">${resetToken}</p>
             </div>
 
             <p style="color: #999; font-size: 14px; line-height: 1.6;">
@@ -50,7 +50,7 @@ class EmailService {
             </p>
           </div>
 
-          <div style="padding: 20px 30px; background: #333; text-align: center;">
+          <div style="padding: 20px 30px; background: #2C3E33; text-align: center;">
             <p style="color: #999; margin: 0; font-size: 12px;">
               © SpeakTrue. All rights reserved.
             </p>

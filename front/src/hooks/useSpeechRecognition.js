@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Platform, Alert } from 'react-native';
 
 // expo-speech-recognition 패키지가 설치되어 있는지 동적으로 확인
 let ExpoSpeechRecognition = null;
@@ -9,10 +8,16 @@ try {
   // 패키지가 설치되지 않은 경우
 }
 
-export default function useSpeechRecognition({ onResult, onError } = {}) {
+export default function useSpeechRecognition({ onResult, onError, onAlert } = {}) {
   const [isListening, setIsListening] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
   const [transcript, setTranscript] = useState('');
+
+  const showAlert = (title, message, type = 'info') => {
+    if (onAlert) {
+      onAlert({ title, message, type });
+    }
+  };
 
   useEffect(() => {
     checkAvailability();
@@ -47,20 +52,20 @@ export default function useSpeechRecognition({ onResult, onError } = {}) {
 
   const startListening = useCallback(async () => {
     if (!isAvailable) {
-      Alert.alert(
+      showAlert(
         '음성 인식 불가',
         '이 기기에서는 음성 인식을 사용할 수 없습니다.\n\n패키지 설치가 필요합니다:\nnpx expo install expo-speech-recognition',
-        [{ text: '확인' }]
+        'warning'
       );
       return;
     }
 
     const hasPermission = await requestPermission();
     if (!hasPermission) {
-      Alert.alert(
+      showAlert(
         '권한 필요',
         '음성 인식을 사용하려면 마이크 권한이 필요합니다.',
-        [{ text: '확인' }]
+        'warning'
       );
       return;
     }

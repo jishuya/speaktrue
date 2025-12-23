@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { Icon, ConfirmModal } from '../components/ui';
+import { Icon, ConfirmModal, AlertModal } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, STATUS_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
@@ -59,6 +59,9 @@ export default function HistoryScreen({ navigation }) {
   // 삭제 확인 모달 상태
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+
+  // 알림 모달 상태
+  const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'info' });
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -111,7 +114,7 @@ export default function HistoryScreen({ navigation }) {
       const data = await api.getHistoryDetail(sessionId, user.id);
       setSelectedSession(data);
     } catch {
-      Alert.alert('오류', '상세 정보를 불러오지 못했습니다');
+      setAlertModal({ visible: true, title: '오류', message: '상세 정보를 불러오지 못했습니다', type: 'error' });
       setModalVisible(false);
     } finally {
       setModalLoading(false);
@@ -617,6 +620,15 @@ export default function HistoryScreen({ navigation }) {
         confirmText="삭제"
         cancelText="취소"
         confirmType="danger"
+      />
+
+      {/* Alert Modal */}
+      <AlertModal
+        visible={alertModal.visible}
+        onClose={() => setAlertModal({ ...alertModal, visible: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
       />
     </SafeAreaView>
   );

@@ -5,13 +5,12 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import { readAsStringAsync } from 'expo-file-system/legacy';
-import { Icon } from '../components/ui';
+import { Icon, AlertModal, ConfirmModal } from '../components/ui';
 import { Header, EmotionBadge } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { API_URL } from '../constants/config';
@@ -36,6 +35,10 @@ export default function RecordingScreen({ navigation }) {
   const [sessionId, setSessionId] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
   const [emotions, setEmotions] = useState([]);
+
+  // 모달 상태
+  const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'info' });
+  const [confirmModal, setConfirmModal] = useState({ visible: false, title: '', message: '', onConfirm: null, confirmType: 'primary' });
 
   // Refs
   const recordingRef = useRef(null);
@@ -72,7 +75,7 @@ export default function RecordingScreen({ navigation }) {
     try {
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('권한 필요', '녹음을 위해 마이크 권한이 필요합니다.');
+        setAlertModal({ visible: true, title: '권한 필요', message: '녹음을 위해 마이크 권한이 필요합니다.', type: 'warning' });
         return;
       }
 
@@ -99,7 +102,7 @@ export default function RecordingScreen({ navigation }) {
       }, 1000);
     } catch (error) {
       console.error('녹음 시작 오류:', error);
-      Alert.alert('오류', '녹음을 시작할 수 없습니다.');
+      setAlertModal({ visible: true, title: '오류', message: '녹음을 시작할 수 없습니다.', type: 'error' });
     }
   };
 
@@ -188,31 +191,26 @@ export default function RecordingScreen({ navigation }) {
 
   // 녹음 삭제 (초기화)
   const resetRecording = () => {
-    Alert.alert(
-      '녹음 삭제',
-      '현재 녹음을 삭제하고 새로 시작하시겠습니까?',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            if (soundRef.current) {
-              await soundRef.current.unloadAsync();
-              soundRef.current = null;
-            }
-            setRecordedUri(null);
-            setPlaybackPosition(0);
-            setPlaybackDuration(0);
-            setRecordingDuration(0);
-            setTranscripts([]);
-            setSessionId(null);
-            setAiInsight(null);
-            setEmotions([]);
-          },
-        },
-      ]
-    );
+    setConfirmModal({
+      visible: true,
+      title: '녹음 삭제',
+      message: '현재 녹음을 삭제하고 새로 시작하시겠습니까?',
+      confirmType: 'danger',
+      onConfirm: async () => {
+        if (soundRef.current) {
+          await soundRef.current.unloadAsync();
+          soundRef.current = null;
+        }
+        setRecordedUri(null);
+        setPlaybackPosition(0);
+        setPlaybackDuration(0);
+        setRecordingDuration(0);
+        setTranscripts([]);
+        setSessionId(null);
+        setAiInsight(null);
+        setEmotions([]);
+      },
+    });
   };
 
   // 서버에 업로드 및 STT 변환
@@ -241,13 +239,13 @@ export default function RecordingScreen({ navigation }) {
       if (result.success) {
         setTranscripts(result.transcripts || []);
         setSessionId(result.sessionId);
-        Alert.alert('변환 완료', '음성이 텍스트로 변환되었습니다.');
+        setAlertModal({ visible: true, title: '변환 완료', message: '음성이 텍스트로 변환되었습니다.', type: 'success' });
       } else {
-        Alert.alert('오류', result.error || '변환에 실패했습니다.');
+        setAlertModal({ visible: true, title: '오류', message: result.error || '변환에 실패했습니다.', type: 'error' });
       }
     } catch (error) {
       console.error('업로드 오류:', error);
-      Alert.alert('오류', '서버 연결에 실패했습니다.');
+      setAlertModal({ visible: true, title: '오류', message: '서버 연결에 실패했습니다.', type: 'error' });
     } finally {
       setIsUploading(false);
     }
@@ -256,12 +254,12 @@ export default function RecordingScreen({ navigation }) {
   // AI 분석
   const analyzeConversation = async () => {
     if (transcripts.length === 0) {
-      Alert.alert('알림', '먼저 녹음을 업로드하여 대화 내용을 변환해주세요.');
+      setAlertModal({ visible: true, title: '알림', message: '먼저 녹음을 업로드하여 대화 내용을 변환해주세요.', type: 'info' });
       return;
     }
 
     if (!sessionId) {
-      Alert.alert('오류', '세션 정보가 없습니다. 다시 업로드해주세요.');
+      setAlertModal({ visible: true, title: '오류', message: '세션 정보가 없습니다. 다시 업로드해주세요.', type: 'error' });
       return;
     }
 
@@ -298,11 +296,11 @@ export default function RecordingScreen({ navigation }) {
         if (detectedEmotions.length === 0) detectedEmotions.push('분석 완료');
         setEmotions(detectedEmotions);
       } else {
-        Alert.alert('오류', result.error || 'AI 분석에 실패했습니다.');
+        setAlertModal({ visible: true, title: '오류', message: result.error || 'AI 분석에 실패했습니다.', type: 'error' });
       }
     } catch (error) {
       console.error('분석 오류:', error);
-      Alert.alert('오류', 'AI 분석에 실패했습니다.');
+      setAlertModal({ visible: true, title: '오류', message: 'AI 분석에 실패했습니다.', type: 'error' });
     } finally {
       setIsAnalyzing(false);
     }
@@ -310,14 +308,13 @@ export default function RecordingScreen({ navigation }) {
 
   const handleBack = () => {
     if (isRecording || recordedUri) {
-      Alert.alert(
-        '나가기',
-        '현재 녹음 내용이 저장되지 않습니다. 나가시겠습니까?',
-        [
-          { text: '취소', style: 'cancel' },
-          { text: '나가기', style: 'destructive', onPress: () => navigation.goBack() },
-        ]
-      );
+      setConfirmModal({
+        visible: true,
+        title: '나가기',
+        message: '현재 녹음 내용이 저장되지 않습니다. 나가시겠습니까?',
+        confirmType: 'danger',
+        onConfirm: () => navigation.goBack(),
+      });
     } else {
       navigation.goBack();
     }
@@ -556,6 +553,27 @@ export default function RecordingScreen({ navigation }) {
 
         <View style={{ height: SPACING.xxl }} />
       </ScrollView>
+
+      {/* Alert Modal */}
+      <AlertModal
+        visible={alertModal.visible}
+        onClose={() => setAlertModal({ ...alertModal, visible: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+      />
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        visible={confirmModal.visible}
+        onClose={() => setConfirmModal({ ...confirmModal, visible: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmType === 'danger' ? '삭제' : '확인'}
+        cancelText="취소"
+        confirmType={confirmModal.confirmType}
+      />
     </SafeAreaView>
   );
 }

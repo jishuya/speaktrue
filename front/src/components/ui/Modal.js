@@ -1,6 +1,8 @@
-import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Dimensions } from 'react-native';
 import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS, Z_INDEX } from '../../constants/theme';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // 기본 모달
 export default function Modal({
@@ -10,6 +12,8 @@ export default function Modal({
   children,
   showCloseButton = true,
   closeOnBackdrop = true,
+  scrollable = false,
+  maxHeight = SCREEN_HEIGHT * 0.7,
 }) {
   return (
     <RNModal
@@ -21,7 +25,7 @@ export default function Modal({
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
         <View style={styles.backdrop}>
           <TouchableWithoutFeedback>
-            <View style={styles.container}>
+            <View style={[styles.container, scrollable && { maxHeight }]}>
               {(title || showCloseButton) && (
                 <View style={styles.header}>
                   <Text style={styles.title}>{title}</Text>
@@ -32,7 +36,18 @@ export default function Modal({
                   )}
                 </View>
               )}
-              <View style={styles.content}>{children}</View>
+              {scrollable ? (
+                <ScrollView
+                  style={styles.scrollContent}
+                  contentContainerStyle={styles.scrollContentContainer}
+                  showsVerticalScrollIndicator={true}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {children}
+                </ScrollView>
+              ) : (
+                <View style={styles.content}>{children}</View>
+              )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -198,6 +213,13 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   content: {
+    padding: SPACING.md,
+    paddingTop: SPACING.sm,
+  },
+  scrollContent: {
+    flexGrow: 0,
+  },
+  scrollContentContainer: {
     padding: SPACING.md,
     paddingTop: SPACING.sm,
   },

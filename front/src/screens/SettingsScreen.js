@@ -4,10 +4,10 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
   StyleSheet,
   Image,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import profileFemaleImage from '../assets/images/profile_female.png';
@@ -49,6 +49,8 @@ export default function SettingsScreen({ navigation }) {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [comingSoonModalVisible, setComingSoonModalVisible] = useState(false);
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
+  const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'info' });
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -105,7 +107,7 @@ export default function SettingsScreen({ navigation }) {
       });
       setProfileModalVisible(false);
     } catch {
-      Alert.alert('오류', '프로필 수정에 실패했습니다.');
+      setAlertModal({ visible: true, title: '오류', message: '프로필 수정에 실패했습니다.', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -114,7 +116,7 @@ export default function SettingsScreen({ navigation }) {
   const handleChangePassword = async (currentPassword, newPassword) => {
     const result = await api.changePassword(currentPassword, newPassword);
     if (result.success) {
-      Alert.alert('성공', '비밀번호가 변경되었습니다.');
+      setAlertModal({ visible: true, title: '성공', message: '비밀번호가 변경되었습니다.', type: 'success' });
     } else {
       throw new Error(result.error || '비밀번호 변경에 실패했습니다.');
     }
@@ -136,14 +138,7 @@ export default function SettingsScreen({ navigation }) {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      '계정 삭제',
-      '계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 정말 삭제하시겠습니까?',
-      [
-        { text: '취소', style: 'cancel' },
-        { text: '삭제', style: 'destructive', onPress: () => {} },
-      ]
-    );
+    setDeleteAccountModalVisible(true);
   };
 
   return (
@@ -212,21 +207,21 @@ export default function SettingsScreen({ navigation }) {
             iconColor={COLORS.primary}
             title="대화 패턴 분석"
             subtitle="나의 NVC 실천 기록 확인하기"
-            onPress={() => navigation.navigate('Patterns')}
+            onPress={() => setComingSoonModalVisible(true)}
           />
           <MenuItem
             icon="menu-book"
             iconBgColor="#F3E5F5"
             iconColor="#7B1FA2"
-            title="사용자 가이드"
-            onPress={() => {}}
+            title="개인정보처리방침"
+            onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/privacy.html')}
           />
           <MenuItem
             icon="chat-bubble"
             iconBgColor="#E0F2F1"
             iconColor="#00796B"
             title="의견 보내기"
-            onPress={() => {}}
+            onPress={() => Linking.openURL('mailto:jishuya3015@gmail.com?subject=[SpeakTrue] 의견 보내기')}
           />
         </MenuGroup>
 
@@ -236,8 +231,8 @@ export default function SettingsScreen({ navigation }) {
             icon="description"
             iconBgColor={COLORS.borderLight}
             iconColor={COLORS.textSecondary}
-            title="이용 약관"
-            onPress={() => {}}
+            title="이용약관"
+            onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/terms.html')}
           />
           <MenuItem
             icon="logout"
@@ -290,6 +285,27 @@ export default function SettingsScreen({ navigation }) {
         message="준비 중입니다"
         confirmText="확인"
         type="info"
+      />
+
+      {/* Delete Account Confirm Modal */}
+      <ConfirmModal
+        visible={deleteAccountModalVisible}
+        onClose={() => setDeleteAccountModalVisible(false)}
+        onConfirm={() => {}}
+        title="계정 삭제"
+        message="계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 정말 삭제하시겠습니까?"
+        confirmText="삭제"
+        cancelText="취소"
+        confirmType="danger"
+      />
+
+      {/* General Alert Modal */}
+      <AlertModal
+        visible={alertModal.visible}
+        onClose={() => setAlertModal({ ...alertModal, visible: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
       />
     </SafeAreaView>
   );

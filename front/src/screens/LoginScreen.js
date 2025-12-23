@@ -359,23 +359,25 @@ export default function LoginScreen({ navigation }) {
 
         // 로딩 상태 해제
         setIsRegistering(false);
+        setShowRegisterModal(false);
+        resetRegisterForm();
 
-        // 성공 알림 표시 (확인 버튼 누르면 모달 닫고 자동 로그인)
+        // 성공 알림 표시 (확인 버튼 누르면 자동 로그인)
         showAlert(
           '회원가입 완료',
           '회원가입이 성공적으로 \n완료되었습니다.\n자동으로 로그인됩니다.',
           'success',
-          async () => {
-            setShowRegisterModal(false);
-            resetRegisterForm();
-            // 자동 로그인
-            const result = await login('email', null, {
-              email: savedEmail,
-              password: savedPassword
-            });
-            if (result.success) {
-              navigation.replace('MainTabs');
-            }
+          () => {
+            // 모달이 완전히 닫힌 후 로그인 실행
+            setTimeout(async () => {
+              const result = await login('email', null, {
+                email: savedEmail,
+                password: savedPassword
+              });
+              if (result.success) {
+                navigation.replace('MainTabs');
+              }
+            }, 100);
           }
         );
       }
@@ -538,12 +540,12 @@ export default function LoginScreen({ navigation }) {
               )}
 
               {/* Kakao */}
-              {renderSocialButton(
+              {/* {renderSocialButton(
                 'kakao',
                 handleKakaoLogin,
                 styles.kakaoButton,
                 <Icon name="chat-bubble" size={18} color="#3B1E1E" />
-              )}
+              )} */}
             </View>
 
             {/* Privacy Text */}
@@ -576,6 +578,7 @@ export default function LoginScreen({ navigation }) {
           resetRegisterForm();
         }}
         title="회원가입"
+        scrollable={true}
       >
         <View style={styles.modalContent}>
           {/* 이름 입력 */}
@@ -1299,12 +1302,13 @@ const styles = StyleSheet.create({
   },
   genderButton: {
     flex: 1,
-    paddingVertical: SPACING.xs,
+    height: 44,
     borderRadius: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.background,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   genderButtonSelected: {
     borderColor: COLORS.primary,
@@ -1313,6 +1317,7 @@ const styles = StyleSheet.create({
   genderButtonText: {
     fontFamily: FONT_FAMILY.base,
     fontSize: 14,
+    lineHeight: 20,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textSecondary,
   },
@@ -1329,7 +1334,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   tokenInput: {
-    letterSpacing: 8,
     fontSize: 18,
     fontWeight: FONT_WEIGHT.bold,
     textAlign: 'center',
