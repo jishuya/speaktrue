@@ -168,7 +168,7 @@ export default function HomeScreen({ navigation }) {
           {/* 레코딩분석 */}
           <TouchableOpacity
             style={[styles.featureCardSmall, styles.featureCardPurple]}
-            onPress={() => handleNavigate('RecordingDetail')}
+            onPress={() => handleNavigate('Recording')}
             activeOpacity={0.9}
           >
             <View style={[styles.featureIconContainer, styles.featureIconPurple]}>

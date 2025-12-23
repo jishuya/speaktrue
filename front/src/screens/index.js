@@ -6,4 +6,4 @@ export { default as HistoryScreen } from './HistoryScreen';
 export { default as PatternsScreen } from './PatternsScreen';
 export { default as SettingsScreen } from './SettingsScreen';
 export { default as LoginScreen } from './LoginScreen';
-export { default as RecordingDetailScreen } from './RecordingDetailScreen';
+export { default as RecordingScreen } from './RecordingScreen';

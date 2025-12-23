@@ -10,6 +10,7 @@ const nvcRoutes = require('./routes/nvc');
 const historyRoutes = require('./routes/history');
 const userRoutes = require('./routes/user');
 const analysisRoutes = require('./routes/analysis');
+const recordingRoutes = require('./routes/recording');
 
 const app = express();
 const PORT = process.env.PORT || 9502;
@@ -18,7 +19,7 @@ const PORT = process.env.PORT || 9502;
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json({ limit: '10mb' })); // 이미지 전송을 위해 limit 증가
+app.use(express.json({ limit: '50mb' })); // 오디오/이미지 전송을 위해 limit 증가
 
 // Health check
 app.get('/health', (req, res) => {
@@ -32,6 +33,7 @@ app.use('/api/nvc', nvcRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/analysis', analysisRoutes);
+app.use('/api/recording', recordingRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

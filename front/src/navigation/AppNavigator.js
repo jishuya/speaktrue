@@ -13,7 +13,7 @@ import {
   PatternsScreen,
   SettingsScreen,
   LoginScreen,
-  RecordingDetailScreen,
+  RecordingScreen,
 } from '../screens';
 import { Icon } from '../components/ui';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -258,8 +258,8 @@ export default function AppNavigator() {
           options={{ animation: 'fade' }}
         />
 
-        {/* Recording Screens */}
-        <Stack.Screen name="RecordingDetail" component={RecordingDetailScreen} />
+        {/* Recording Screen */}
+        <Stack.Screen name="Recording" component={RecordingScreen} />
 
         {/* Transform Screen (NVC 변환) */}
         <Stack.Screen name="Transform" component={TransformScreen} />
