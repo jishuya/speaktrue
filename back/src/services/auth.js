@@ -1,6 +1,7 @@
 // OAuth 및 인증 관련 서비스
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const bcrypt = require('bcrypt');
 const db = require('./db');
 
 class AuthService {
@@ -177,6 +178,98 @@ class AuthService {
   async deleteUser(userId) {
     const result = await db.query('DELETE FROM users WHERE id = $1 RETURNING id', [userId]);
     return result.rows.length > 0;
+  }
+
+  // 이메일 로그인 처리
+  async handleEmailLogin(email, password) {
+    try {
+      // 이메일로 사용자 조회
+      const result = await db.query(
+        'SELECT * FROM users WHERE email = $1 AND oauth_provider IS NULL',
+        [email]
+      );
+
+      if (result.rows.length === 0) {
+        return { success: false, error: '이메일 또는 비밀번호가 일치하지 않습니다.' };
+      }
+
+      const user = result.rows[0];
+
+      // 비밀번호 검증
+      const isValidPassword = await bcrypt.compare(password, user.password_hash);
+      if (!isValidPassword) {
+        return { success: false, error: '이메일 또는 비밀번호가 일치하지 않습니다.' };
+      }
+
+      // JWT 토큰 발급
+      const token = this.generateToken(user.id);
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          profileImage: user.profile_image,
+          gender: user.gender,
+          type: user.type,
+          partnerName: user.partner_name,
+        },
+        token,
+      };
+    } catch (error) {
+      console.error('Email login failed:', error.message);
+      return { success: false, error: '로그인 중 오류가 발생했습니다.' };
+    }
+  }
+
+  // 이메일 회원가입 처리
+  async handleEmailRegister(email, password, name = null) {
+    try {
+      // 이메일 중복 확인
+      const existingUser = await db.query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+      );
+
+      if (existingUser.rows.length > 0) {
+        return { success: false, error: '이미 사용 중인 이메일입니다.' };
+      }
+
+      // 비밀번호 해시
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(password, saltRounds);
+
+      // 새 사용자 생성
+      const newUser = await db.query(
+        `INSERT INTO users (email, password_hash, name)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [email, passwordHash, name || email.split('@')[0]]
+      );
+
+      const user = newUser.rows[0];
+
+      // JWT 토큰 발급
+      const token = this.generateToken(user.id);
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          profileImage: user.profile_image,
+          gender: user.gender,
+          type: user.type,
+          partnerName: user.partner_name,
+        },
+        token,
+      };
+    } catch (error) {
+      console.error('Email registration failed:', error.message);
+      return { success: false, error: '회원가입 중 오류가 발생했습니다.' };
+    }
   }
 }
 

@@ -200,6 +200,14 @@ class ApiService {
     });
   }
 
+  // Auth - 이메일 로그인
+  async emailLogin(email, password) {
+    return this.request('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
   async logout() {
     return this.request('/api/auth/logout', {
       method: 'POST',

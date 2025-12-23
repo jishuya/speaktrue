@@ -66,6 +66,48 @@ router.post('/naver', asyncHandler(async (req, res) => {
   });
 }));
 
+// POST /api/auth/login - 이메일 로그인
+router.post('/login', asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
+  }
+
+  const result = await authService.handleEmailLogin(email, password);
+
+  if (!result.success) {
+    return res.status(401).json({ error: result.error });
+  }
+
+  res.json({
+    message: '로그인 성공',
+    user: result.user,
+    token: result.token,
+  });
+}));
+
+// POST /api/auth/register - 회원가입
+router.post('/register', asyncHandler(async (req, res) => {
+  const { email, password, name } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
+  }
+
+  const result = await authService.handleEmailRegister(email, password, name);
+
+  if (!result.success) {
+    return res.status(400).json({ error: result.error });
+  }
+
+  res.json({
+    message: '회원가입 성공',
+    user: result.user,
+    token: result.token,
+  });
+}));
+
 // POST /api/auth/logout - 로그아웃
 router.post('/logout', authenticate, asyncHandler(async (req, res) => {
   // JWT 기반 인증이므로 클라이언트에서 토큰 삭제로 처리

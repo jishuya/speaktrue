@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email           VARCHAR(255) UNIQUE,
+    password_hash   VARCHAR(255),  -- 일반 로그인용 (bcrypt)
     name            VARCHAR(100) NOT NULL,
     gender          VARCHAR(10) NOT NULL DEFAULT 'wife',
     type        	VARCHAR(10) NOT NULL DEFAULT 'female',

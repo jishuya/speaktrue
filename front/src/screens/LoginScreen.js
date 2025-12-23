@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
@@ -20,6 +21,9 @@ export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Google OAuth hook
   const { response: googleResponse, promptAsync: googlePromptAsync } = authService.useGoogleAuth();
@@ -111,6 +115,34 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // 일반 로그인
+  const handleEmailLogin = async () => {
+    if (!email.trim()) {
+      Alert.alert('알림', '이메일을 입력해주세요.');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('알림', '비밀번호를 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadingProvider('email');
+    try {
+      const result = await login('email', null, { email, password });
+      if (result.success) {
+        navigation.replace('MainTabs');
+      } else {
+        Alert.alert('로그인 실패', result.error || '이메일 또는 비밀번호를 확인해주세요.');
+      }
+    } catch (error) {
+      Alert.alert('오류', '로그인 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+      setLoadingProvider(null);
+    }
+  };
+
   const renderSocialButton = (provider, onPress, style, iconContent) => {
     const isCurrentLoading = loadingProvider === provider;
     const getLoaderColor = () => {
@@ -157,7 +189,7 @@ export default function LoginScreen({ navigation }) {
             {/* Logo Section */}
             <View style={styles.logoSection}>
               <View style={styles.logoContainer}>
-                <Logo size={56} color={COLORS.surface} />
+                <Logo size={40} color={COLORS.surface} />
               </View>
               <Text style={styles.title}>
                 <Text style={styles.titleBold}>SpeakTrue</Text>
@@ -165,6 +197,75 @@ export default function LoginScreen({ navigation }) {
               <Text style={styles.subtitle}>
                 서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
               </Text>
+            </View>
+
+            {/* Login Form */}
+            <View style={styles.formContainer}>
+              {/* Email Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>아이디 또는 이메일</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="mail" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="이메일을 입력해주세요"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputGroup}>
+                <View style={styles.inputLabelRow}>
+                  <Text style={styles.inputLabel}>비밀번호</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.forgotPassword}>비밀번호 찾기</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.inputWrapper}>
+                  <Icon name="lock" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="비밀번호를 입력해주세요"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeButton}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Icon
+                      name={showPassword ? 'visibility' : 'visibility-off'}
+                      size={18}
+                      color={COLORS.textMuted}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Login Button */}
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={handleEmailLogin}
+                activeOpacity={0.8}
+                disabled={isLoading}
+              >
+                {loadingProvider === 'email' ? (
+                  <ActivityIndicator size="small" color={COLORS.surface} />
+                ) : (
+                  <>
+                    <Text style={styles.loginButtonText}>로그인</Text>
+                    <Icon name="arrow-forward" size={16} color={COLORS.surface} />
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
 
             {/* Divider */}
@@ -197,7 +298,7 @@ export default function LoginScreen({ navigation }) {
                 'kakao',
                 handleKakaoLogin,
                 styles.kakaoButton,
-                <Icon name="chat-bubble" size={22} color="#3B1E1E" />
+                <Icon name="chat-bubble" size={18} color="#3B1E1E" />
               )}
             </View>
 
@@ -261,32 +362,31 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     justifyContent: 'center',
-    paddingVertical: SPACING.xl,
+    paddingVertical: SPACING.sm,
   },
 
   // Logo Section
   logoSection: {
     alignItems: 'center',
-    marginBottom: SPACING.xl,
-    marginTop: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.sm,
     transform: [{ rotate: '3deg' }],
     shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowRadius: 12,
+    elevation: 6,
   },
   title: {
-    fontSize: 36,
+    fontSize: 28,
     letterSpacing: -0.5,
     color: COLORS.textPrimary,
   },
@@ -296,20 +396,96 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 16,
-    fontWeight: FONT_WEIGHT.semiBold,
+    fontSize: 13,
+    fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
     textAlign: 'center',
-    marginTop: SPACING.sm,
-    lineHeight: 24,
+    marginTop: SPACING.xs,
+    lineHeight: 20,
+  },
+
+  // Form
+  formContainer: {
+    marginTop: SPACING.md,
+  },
+  inputGroup: {
+    marginBottom: SPACING.sm,
+  },
+  inputLabel: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+    marginLeft: SPACING.xs,
+  },
+  inputLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+  },
+  forgotPassword: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 11,
+    fontWeight: FONT_WEIGHT.semiBold,
+    color: COLORS.primary,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.md,
+    paddingLeft: SPACING.sm,
+    paddingRight: SPACING.xs,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  inputIcon: {
+    marginRight: SPACING.xs,
+  },
+  input: {
+    flex: 1,
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 14,
+    fontWeight: FONT_WEIGHT.medium,
+    color: COLORS.textPrimary,
+    paddingVertical: SPACING.sm,
+  },
+  eyeButton: {
+    padding: SPACING.xs,
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.sm,
+    marginTop: SPACING.xs,
+    gap: SPACING.xs,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  loginButtonText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 15,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.surface,
   },
 
   // Divider
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: SPACING.xxl,
-    marginBottom: SPACING.lg,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
   divider: {
     flex: 1,
@@ -318,40 +494,40 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textMuted,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
   },
 
   // Social Buttons
   socialButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: SPACING.lg,
-    marginTop: SPACING.md,
+    gap: SPACING.md,
+    marginTop: SPACING.xs,
   },
   socialButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: COLORS.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 2,
+    elevation: 1,
   },
   googleButton: {
     backgroundColor: COLORS.surface,
   },
   googleIcon: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     color: COLORS.textSecondary,
   },
@@ -361,7 +537,7 @@ const styles = StyleSheet.create({
   },
   naverIcon: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     color: COLORS.surface,
   },
@@ -373,11 +549,11 @@ const styles = StyleSheet.create({
   // Privacy Text
   privacyText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 13,
+    fontSize: 11,
     color: COLORS.textMuted,
     textAlign: 'center',
-    marginTop: SPACING.xl,
-    lineHeight: 20,
+    marginTop: SPACING.md,
+    lineHeight: 16,
   },
   linkText: {
     color: COLORS.primary,
@@ -386,13 +562,13 @@ const styles = StyleSheet.create({
 
   // Footer
   footer: {
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
+    paddingTop: SPACING.xs,
+    paddingBottom: SPACING.sm,
     alignItems: 'center',
   },
   footerText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: 13,
+    fontSize: 11,
     color: COLORS.textMuted,
   },
 });

@@ -38,10 +38,18 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // OAuth 로그인 처리
-  const login = async (provider, accessToken) => {
+  // 로그인 처리 (OAuth 또는 이메일)
+  const login = async (provider, accessToken, credentials = null) => {
     try {
-      const response = await api.oauthLogin(provider, accessToken);
+      let response;
+
+      if (provider === 'email' && credentials) {
+        // 이메일 로그인
+        response = await api.emailLogin(credentials.email, credentials.password);
+      } else {
+        // OAuth 로그인
+        response = await api.oauthLogin(provider, accessToken);
+      }
 
       if (response.token && response.user) {
         await Promise.all([
