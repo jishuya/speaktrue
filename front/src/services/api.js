@@ -208,9 +208,10 @@ class ApiService {
     });
   }
 
-  async logout() {
+  async logout(oauthToken = null, oauthProvider = null) {
     return this.request('/api/auth/logout', {
       method: 'POST',
+      body: JSON.stringify({ oauthToken, oauthProvider }),
     });
   }
 

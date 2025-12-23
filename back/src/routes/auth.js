@@ -122,8 +122,13 @@ router.post('/register', asyncHandler(async (req, res) => {
 
 // POST /api/auth/logout - 로그아웃
 router.post('/logout', authenticate, asyncHandler(async (req, res) => {
-  // JWT 기반 인증이므로 클라이언트에서 토큰 삭제로 처리
-  // 필요 시 토큰 블랙리스트 구현 가능
+  const { oauthToken, oauthProvider } = req.body;
+
+  // 네이버 OAuth 토큰 무효화 (서버에서만 가능)
+  if (oauthProvider === 'naver' && oauthToken) {
+    await authService.revokeNaverToken(oauthToken);
+  }
+
   res.json({ message: '로그아웃 성공' });
 }));
 

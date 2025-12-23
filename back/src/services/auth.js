@@ -275,6 +275,31 @@ class AuthService {
     }
   }
 
+  // 네이버 OAuth 토큰 무효화
+  async revokeNaverToken(accessToken) {
+    try {
+      const clientId = process.env.NAVER_CLIENT_ID;
+      const clientSecret = process.env.NAVER_CLIENT_SECRET;
+
+      if (!clientId || !clientSecret) {
+        console.warn('Naver OAuth credentials not configured');
+        return;
+      }
+
+      await axios.get('https://nid.naver.com/oauth2.0/token', {
+        params: {
+          grant_type: 'delete',
+          client_id: clientId,
+          client_secret: clientSecret,
+          access_token: accessToken,
+          service_provider: 'NAVER',
+        },
+      });
+    } catch (error) {
+      console.error('Naver token revoke failed:', error.message);
+    }
+  }
+
   // 비밀번호 변경 처리
   async handleChangePassword(userId, currentPassword, newPassword) {
     try {

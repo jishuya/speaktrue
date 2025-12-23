@@ -87,20 +87,65 @@ export function AuthProvider({ children }) {
   // 로그아웃 처리
   const logout = async () => {
     try {
-      await api.logout();
+      // 저장된 OAuth 정보 가져오기
+      const [oauthToken, oauthProvider] = await Promise.all([
+        AsyncStorage.getItem(OAUTH_TOKEN_KEY),
+        AsyncStorage.getItem(OAUTH_PROVIDER_KEY),
+      ]);
+
+      // 소셜 로그아웃 처리 (OAuth 토큰 무효화)
+      if (oauthToken && oauthProvider) {
+        await revokeOAuthToken(oauthProvider, oauthToken);
+      }
+
+      // 서버 로그아웃 API 호출 (네이버는 서버에서 토큰 무효화)
+      await api.logout(oauthToken, oauthProvider);
     } catch (error) {
-      console.error('Logout API error:', error);
+      console.error('Logout error:', error);
     }
 
+    // 로컬 스토리지 정리
     await Promise.all([
       AsyncStorage.removeItem(AUTH_TOKEN_KEY),
       AsyncStorage.removeItem(USER_DATA_KEY),
+      AsyncStorage.removeItem(OAUTH_TOKEN_KEY),
+      AsyncStorage.removeItem(OAUTH_PROVIDER_KEY),
     ]);
 
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
     api.setAuthToken(null);
+  };
+
+  // OAuth 토큰 무효화 (소셜 로그아웃)
+  const revokeOAuthToken = async (provider, accessToken) => {
+    try {
+      switch (provider) {
+        case 'kakao':
+          // 카카오 로그아웃 API
+          await fetch('https://kapi.kakao.com/v1/user/logout', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          break;
+
+        case 'naver':
+          // 네이버는 서버에서 처리 (client_secret 필요)
+          break;
+
+        case 'google':
+          // 구글 토큰 무효화
+          await fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, {
+            method: 'POST',
+          });
+          break;
+      }
+    } catch (error) {
+      console.error(`${provider} OAuth revoke error:`, error);
+    }
   };
 
   // 사용자 정보 갱신
