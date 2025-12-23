@@ -15,6 +15,7 @@ import { Icon } from '../components/ui';
 import { Header, EmotionBadge } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { API_URL } from '../constants/config';
+import { api } from '../services';
 
 export default function RecordingScreen({ navigation }) {
   // 녹음 상태
@@ -32,6 +33,7 @@ export default function RecordingScreen({ navigation }) {
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [transcripts, setTranscripts] = useState([]);
+  const [sessionId, setSessionId] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
   const [emotions, setEmotions] = useState([]);
 
@@ -204,6 +206,7 @@ export default function RecordingScreen({ navigation }) {
             setPlaybackDuration(0);
             setRecordingDuration(0);
             setTranscripts([]);
+            setSessionId(null);
             setAiInsight(null);
             setEmotions([]);
           },
@@ -237,6 +240,7 @@ export default function RecordingScreen({ navigation }) {
 
       if (result.success) {
         setTranscripts(result.transcripts || []);
+        setSessionId(result.sessionId);
         Alert.alert('변환 완료', '음성이 텍스트로 변환되었습니다.');
       } else {
         Alert.alert('오류', result.error || '변환에 실패했습니다.');
@@ -256,36 +260,45 @@ export default function RecordingScreen({ navigation }) {
       return;
     }
 
+    if (!sessionId) {
+      Alert.alert('오류', '세션 정보가 없습니다. 다시 업로드해주세요.');
+      return;
+    }
+
     setIsAnalyzing(true);
 
     try {
-      // 대화 내용을 텍스트로 변환
-      const conversationText = transcripts
-        .map(t => `${t.speaker === 'me' ? '나' : '상대방'}: ${t.content}`)
-        .join('\n');
+      // api.analyzeRecording 사용 (sessions, session_summaries, session_tags에 저장)
+      const result = await api.analyzeRecording(sessionId);
 
-      // Claude API로 분석 요청
-      const response = await fetch(`${API_URL}/api/chat/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `다음 부부 대화를 분석해주세요:\n\n${conversationText}\n\n1. 대화의 핵심 갈등 포인트\n2. 각자의 숨겨진 감정/욕구\n3. 더 나은 대화를 위한 제안`,
-          mode: 'empathy',
-        }),
-      });
+      if (result.success && result.analysis) {
+        const analysis = result.analysis;
 
-      const result = await response.json();
+        // AI 인사이트 텍스트 구성
+        const insightText = [
+          `📌 핵심 갈등: ${analysis.rootCause}`,
+          '',
+          `📝 요약: ${analysis.summary}`,
+          '',
+          `💭 나의 충족되지 못한 욕구: ${analysis.myUnmetNeed}`,
+          '',
+          `👤 상대방의 충족되지 못한 욕구: ${analysis.partnerUnmetNeed}`,
+          '',
+          `🔄 갈등 패턴: ${analysis.conflictPattern}`,
+          '',
+          `💡 제안: ${analysis.suggestedApproach}`,
+          '',
+          analysis.actionItems?.length > 0 ? `✅ 실천 항목:\n${analysis.actionItems.map(item => `• ${item}`).join('\n')}` : '',
+        ].filter(Boolean).join('\n');
 
-      if (result.response) {
-        setAiInsight(result.response);
-        // 감정 태그 설정 (간단한 키워드 기반)
-        const detectedEmotions = [];
-        if (result.response.includes('인정') || result.response.includes('존중')) detectedEmotions.push('인정의 욕구');
-        if (result.response.includes('피곤') || result.response.includes('지침')) detectedEmotions.push('압도감');
-        if (result.response.includes('자유') || result.response.includes('선택')) detectedEmotions.push('자율성');
-        if (result.response.includes('함께') || result.response.includes('연결')) detectedEmotions.push('유대감');
+        setAiInsight(insightText);
+
+        // 감정 태그 설정 (분석 결과에서 가져옴)
+        const detectedEmotions = analysis.myEmotions?.slice(0, 4) || [];
         if (detectedEmotions.length === 0) detectedEmotions.push('분석 완료');
         setEmotions(detectedEmotions);
+      } else {
+        Alert.alert('오류', result.error || 'AI 분석에 실패했습니다.');
       }
     } catch (error) {
       console.error('분석 오류:', error);

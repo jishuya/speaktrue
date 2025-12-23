@@ -110,6 +110,13 @@ class ApiService {
     });
   }
 
+  // Recording - 녹음 대화 AI 분석
+  async analyzeRecording(sessionId) {
+    return this.request(`/api/recording/analyze/${sessionId}`, {
+      method: 'POST',
+    });
+  }
+
   // NVC
   async convertToNvc(message, sessionId = null) {
     const body = { message };

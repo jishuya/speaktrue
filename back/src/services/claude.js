@@ -596,6 +596,78 @@ ${conflictPatterns.length > 0 ? conflictPatterns.map(p => `- ${p.pattern}: ${p.c
     }
   }
 
+  // 녹음된 부부 대화 분석 (session_type='recording'용)
+  // EmpathyScreen의 generateSessionSummary와 동일한 형식으로 반환
+  async analyzeRecordingConversation(transcripts) {
+    const systemPrompt = `당신은 부부관계 전문 상담사입니다. 녹음된 부부 대화를 분석하여 JSON 형식으로 인사이트를 제공해주세요.
+
+## 응답 형식
+반드시 아래 JSON 형식으로만 응답해주세요:
+{
+  "rootCause": "이 대화에서 드러난 근본적인 갈등 원인 (1문장)",
+  "triggerSituation": "트리거 상황 (가사, 시댁, 돈, 육아, 소통 등 핵심 키워드)",
+  "summary": "대화 전체 요약 (2-3문장)",
+  "myEmotions": ["나(사용자)가 느꼈을 감정들", "최대 5개"],
+  "myNeeds": ["나의 욕구/바람", "최대 3개"],
+  "myUnmetNeed": "나의 충족되지 못한 핵심 욕구 (1문장)",
+  "partnerEmotions": ["상대방이 느꼈을 것으로 추정되는 감정", "최대 3개"],
+  "partnerNeeds": ["상대방의 욕구로 추정되는 것", "최대 3개"],
+  "partnerUnmetNeed": "상대방의 충족되지 못한 욕구 (1문장)",
+  "conflictPattern": "갈등 패턴 (회피형, 폭발형, 냉전형, 비난형, 방어형 등)",
+  "suggestedApproach": "더 나은 대화를 위한 제안 (2-3문장)",
+  "actionItems": ["구체적 실천 항목", "최대 3개"],
+  "topics": ["주제 태그", "최대 3개"]
+}
+
+## 분석 기준
+- '나'와 '상대방'의 대화를 객관적으로 분석
+- 각자의 숨겨진 감정과 욕구를 파악
+- 갈등의 근본 원인과 패턴 식별
+- 비난 없이 양측 모두의 관점 고려
+- 실천 가능한 구체적인 제안
+
+## 대화 스타일
+- 진지하고 따뜻한 전문 상담사 톤
+- 이모지 사용하지 않음
+- 판단이나 비난 없이 객관적 분석
+
+## 절대 하지 말 것
+- 어느 한 쪽만 비난하기
+- 이모지 사용
+- JSON 외의 텍스트 출력
+- 대화에서 언급되지 않은 내용 추측`;
+
+    // 대화 내용을 텍스트로 변환
+    const conversationText = transcripts
+      .map(t => `${t.speaker === 'me' ? '나' : '상대방'}: ${t.content}`)
+      .join('\n');
+
+    const response = await this.sendMessage(
+      [{ role: 'user', content: `다음 부부 대화를 분석해주세요:\n\n${conversationText}` }],
+      systemPrompt
+    );
+
+    try {
+      return JSON.parse(response);
+    } catch {
+      return {
+        rootCause: '분석 실패',
+        triggerSituation: '',
+        summary: response,
+        myEmotions: [],
+        myNeeds: [],
+        myUnmetNeed: '',
+        partnerEmotions: [],
+        partnerNeeds: [],
+        partnerUnmetNeed: '',
+        conflictPattern: '',
+        suggestedApproach: '',
+        actionItems: [],
+        topics: [],
+      };
+    }
+  }
+
   async convertToNvc(message, sessionContext = null) {
     // 세션 컨텍스트가 있으면 프롬프트에 추가
     let contextSection = '';

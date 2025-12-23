@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../services/db');
 const clovaSpeech = require('../services/clovaspeech');
+const claudeService = require('../services/claude');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -159,6 +160,113 @@ router.get('/list/all', async (req, res) => {
   } catch (error) {
     console.error('녹음 목록 조회 오류:', error);
     res.status(500).json({ error: '목록 조회 중 오류가 발생했습니다.' });
+  }
+});
+
+/**
+ * POST /api/recording/analyze/:sessionId
+ * 녹음 대화 AI 분석 (session_summaries, session_tags에 저장)
+ */
+router.post('/analyze/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    // 1. 세션 존재 확인
+    const sessionResult = await db.query(
+      `SELECT id, session_type FROM sessions WHERE id = $1`,
+      [sessionId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
+    }
+
+    // 2. 트랜스크립트 조회
+    const transcriptsResult = await db.query(
+      `SELECT speaker, content, start_time as "startTime", end_time as "endTime"
+       FROM recording_transcripts
+       WHERE session_id = $1
+       ORDER BY start_time ASC`,
+      [sessionId]
+    );
+
+    if (transcriptsResult.rows.length === 0) {
+      return res.status(400).json({ error: '분석할 대화 내용이 없습니다.' });
+    }
+
+    const transcripts = transcriptsResult.rows;
+
+    // 3. Claude API로 분석
+    const analysis = await claudeService.analyzeRecordingConversation(transcripts);
+
+    // 4. session_summaries 테이블에 저장
+    await db.query(
+      `INSERT INTO session_summaries (
+        session_id, root_cause, trigger_situation, summary,
+        my_emotions, my_needs, my_unmet_need,
+        partner_emotions, partner_needs, partner_unmet_need,
+        conflict_pattern, suggested_approach, action_items
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      ON CONFLICT (session_id) DO UPDATE SET
+        root_cause = $2, trigger_situation = $3, summary = $4,
+        my_emotions = $5, my_needs = $6, my_unmet_need = $7,
+        partner_emotions = $8, partner_needs = $9, partner_unmet_need = $10,
+        conflict_pattern = $11, suggested_approach = $12, action_items = $13`,
+      [
+        sessionId,
+        analysis.rootCause,
+        analysis.triggerSituation,
+        analysis.summary,
+        analysis.myEmotions,
+        analysis.myNeeds,
+        analysis.myUnmetNeed,
+        analysis.partnerEmotions,
+        analysis.partnerNeeds,
+        analysis.partnerUnmetNeed,
+        analysis.conflictPattern,
+        analysis.suggestedApproach,
+        analysis.actionItems,
+      ]
+    );
+
+    // 5. session_tags 테이블에 주제 태그 저장
+    if (analysis.topics && analysis.topics.length > 0) {
+      for (const topic of analysis.topics) {
+        await db.query(
+          `INSERT INTO session_tags (session_id, tag_type, tag_name)
+           VALUES ($1, 'topic', $2)
+           ON CONFLICT (session_id, tag_type, tag_name) DO NOTHING`,
+          [sessionId, topic]
+        );
+      }
+    }
+
+    // 6. 감정 태그 저장
+    if (analysis.myEmotions && analysis.myEmotions.length > 0) {
+      for (const emotion of analysis.myEmotions.slice(0, 3)) {
+        await db.query(
+          `INSERT INTO session_tags (session_id, tag_type, tag_name)
+           VALUES ($1, 'my_emotion', $2)
+           ON CONFLICT (session_id, tag_type, tag_name) DO NOTHING`,
+          [sessionId, emotion]
+        );
+      }
+    }
+
+    // 7. 세션 상태 업데이트 (분석 완료)
+    await db.query(
+      `UPDATE sessions SET status = 'analyzed', ended_at = NOW() WHERE id = $1`,
+      [sessionId]
+    );
+
+    res.json({
+      success: true,
+      sessionId,
+      analysis,
+    });
+  } catch (error) {
+    console.error('녹음 분석 오류:', error);
+    res.status(500).json({ error: 'AI 분석 중 오류가 발생했습니다.', details: error.message });
   }
 });
 
