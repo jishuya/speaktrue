@@ -2,7 +2,9 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const db = require('./db');
+const emailService = require('./email');
 
 class AuthService {
   constructor() {
@@ -335,6 +337,83 @@ class AuthService {
     } catch (error) {
       console.error('Password change failed:', error.message);
       return { success: false, error: '비밀번호 변경 중 오류가 발생했습니다.' };
+    }
+  }
+
+  // 비밀번호 재설정 요청 (이메일 발송)
+  async requestPasswordReset(email) {
+    try {
+      // 이메일로 사용자 조회
+      const result = await db.query(
+        'SELECT * FROM users WHERE email = $1 AND oauth_provider IS NULL',
+        [email]
+      );
+
+      if (result.rows.length === 0) {
+        // 보안상 사용자가 없어도 성공 메시지 반환
+        return { success: true, message: '이메일이 발송되었습니다.' };
+      }
+
+      const user = result.rows[0];
+
+      // 6자리 인증 코드 생성
+      const resetToken = crypto.randomInt(100000, 999999).toString();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15분 후 만료
+
+      // users 테이블에 토큰 저장
+      await db.query(
+        'UPDATE users SET reset_token = $1, reset_token_expires_at = $2 WHERE id = $3',
+        [resetToken, expiresAt, user.id]
+      );
+
+      // 이메일 발송
+      const emailResult = await emailService.sendPasswordResetEmail(email, resetToken);
+      if (!emailResult.success) {
+        return { success: false, error: '이메일 발송에 실패했습니다.' };
+      }
+
+      return { success: true, message: '이메일이 발송되었습니다.' };
+    } catch (error) {
+      console.error('Password reset request failed:', error.message);
+      return { success: false, error: '비밀번호 재설정 요청 중 오류가 발생했습니다.' };
+    }
+  }
+
+  // 비밀번호 재설정 (토큰 검증 및 변경)
+  async resetPassword(email, token, newPassword) {
+    try {
+      // 이메일로 사용자 조회 및 토큰 검증
+      const userResult = await db.query(
+        `SELECT * FROM users
+         WHERE email = $1
+         AND oauth_provider IS NULL
+         AND reset_token = $2
+         AND reset_token_expires_at > NOW()`,
+        [email, token]
+      );
+
+      if (userResult.rows.length === 0) {
+        return { success: false, error: '인증 코드가 유효하지 않거나 만료되었습니다.' };
+      }
+
+      const user = userResult.rows[0];
+
+      // 새 비밀번호 해시
+      const saltRounds = 10;
+      const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+      // 비밀번호 업데이트 및 토큰 초기화
+      await db.query(
+        `UPDATE users
+         SET password_hash = $1, reset_token = NULL, reset_token_expires_at = NULL, updated_at = NOW()
+         WHERE id = $2`,
+        [newPasswordHash, user.id]
+      );
+
+      return { success: true, message: '비밀번호가 재설정되었습니다.' };
+    } catch (error) {
+      console.error('Password reset failed:', error.message);
+      return { success: false, error: '비밀번호 재설정 중 오류가 발생했습니다.' };
     }
   }
 }

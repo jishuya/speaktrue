@@ -38,6 +38,10 @@ CREATE TABLE users (
     -- 설정
     notifications_enabled BOOLEAN DEFAULT true,
 
+    -- 비밀번호 재설정
+    reset_token           VARCHAR(6),
+    reset_token_expires_at TIMESTAMP,
+
     created_at      TIMESTAMP DEFAULT NOW(),
     updated_at      TIMESTAMP DEFAULT NOW()
 );

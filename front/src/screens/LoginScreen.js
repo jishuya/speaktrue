@@ -36,6 +36,17 @@ export default function LoginScreen({ navigation }) {
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
+  // 비밀번호 찾기 모달 상태
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState(1); // 1: 이메일 입력, 2: 인증코드+새비밀번호
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+
   // Google OAuth hook
   const { response: googleResponse, promptAsync: googlePromptAsync } = authService.useGoogleAuth();
 
@@ -163,6 +174,83 @@ export default function LoginScreen({ navigation }) {
     setRegisterGender('');
     setRegisterPartnerName('');
     setShowRegisterPassword(false);
+  };
+
+  // 비밀번호 찾기 모달 초기화
+  const resetForgotPasswordForm = () => {
+    setForgotPasswordStep(1);
+    setForgotEmail('');
+    setResetToken('');
+    setNewPassword('');
+    setNewPasswordConfirm('');
+    setShowNewPassword(false);
+  };
+
+  // 비밀번호 재설정 이메일 발송
+  const handleSendResetEmail = async () => {
+    if (!forgotEmail.trim()) {
+      Alert.alert('알림', '이메일을 입력해주세요.');
+      return;
+    }
+
+    setIsSendingResetEmail(true);
+    try {
+      await api.request('/api/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      Alert.alert('성공', '인증 코드가 이메일로 발송되었습니다.\n15분 내에 입력해주세요.');
+      setForgotPasswordStep(2);
+    } catch (error) {
+      Alert.alert('오류', error.message || '이메일 발송에 실패했습니다.');
+    } finally {
+      setIsSendingResetEmail(false);
+    }
+  };
+
+  // 비밀번호 재설정
+  const handleResetPassword = async () => {
+    if (!resetToken.trim()) {
+      Alert.alert('알림', '인증 코드를 입력해주세요.');
+      return;
+    }
+    if (!newPassword.trim()) {
+      Alert.alert('알림', '새 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert('알림', '비밀번호는 6자 이상이어야 합니다.');
+      return;
+    }
+    if (newPassword !== newPasswordConfirm) {
+      Alert.alert('알림', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      await api.request('/api/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: forgotEmail,
+          token: resetToken,
+          newPassword: newPassword,
+        }),
+      });
+      Alert.alert('성공', '비밀번호가 재설정되었습니다.\n새 비밀번호로 로그인해주세요.', [
+        {
+          text: '확인',
+          onPress: () => {
+            setShowForgotPasswordModal(false);
+            resetForgotPasswordForm();
+          },
+        },
+      ]);
+    } catch (error) {
+      Alert.alert('오류', error.message || '비밀번호 재설정에 실패했습니다.');
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   // 회원가입 처리
@@ -315,7 +403,7 @@ export default function LoginScreen({ navigation }) {
               <View style={styles.inputGroup}>
                 <View style={styles.inputLabelRow}>
                   <Text style={styles.inputLabel}>비밀번호</Text>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShowForgotPasswordModal(true)}>
                     <Text style={styles.forgotPassword}>비밀번호 찾기</Text>
                   </TouchableOpacity>
                 </View>
@@ -556,6 +644,140 @@ export default function LoginScreen({ navigation }) {
               <Text style={styles.modalButtonText}>회원가입</Text>
             )}
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* 비밀번호 찾기 모달 */}
+      <Modal
+        visible={showForgotPasswordModal}
+        onClose={() => {
+          setShowForgotPasswordModal(false);
+          resetForgotPasswordForm();
+        }}
+        title={forgotPasswordStep === 1 ? '비밀번호 찾기' : '비밀번호 재설정'}
+      >
+        <View style={styles.modalContent}>
+          {forgotPasswordStep === 1 ? (
+            <>
+              <Text style={styles.forgotPasswordDescription}>
+                가입하신 이메일 주소를 입력하시면{'\n'}비밀번호 재설정 코드를 보내드립니다.
+              </Text>
+
+              {/* 이메일 입력 */}
+              <View style={styles.modalInputGroup}>
+                <Text style={styles.modalInputLabel}>이메일</Text>
+                <View style={styles.modalInputWrapper}>
+                  <Icon name="mail" size={18} color={COLORS.textMuted} />
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="이메일을 입력해주세요"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={forgotEmail}
+                    onChangeText={setForgotEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+              </View>
+
+              {/* 인증코드 발송 버튼 */}
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSendResetEmail}
+                disabled={isSendingResetEmail}
+              >
+                {isSendingResetEmail ? (
+                  <ActivityIndicator size="small" color={COLORS.surface} />
+                ) : (
+                  <Text style={styles.modalButtonText}>인증 코드 발송</Text>
+                )}
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.forgotPasswordDescription}>
+                {forgotEmail}로 발송된{'\n'}6자리 인증 코드를 입력해주세요.
+              </Text>
+
+              {/* 인증 코드 입력 */}
+              <View style={styles.modalInputGroup}>
+                <Text style={styles.modalInputLabel}>인증 코드</Text>
+                <View style={styles.modalInputWrapper}>
+                  <Icon name="vpn-key" size={18} color={COLORS.textMuted} />
+                  <TextInput
+                    style={[styles.modalInput, styles.tokenInput]}
+                    placeholder="6자리 코드"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={resetToken}
+                    onChangeText={setResetToken}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                  />
+                </View>
+              </View>
+
+              {/* 새 비밀번호 입력 */}
+              <View style={styles.modalInputGroup}>
+                <Text style={styles.modalInputLabel}>새 비밀번호</Text>
+                <View style={styles.modalInputWrapper}>
+                  <Icon name="lock" size={18} color={COLORS.textMuted} />
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="새 비밀번호 (6자 이상)"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    secureTextEntry={!showNewPassword}
+                  />
+                  <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+                    <Icon
+                      name={showNewPassword ? 'visibility' : 'visibility-off'}
+                      size={18}
+                      color={COLORS.textMuted}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 새 비밀번호 확인 */}
+              <View style={styles.modalInputGroup}>
+                <Text style={styles.modalInputLabel}>새 비밀번호 확인</Text>
+                <View style={styles.modalInputWrapper}>
+                  <Icon name="lock" size={18} color={COLORS.textMuted} />
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="비밀번호를 다시 입력해주세요"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={newPasswordConfirm}
+                    onChangeText={setNewPasswordConfirm}
+                    secureTextEntry={!showNewPassword}
+                  />
+                </View>
+              </View>
+
+              {/* 비밀번호 재설정 버튼 */}
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleResetPassword}
+                disabled={isResettingPassword}
+              >
+                {isResettingPassword ? (
+                  <ActivityIndicator size="small" color={COLORS.surface} />
+                ) : (
+                  <Text style={styles.modalButtonText}>비밀번호 재설정</Text>
+                )}
+              </TouchableOpacity>
+
+              {/* 인증코드 재발송 */}
+              <TouchableOpacity
+                style={styles.resendButton}
+                onPress={() => setForgotPasswordStep(1)}
+              >
+                <Text style={styles.resendButtonText}>인증 코드 다시 받기</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </Modal>
     </SafeAreaView>
@@ -945,5 +1167,30 @@ const styles = StyleSheet.create({
   genderButtonTextSelected: {
     color: COLORS.primary,
     fontWeight: FONT_WEIGHT.bold,
+  },
+  forgotPasswordDescription: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: SPACING.lg,
+  },
+  tokenInput: {
+    letterSpacing: 8,
+    fontSize: 18,
+    fontWeight: FONT_WEIGHT.bold,
+    textAlign: 'center',
+  },
+  resendButton: {
+    alignItems: 'center',
+    marginTop: SPACING.md,
+    paddingVertical: SPACING.sm,
+  },
+  resendButtonText: {
+    fontFamily: FONT_FAMILY.base,
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHT.medium,
   },
 });

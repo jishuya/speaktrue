@@ -160,6 +160,50 @@ router.post('/refresh', authenticate, asyncHandler(async (req, res) => {
   });
 }));
 
+// POST /api/auth/forgot-password - 비밀번호 재설정 요청
+router.post('/forgot-password', asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: '이메일을 입력해주세요.' });
+  }
+
+  const result = await authService.requestPasswordReset(email);
+
+  if (!result.success) {
+    return res.status(400).json({ error: result.error });
+  }
+
+  res.json({
+    success: true,
+    message: result.message,
+  });
+}));
+
+// POST /api/auth/reset-password - 비밀번호 재설정
+router.post('/reset-password', asyncHandler(async (req, res) => {
+  const { email, token, newPassword } = req.body;
+
+  if (!email || !token || !newPassword) {
+    return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: '새 비밀번호는 6자 이상이어야 합니다.' });
+  }
+
+  const result = await authService.resetPassword(email, token, newPassword);
+
+  if (!result.success) {
+    return res.status(400).json({ error: result.error });
+  }
+
+  res.json({
+    success: true,
+    message: result.message,
+  });
+}));
+
 // POST /api/auth/change-password - 비밀번호 변경
 router.post('/change-password', authenticate, asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
