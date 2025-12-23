@@ -89,7 +89,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
 // POST /api/auth/register - 회원가입
 router.post('/register', asyncHandler(async (req, res) => {
-  const { email, password, name, gender, partnerName } = req.body;
+  const { email, password, name, gender, type, partnerName } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
@@ -103,11 +103,15 @@ router.post('/register', asyncHandler(async (req, res) => {
     return res.status(400).json({ error: '성별을 선택해주세요.' });
   }
 
+  if (!type || !['husband', 'wife'].includes(type)) {
+    return res.status(400).json({ error: '역할을 선택해주세요.' });
+  }
+
   if (!partnerName) {
     return res.status(400).json({ error: '상대방 이름을 입력해주세요.' });
   }
 
-  const result = await authService.handleEmailRegister(email, password, name, gender, partnerName);
+  const result = await authService.handleEmailRegister(email, password, name, gender, type, partnerName);
 
   if (!result.success) {
     return res.status(400).json({ error: result.error });

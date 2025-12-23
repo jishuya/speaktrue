@@ -31,6 +31,7 @@ export default function LoginScreen({ navigation }) {
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
   const [registerName, setRegisterName] = useState('');
   const [registerGender, setRegisterGender] = useState(''); // 'male' or 'female'
+  const [registerType, setRegisterType] = useState(''); // 'husband' or 'wife'
   const [registerPartnerName, setRegisterPartnerName] = useState('');
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -199,6 +200,7 @@ export default function LoginScreen({ navigation }) {
     setRegisterPasswordConfirm('');
     setRegisterName('');
     setRegisterGender('');
+    setRegisterType('');
     setRegisterPartnerName('');
     setShowRegisterPassword(false);
   };
@@ -291,6 +293,7 @@ export default function LoginScreen({ navigation }) {
     return (
       registerName.trim() &&
       registerGender &&
+      registerType &&
       registerPartnerName.trim() &&
       registerEmail.trim() &&
       isValidEmail(registerEmail) &&
@@ -308,6 +311,10 @@ export default function LoginScreen({ navigation }) {
     }
     if (!registerGender) {
       Alert.alert('알림', '성별을 선택해주세요.');
+      return;
+    }
+    if (!registerType) {
+      Alert.alert('알림', '역할을 선택해주세요.');
       return;
     }
     if (!registerPartnerName.trim()) {
@@ -344,6 +351,7 @@ export default function LoginScreen({ navigation }) {
           password: registerPassword,
           name: registerName,
           gender: registerGender,
+          type: registerType,
           partnerName: registerPartnerName,
         }),
       });
@@ -624,6 +632,45 @@ export default function LoginScreen({ navigation }) {
                   ]}
                 >
                   여
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 역할 선택 */}
+          <View style={styles.modalInputGroup}>
+            <Text style={styles.modalInputLabel}>역할 <Text style={styles.requiredMark}>*</Text></Text>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  registerType === 'husband' && styles.genderButtonSelected,
+                ]}
+                onPress={() => setRegisterType('husband')}
+              >
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    registerType === 'husband' && styles.genderButtonTextSelected,
+                  ]}
+                >
+                  남편
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  registerType === 'wife' && styles.genderButtonSelected,
+                ]}
+                onPress={() => setRegisterType('wife')}
+              >
+                <Text
+                  style={[
+                    styles.genderButtonText,
+                    registerType === 'wife' && styles.genderButtonTextSelected,
+                  ]}
+                >
+                  아내
                 </Text>
               </TouchableOpacity>
             </View>

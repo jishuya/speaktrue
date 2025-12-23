@@ -226,7 +226,7 @@ class AuthService {
   }
 
   // 이메일 회원가입 처리
-  async handleEmailRegister(email, password, name, gender = null, partnerName = null) {
+  async handleEmailRegister(email, password, name, gender = null, type = null, partnerName = null) {
     try {
       // 이메일 중복 확인
       const existingUser = await db.query(
@@ -243,14 +243,13 @@ class AuthService {
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
       // 새 사용자 생성
-      // type: 생물학적 성별 (male/female)
-      // gender: 역할 (husband/wife) - type에서 자동 매핑
-      const genderRole = gender === 'male' ? 'husband' : 'wife';
+      // gender: 성별 (male/female)
+      // type: 역할 (husband/wife)
       const newUser = await db.query(
-        `INSERT INTO users (email, password_hash, name, type, gender, partner_name)
+        `INSERT INTO users (email, password_hash, name, gender, type, partner_name)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
-        [email, passwordHash, name || email.split('@')[0], gender, genderRole, partnerName]
+        [email, passwordHash, name || email.split('@')[0], gender, type, partnerName]
       );
 
       const user = newUser.rows[0];

@@ -15,9 +15,7 @@ import { Header, InsightCard, ProgressBar } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { mapEmotionsWithStyle } from '../constants/emotions';
 import api from '../services/api';
-
-// TODO: 실제 인증 구현 후 교체
-const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+import { useAuth } from '../store/AuthContext';
 
 const PERIOD_OPTIONS = [
   { label: '지난 7일', value: '7days' },
@@ -27,6 +25,7 @@ const PERIOD_OPTIONS = [
 ];
 
 export default function PatternsScreen({ navigation }) {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState('30days');
@@ -41,9 +40,11 @@ export default function PatternsScreen({ navigation }) {
   const [insightError, setInsightError] = useState(null);
 
   const fetchPatternData = useCallback(async () => {
+    if (!user?.id) return;
+
     try {
       setError(null);
-      const result = await api.getPatternAnalysis(TEMP_USER_ID, period);
+      const result = await api.getPatternAnalysis(user.id, period);
       // 프론트엔드에서 감정 아이콘/색상 매핑 적용
       if (result.emotions) {
         result.emotions = mapEmotionsWithStyle(result.emotions);
@@ -55,7 +56,7 @@ export default function PatternsScreen({ navigation }) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [period]);
+  }, [period, user?.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -83,7 +84,7 @@ export default function PatternsScreen({ navigation }) {
     setShowInsightModal(true);
 
     try {
-      const result = await api.getPatternInsight(TEMP_USER_ID, period);
+      const result = await api.getPatternInsight(user.id, period);
       if (result.insight) {
         setAiInsight(result.insight);
       } else {

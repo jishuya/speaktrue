@@ -20,11 +20,10 @@ import { Header, HeaderWithIcon, HistoryDetailModal } from '../components/common
 import { COLORS, NVC_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
 import { formatDateTimeRelative } from '../utils/dateTime';
-
-// TODO: 실제 인증 구현 후 제거
-const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+import { useAuth } from '../store/AuthContext';
 
 export default function TransformScreen({ navigation, route }) {
+  const { user } = useAuth();
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,9 +97,11 @@ export default function TransformScreen({ navigation, route }) {
 
   // 세션 목록 불러오기
   const fetchSessions = async () => {
+    if (!user?.id) return;
+
     try {
       setSessionsLoading(true);
-      const data = await api.getHistorySummary(TEMP_USER_ID);
+      const data = await api.getHistorySummary(user.id);
       let sessionList = data.sessions || [];
 
       // 전달받은 세션이 있고 목록에 없으면 API에서 정보 가져와서 맨 위에 추가
@@ -165,7 +166,7 @@ export default function TransformScreen({ navigation, route }) {
     try {
       setDetailLoading(true);
       setShowDetailModal(true);
-      const data = await api.getHistoryDetail(sessionId, TEMP_USER_ID);
+      const data = await api.getHistoryDetail(sessionId, user.id);
       setDetailSession(data);
     } catch {
       Alert.alert('오류', '상세 정보를 불러오지 못했습니다.');

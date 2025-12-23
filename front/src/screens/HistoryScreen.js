@@ -16,9 +16,7 @@ import { Icon, ConfirmModal } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, STATUS_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
-
-// TODO: 실제 인증 구현 후 제거
-const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+import { useAuth } from '../store/AuthContext';
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
@@ -41,6 +39,7 @@ const formatDate = (dateString) => {
 };
 
 export default function HistoryScreen({ navigation }) {
+  const { user } = useAuth();
   const [historyData, setHistoryData] = useState([]);
   const [stats, setStats] = useState({
     totalSessions: 0,
@@ -69,11 +68,13 @@ export default function HistoryScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchHistorySummary = async () => {
+    if (!user?.id) return;
+
     try {
       setLoading(true);
       setError(null);
 
-      const data = await api.getHistorySummary(TEMP_USER_ID);
+      const data = await api.getHistorySummary(user.id);
 
       setHistoryData(data.sessions.map(session => ({
         ...session,
@@ -98,7 +99,7 @@ export default function HistoryScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetchHistorySummary();
-    }, [])
+    }, [user?.id])
   );
 
   // 세션 상세 조회
@@ -107,7 +108,7 @@ export default function HistoryScreen({ navigation }) {
       setModalLoading(true);
       setModalVisible(true);
 
-      const data = await api.getHistoryDetail(sessionId, TEMP_USER_ID);
+      const data = await api.getHistoryDetail(sessionId, user.id);
       setSelectedSession(data);
     } catch {
       Alert.alert('오류', '상세 정보를 불러오지 못했습니다');
@@ -131,7 +132,7 @@ export default function HistoryScreen({ navigation }) {
     if (!deleteTargetId) return;
 
     try {
-      await api.deleteHistory(deleteTargetId, TEMP_USER_ID);
+      await api.deleteHistory(deleteTargetId, user.id);
       setHistoryData(prev => prev.filter(item => item.id !== deleteTargetId));
       setStats(prev => ({
         ...prev,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,9 +17,6 @@ import { ConfirmModal, AlertModal } from '../components/ui/Modal';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
 import { useAuth } from '../store/AuthContext';
-
-// TODO: 실제 인증 구현 후 교체
-const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
 
 // 성별 변환 함수
 const genderToKorean = (gender) => {
@@ -53,9 +50,13 @@ export default function SettingsScreen({ navigation }) {
   const isOAuthUser = user?.oauthProvider != null;
 
   const fetchProfile = useCallback(async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      const data = await api.getProfile(TEMP_USER_ID);
+      const data = await api.getProfile(user.id);
       setProfile({
         name: data.name || '',
         email: data.email || '',
@@ -67,7 +68,7 @@ export default function SettingsScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchProfile();
@@ -76,7 +77,7 @@ export default function SettingsScreen({ navigation }) {
   const handleSaveProfile = async (updatedProfile) => {
     try {
       setSaving(true);
-      const data = await api.updateProfile(TEMP_USER_ID, {
+      const data = await api.updateProfile(user.id, {
         ...updatedProfile,
         gender: genderToEnglish(updatedProfile.gender),
       });

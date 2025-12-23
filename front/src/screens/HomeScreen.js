@@ -13,9 +13,7 @@ import { Icon } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
 import { COLORS, FEATURE_CARD_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
-
-// TODO: 실제 인증 구현 후 제거
-const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+import { useAuth } from '../store/AuthContext';
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
@@ -35,13 +33,16 @@ const formatDate = (dateString) => {
 };
 
 export default function HomeScreen({ navigation }) {
+  const { user } = useAuth();
   const [journeyData, setJourneyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchJourneyData = async () => {
+    if (!user?.id) return;
+
     try {
       setLoading(true);
-      const data = await api.getHistorySummary(TEMP_USER_ID);
+      const data = await api.getHistorySummary(user.id);
 
       // 최근 5개만 표시
       const recentSessions = data.sessions.slice(0, 5).map(session => ({
@@ -65,7 +66,7 @@ export default function HomeScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetchJourneyData();
-    }, [])
+    }, [user?.id])
   );
 
   const handleNavigate = (screen) => {
@@ -90,7 +91,7 @@ export default function HomeScreen({ navigation }) {
         {/* Greeting */}
         <View style={styles.greetingSection}>
           <Text style={styles.greetingTitle}>
-            안녕하세요, 지수님.
+            안녕하세요, {user?.name || '회원'}님.
           </Text>
           <Text style={styles.greetingSubtitle}>
             오늘은 어떤 마음인가요?
