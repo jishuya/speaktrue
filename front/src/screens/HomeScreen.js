@@ -202,7 +202,7 @@ export default function HomeScreen({ navigation }) {
               contentContainerStyle={styles.journeyScrollContent}
             >
               {journeyData.map((item) => (
-                <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95}>
+                <TouchableOpacity key={item.id} style={styles.journeyCard} activeOpacity={0.95} onPress={() => handleNavigate('History')}>
                   <View style={styles.journeyCardHeader}>
                     <Text style={styles.journeyDate}>{item.date}</Text>
                     <StatusBadge status={item.resolved ? 'resolved' : 'unresolved'} />
@@ -228,9 +228,6 @@ export default function HomeScreen({ navigation }) {
             </View>
           )}
         </View>
-
-        {/* Bottom spacing for tab bar */}
-        <View style={{ height: 80 }} />
       </ScrollView>
     </SafeAreaView>
   );

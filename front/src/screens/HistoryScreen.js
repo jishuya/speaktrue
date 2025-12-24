@@ -6,14 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Modal,
-  Pressable,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon, ConfirmModal, AlertModal } from '../components/ui';
-import { Header, StatusBadge } from '../components/common';
+import { Header, StatusBadge, HistoryDetailModal } from '../components/common';
 import { COLORS, STATUS_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
 import { useAuth } from '../store/AuthContext';
@@ -111,14 +109,9 @@ export default function HistoryScreen({ navigation }) {
       setModalLoading(true);
       setModalVisible(true);
 
-      console.log('[HistoryScreen] Fetching session detail for:', sessionId, 'userId:', user.id);
       const data = await api.getHistoryDetail(sessionId, user.id);
-      console.log('[HistoryScreen] API Response:', JSON.stringify(data, null, 2));
-      console.log('[HistoryScreen] summary:', data?.summary);
-      console.log('[HistoryScreen] tags:', data?.tags);
       setSelectedSession(data);
-    } catch (err) {
-      console.error('[HistoryScreen] Error fetching session detail:', err);
+    } catch {
       setAlertModal({ visible: true, title: '오류', message: '상세 정보를 불러오지 못했습니다', type: 'error' });
       setModalVisible(false);
     } finally {
@@ -245,232 +238,11 @@ export default function HistoryScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  // 상세 모달 렌더링
-  const renderDetailModal = () => (
-    <Modal
-      visible={modalVisible}
-      transparent
-      animationType="fade"
-      onRequestClose={closeModal}
-    >
-      <Pressable style={styles.modalOverlay} onPress={closeModal}>
-        <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
-          {modalLoading ? (
-            <View style={styles.modalLoading}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-          ) : selectedSession ? (
-            <>
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScrollView}>
-              {/* 헤더 */}
-              <View style={styles.modalHeader}>
-                <View style={styles.modalHeaderLeft}>
-                  <Text style={styles.modalDate}>
-                    {formatDate(selectedSession.startedAt)} 상담
-                  </Text>
-                  <StatusBadge status={selectedSession.isResolved ? 'resolved' : 'unresolved'} />
-                  {selectedSession.summaryOnly && (
-                    <View style={styles.summaryOnlyBadge}>
-                      <Text style={styles.summaryOnlyText}>요약만</Text>
-                    </View>
-                  )}
-                </View>
-                <TouchableOpacity onPress={closeModal}>
-                  <Icon name="close" size={24} color={COLORS.textSecondary} />
-                </TouchableOpacity>
-              </View>
-
-              {/* 3개월 지난 세션 안내 */}
-              {selectedSession.summaryOnly && (
-                <View style={styles.summaryOnlyNotice}>
-                  <Icon name="info" size={16} color={COLORS.textMuted} />
-                  <Text style={styles.summaryOnlyNoticeText}>
-                    3개월이 지난 상담은 요약만 확인할 수 있습니다.
-                  </Text>
-                </View>
-              )}
-
-              {/* 근본 원인 */}
-              {selectedSession.summary?.rootCause && (
-                <View style={styles.modalSection}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="chat" size={16} color={COLORS.primary} />
-                    <Text style={styles.modalSectionTitle}>근본 원인</Text>
-                  </View>
-                  <Text style={styles.modalSectionText}>
-                    {selectedSession.summary.rootCause}
-                  </Text>
-                </View>
-              )}
-
-              {/* 대화 요약 */}
-              {selectedSession.summary?.summary && (
-                <View style={styles.modalSection}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="description" size={16} color={COLORS.primary} />
-                    <Text style={styles.modalSectionTitle}>대화 요약</Text>
-                  </View>
-                  <Text style={styles.modalSectionText}>
-                    {selectedSession.summary.summary}
-                  </Text>
-                </View>
-              )}
-
-              {/* 감정 섹션 */}
-              <View style={styles.emotionRow}>
-                {/* 나의 감정 */}
-                <View style={styles.emotionColumn}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="sentiment-satisfied" size={16} color={COLORS.primary} />
-                    <Text style={styles.modalSectionTitle}>나의 감정</Text>
-                  </View>
-                  <View style={styles.emotionTagList}>
-                    {selectedSession.summary?.myEmotions?.length > 0 ? (
-                      selectedSession.summary.myEmotions.map((emotion, idx) => (
-                        <View key={idx} style={styles.emotionTagItem}>
-                          <Text style={styles.emotionTagItemText}>{emotion}</Text>
-                        </View>
-                      ))
-                    ) : (
-                      <Text style={styles.emptyTagText}>없음</Text>
-                    )}
-                  </View>
-                </View>
-
-                {/* 상대방 감정 */}
-                <View style={styles.emotionColumn}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="sentiment-satisfied" size={16} color="#9F7AEA" />
-                    <Text style={styles.modalSectionTitle}>상대방 감정</Text>
-                  </View>
-                  <View style={styles.emotionTagList}>
-                    {selectedSession.summary?.partnerEmotions?.length > 0 ? (
-                      selectedSession.summary.partnerEmotions.map((emotion, idx) => (
-                        <View key={idx} style={[styles.emotionTagItem, styles.partnerEmotionTag]}>
-                          <Text style={[styles.emotionTagItemText, styles.partnerEmotionText]}>{emotion}</Text>
-                        </View>
-                      ))
-                    ) : (
-                      <Text style={styles.emptyTagText}>없음</Text>
-                    )}
-                  </View>
-                </View>
-              </View>
-
-              {/* 핵심 욕구 */}
-              {(selectedSession.summary?.myUnmetNeed || selectedSession.summary?.partnerUnmetNeed) && (
-                <View style={styles.insightSection}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="lightbulb" size={16} color="#F6AD55" />
-                    <Text style={styles.modalSectionTitle}>충족되지 못한 욕구</Text>
-                  </View>
-                  {selectedSession.summary.myUnmetNeed && (
-                    <View style={styles.insightItem}>
-                      <Text style={styles.insightLabel}>나</Text>
-                      <Text style={styles.insightValue}>{selectedSession.summary.myUnmetNeed}</Text>
-                    </View>
-                  )}
-                  {selectedSession.summary.partnerUnmetNeed && (
-                    <View style={styles.insightItem}>
-                      <Text style={styles.insightLabel}>상대방</Text>
-                      <Text style={styles.insightValue}>{selectedSession.summary.partnerUnmetNeed}</Text>
-                    </View>
-                  )}
-                </View>
-              )}
-
-              {/* AI 제안 솔루션 */}
-              {selectedSession.summary?.suggestedApproach && (
-                <View style={styles.solutionSection}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="tips-and-updates" size={16} color="#48BB78" />
-                    <Text style={styles.modalSectionTitle}>AI 제안 솔루션</Text>
-                  </View>
-                  <Text style={styles.modalSectionText}>
-                    {selectedSession.summary.suggestedApproach}
-                  </Text>
-                  {selectedSession.summary.actionItems?.length > 0 ? (
-                    <View style={styles.actionItemsContainer}>
-                      {selectedSession.summary.actionItems.map((item, idx) => (
-                        <View key={idx} style={styles.actionItem}>
-                          <Icon name="check-circle" size={14} color="#48BB78" />
-                          <Text style={styles.actionItemText}>{item}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  ) : null}
-                </View>
-              )}
-
-              {/* 주제 태그 */}
-              {selectedSession.tags?.topic?.length > 0 ? (
-                <View style={styles.modalSection}>
-                  <View style={styles.modalSectionHeader}>
-                    <Icon name="pricetag" size={16} color={COLORS.textSecondary} />
-                    <Text style={styles.modalSectionTitle}>주제</Text>
-                  </View>
-                  <View style={styles.modalTagList}>
-                    {selectedSession.tags.topic.map((tag, idx) => (
-                      <View key={idx} style={styles.modalTag}>
-                        <Text style={styles.modalTagText}>{tag}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              ) : null}
-
-              {/* 데이터가 전혀 없을 때 안내 */}
-              {!selectedSession.summary?.rootCause &&
-               !selectedSession.summary?.summary &&
-               !(selectedSession.summary?.myEmotions?.length > 0) &&
-               !(selectedSession.summary?.partnerEmotions?.length > 0) &&
-               !selectedSession.summary?.suggestedApproach ? (
-                <View style={styles.noDataContainer}>
-                  <Icon name="info" size={24} color={COLORS.textMuted} />
-                  <Text style={styles.noDataText}>
-                    아직 상담 요약이 생성되지 않았습니다.
-                  </Text>
-                </View>
-              ) : null}
-            </ScrollView>
-
-            {/* 해결/미해결 버튼 */}
-            <View style={styles.resolveButtonContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.resolveButton,
-                  selectedSession.isResolved ? styles.resolveButtonActive : styles.resolveButtonInactive
-                ]}
-                onPress={() => handleResolveToggle(selectedSession.id, true)}
-                disabled={selectedSession.isResolved}
-              >
-                <Icon name="thumb-up" size={18} color={selectedSession.isResolved ? COLORS.surface : '#68A37A'} />
-                <Text style={[
-                  styles.resolveButtonText,
-                  selectedSession.isResolved ? styles.resolveButtonTextActive : styles.resolveButtonTextInactive
-                ]}>해결</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.resolveButton,
-                  !selectedSession.isResolved ? styles.unresolveButtonActive : styles.unresolveButtonInactive
-                ]}
-                onPress={() => handleResolveToggle(selectedSession.id, false)}
-                disabled={!selectedSession.isResolved}
-              >
-                <Icon name="thumb-down" size={18} color={!selectedSession.isResolved ? COLORS.surface : '#E8936A'} />
-                <Text style={[
-                  styles.resolveButtonText,
-                  !selectedSession.isResolved ? styles.unresolveButtonTextActive : styles.unresolveButtonTextInactive
-                ]}>미해결</Text>
-              </TouchableOpacity>
-            </View>
-            </>
-          ) : null}
-        </Pressable>
-      </Pressable>
-    </Modal>
-  );
+  // 해결 상태 토글 (모달에서 호출 후 닫기)
+  const handleResolveAndClose = (sessionId, isResolved) => {
+    handleResolveToggle(sessionId, isResolved);
+    closeModal();
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -624,7 +396,13 @@ export default function HistoryScreen({ navigation }) {
       )}
 
       {/* Detail Modal */}
-      {renderDetailModal()}
+      <HistoryDetailModal
+        visible={modalVisible}
+        onClose={closeModal}
+        session={selectedSession}
+        loading={modalLoading}
+        onResolveToggle={handleResolveAndClose}
+      />
 
       {/* Delete Confirm Modal */}
       <ConfirmModal
@@ -883,153 +661,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: FONT_WEIGHT.medium,
   },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-  modalContent: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    width: '100%',
-    maxHeight: '80%',
-    minHeight: 200,
-    ...SHADOWS.lg,
-  },
-  modalLoading: {
-    padding: SPACING.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.lg,
-    paddingBottom: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-  },
-  modalDate: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  modalSection: {
-    marginBottom: SPACING.lg,
-  },
-  modalSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    marginBottom: SPACING.sm,
-  },
-  modalSectionTitle: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textSecondary,
-  },
-  modalSectionText: {
-    fontSize: FONT_SIZE.base,
-    color: COLORS.textPrimary,
-    lineHeight: 22,
-  },
-  emotionRow: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
-  },
-  emotionColumn: {
-    flex: 1,
-  },
-  emotionTagList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.xs,
-  },
-  emotionTagItem: {
-    backgroundColor: `${COLORS.primary}15`,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
-    borderRadius: BORDER_RADIUS.full,
-  },
-  emotionTagItemText: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.primary,
-  },
-  partnerEmotionTag: {
-    backgroundColor: '#F3E8FF',
-  },
-  partnerEmotionText: {
-    color: '#9F7AEA',
-  },
-  insightSection: {
-    backgroundColor: '#FFFBEB',
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.lg,
-  },
-  insightItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingVertical: SPACING.xs,
-  },
-  insightLabel: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    minWidth: 50,
-  },
-  insightValue: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.semiBold,
-    color: '#D69E2E',
-    flex: 1,
-    textAlign: 'right',
-  },
-  solutionSection: {
-    backgroundColor: '#F0FFF4',
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.lg,
-  },
-  actionItemsContainer: {
-    marginTop: SPACING.sm,
-    gap: SPACING.xs,
-  },
-  actionItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.xs,
-  },
-  actionItemText: {
-    fontSize: FONT_SIZE.sm,
-    color: '#276749',
-    flex: 1,
-    lineHeight: 20,
-  },
-  modalTagList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.xs,
-  },
-  modalTag: {
-    backgroundColor: COLORS.backgroundLight,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
-    borderRadius: BORDER_RADIUS.full,
-  },
-  modalTagText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-  },
-  // Summary Only 배지 및 안내
+  // Summary Only 배지 (리스트 아이템에서 사용)
   summaryOnlyBadge: {
     backgroundColor: COLORS.backgroundLight,
     paddingHorizontal: SPACING.sm,
@@ -1042,93 +674,5 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     fontWeight: FONT_WEIGHT.medium,
-  },
-  summaryOnlyNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.backgroundLight,
-    padding: SPACING.sm,
-    borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.lg,
-    gap: SPACING.xs,
-  },
-  summaryOnlyNoticeText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textMuted,
-    flex: 1,
-  },
-  modalBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    marginTop: SPACING.xs,
-  },
-  modalHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    flex: 1,
-  },
-  modalScrollView: {
-    flex: 1,
-  },
-  resolveButtonContainer: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    paddingTop: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
-  },
-  resolveButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.md,
-    gap: SPACING.xs,
-  },
-  resolveButtonActive: {
-    backgroundColor: '#68A37A',
-  },
-  resolveButtonInactive: {
-    backgroundColor: '#E8F5E9',
-    borderWidth: 1,
-    borderColor: '#68A37A',
-  },
-  unresolveButtonActive: {
-    backgroundColor: '#E8936A',
-  },
-  unresolveButtonInactive: {
-    backgroundColor: '#FDECE5',
-    borderWidth: 1,
-    borderColor: '#E8936A',
-  },
-  resolveButtonText: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.medium,
-  },
-  resolveButtonTextActive: {
-    color: COLORS.surface,
-  },
-  resolveButtonTextInactive: {
-    color: '#68A37A',
-  },
-  unresolveButtonTextActive: {
-    color: COLORS.surface,
-  },
-  unresolveButtonTextInactive: {
-    color: '#E8936A',
-  },
-  noDataContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.xxl,
-    gap: SPACING.sm,
-  },
-  noDataText: {
-    fontSize: FONT_SIZE.base,
-    color: COLORS.textMuted,
-    textAlign: 'center',
   },
 });
