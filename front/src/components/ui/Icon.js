@@ -133,6 +133,16 @@ const ICON_MAP = {
   'volume-mute': { set: 'ion', iconName: 'volume-mute' },        // 답답함/억압
   'lock-closed': { set: 'ion', iconName: 'lock-closed' },        // 억압감
   'unlink': { set: 'ion', iconName: 'unlink' },                  // 단절/외로움
+  'bandage': { set: 'ion', iconName: 'bandage' },                  // 상처
+
+  // Fallback shapes (매핑에 없는 감정용)
+  'ellipse': { set: 'ion', iconName: 'ellipse' },
+  'square': { set: 'ion', iconName: 'square' },
+  'triangle': { set: 'ion', iconName: 'triangle' },
+  'diamond': { set: 'ion', iconName: 'diamond' },
+  'heart': { set: 'ion', iconName: 'heart' },
+  'flower': { set: 'ion', iconName: 'flower' },
+  'planet': { set: 'ion', iconName: 'planet' },
 
   // Nature & Wellness
   'spa': { set: 'mat', iconName: 'spa' },

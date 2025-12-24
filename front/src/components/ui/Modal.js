@@ -1,4 +1,4 @@
-import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Dimensions } from 'react-native';
+import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS, Z_INDEX } from '../../constants/theme';
 
@@ -136,6 +136,7 @@ export function SessionFeedbackModal({
   onClose,
   onResolve,
   onUnresolve,
+  isLoading = false,
   title = '오늘 대화가 도움이 되셨나요?',
   resolveText = '마음이 정리됐어요',
   unresolveText = '아직 복잡해요',
@@ -144,35 +145,38 @@ export function SessionFeedbackModal({
     <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.feedbackContainer}>
-          <View style={[styles.iconCircle, { backgroundColor: `${COLORS.primary}15` }]}>
-            <Icon name="favorite" size={26} color={COLORS.primary} />
-          </View>
-          <Text style={styles.feedbackTitle}>{title}</Text>
-          <Text style={styles.feedbackSubtitle}>
-            다음 대화에 도움이 될 수 있어요
-          </Text>
-          <View style={styles.feedbackButtons}>
-            <TouchableOpacity
-              style={styles.feedbackButton}
-              onPress={() => {
-                onResolve?.();
-                onClose();
-              }}
-            >
-              <Icon name="sentiment-satisfied" size={24} color={COLORS.success} />
-              <Text style={styles.feedbackButtonText}>{resolveText}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.feedbackButton}
-              onPress={() => {
-                onUnresolve?.();
-                onClose();
-              }}
-            >
-              <Icon name="sentiment-dissatisfied" size={24} color={COLORS.warning} />
-              <Text style={styles.feedbackButtonText}>{unresolveText}</Text>
-            </TouchableOpacity>
-          </View>
+          {isLoading ? (
+            <>
+              <ActivityIndicator size="large" color={COLORS.primary} />
+              <Text style={[styles.feedbackTitle, { marginTop: SPACING.md }]}>준비 중...</Text>
+            </>
+          ) : (
+            <>
+              <View style={[styles.iconCircle, { backgroundColor: `${COLORS.primary}15` }]}>
+                <Icon name="favorite" size={26} color={COLORS.primary} />
+              </View>
+              <Text style={styles.feedbackTitle}>{title}</Text>
+              <Text style={styles.feedbackSubtitle}>
+                다음 대화에 도움이 될 수 있어요
+              </Text>
+              <View style={styles.feedbackButtons}>
+                <TouchableOpacity
+                  style={styles.feedbackButton}
+                  onPress={onResolve}
+                >
+                  <Icon name="sentiment-satisfied" size={24} color={COLORS.success} />
+                  <Text style={styles.feedbackButtonText}>{resolveText}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.feedbackButton}
+                  onPress={onUnresolve}
+                >
+                  <Icon name="sentiment-dissatisfied" size={24} color={COLORS.warning} />
+                  <Text style={styles.feedbackButtonText}>{unresolveText}</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </View>
       </View>
     </RNModal>

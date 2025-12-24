@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: BORDER_RADIUS.xl,
     borderTopRightRadius: BORDER_RADIUS.xl,
     maxHeight: '90%',
-    minHeight: '50%',
+    minHeight: '85%',
   },
   modalHeader: {
     flexDirection: 'row',

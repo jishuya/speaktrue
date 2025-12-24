@@ -42,9 +42,11 @@ export const EMOTION_MAP = {
   '부담감': { icon: 'fitness', color: '#8D6E63' },
   '압박감': { icon: 'fitness', color: '#A1887F' },
 
-  // 부정적 감정 - 서운함/실망/좌절
+  // 부정적 감정 - 서운함/실망/좌절/상처
   '서운함': { icon: 'heart-broken', color: '#E59866' },
   '서운': { icon: 'heart-broken', color: '#D68910' },
+  '상처': { icon: 'bandage', color: '#E57373' },
+  '상처받음': { icon: 'bandage', color: '#EF5350' },
   '실망': { icon: 'thumb-down', color: '#AF7AC5' },
   '실망감': { icon: 'thumb-down', color: '#9B59B6' },
   '좌절': { icon: 'trending-down', color: '#7B1FA2' },
@@ -196,6 +198,14 @@ const FALLBACK_STYLES = [
   { icon: 'planet', color: '#FFB74D' },
   { icon: 'sparkles', color: '#FF8A65' },
   { icon: 'prism', color: '#A1887F' },
+  { icon: 'cloud', color: '#90CAF9' },
+  { icon: 'moon', color: '#CE93D8' },
+  { icon: 'sunny', color: '#FFCC80' },
+  { icon: 'snow', color: '#B3E5FC' },
+  { icon: 'flame', color: '#FFAB91' },
+  { icon: 'flash', color: '#FFF59D' },
+  { icon: 'ribbon', color: '#F48FB1' },
+  { icon: 'compass', color: '#80DEEA' },
 ];
 
 // 감정 이름에 기반한 일관된 해시 생성 (같은 감정은 항상 같은 스타일)

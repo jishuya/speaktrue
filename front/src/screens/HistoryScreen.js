@@ -111,9 +111,14 @@ export default function HistoryScreen({ navigation }) {
       setModalLoading(true);
       setModalVisible(true);
 
+      console.log('[HistoryScreen] Fetching session detail for:', sessionId, 'userId:', user.id);
       const data = await api.getHistoryDetail(sessionId, user.id);
+      console.log('[HistoryScreen] API Response:', JSON.stringify(data, null, 2));
+      console.log('[HistoryScreen] summary:', data?.summary);
+      console.log('[HistoryScreen] tags:', data?.tags);
       setSelectedSession(data);
-    } catch {
+    } catch (err) {
+      console.error('[HistoryScreen] Error fetching session detail:', err);
       setAlertModal({ visible: true, title: '오류', message: '상세 정보를 불러오지 못했습니다', type: 'error' });
       setModalVisible(false);
     } finally {
@@ -384,7 +389,7 @@ export default function HistoryScreen({ navigation }) {
                   <Text style={styles.modalSectionText}>
                     {selectedSession.summary.suggestedApproach}
                   </Text>
-                  {selectedSession.summary.actionItems?.length > 0 && (
+                  {selectedSession.summary.actionItems?.length > 0 ? (
                     <View style={styles.actionItemsContainer}>
                       {selectedSession.summary.actionItems.map((item, idx) => (
                         <View key={idx} style={styles.actionItem}>
@@ -393,12 +398,12 @@ export default function HistoryScreen({ navigation }) {
                         </View>
                       ))}
                     </View>
-                  )}
+                  ) : null}
                 </View>
               )}
 
               {/* 주제 태그 */}
-              {selectedSession.tags?.topic?.length > 0 && (
+              {selectedSession.tags?.topic?.length > 0 ? (
                 <View style={styles.modalSection}>
                   <View style={styles.modalSectionHeader}>
                     <Icon name="pricetag" size={16} color={COLORS.textSecondary} />
@@ -412,7 +417,21 @@ export default function HistoryScreen({ navigation }) {
                     ))}
                   </View>
                 </View>
-              )}
+              ) : null}
+
+              {/* 데이터가 전혀 없을 때 안내 */}
+              {!selectedSession.summary?.rootCause &&
+               !selectedSession.summary?.summary &&
+               !(selectedSession.summary?.myEmotions?.length > 0) &&
+               !(selectedSession.summary?.partnerEmotions?.length > 0) &&
+               !selectedSession.summary?.suggestedApproach ? (
+                <View style={styles.noDataContainer}>
+                  <Icon name="info" size={24} color={COLORS.textMuted} />
+                  <Text style={styles.noDataText}>
+                    아직 상담 요약이 생성되지 않았습니다.
+                  </Text>
+                </View>
+              ) : null}
             </ScrollView>
 
             {/* 해결/미해결 버튼 */}
@@ -548,19 +567,19 @@ export default function HistoryScreen({ navigation }) {
               onChangeText={handleSearchChange}
               returnKeyType="search"
             />
-            {searchQuery.length > 0 && (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity onPress={() => handleSearchChange('')}>
                 <Icon name="close" size={18} color={COLORS.textMuted} />
               </TouchableOpacity>
-            )}
+            ) : null}
           </View>
 
           {/* Search Result Count */}
-          {searchQuery.trim() && (
+          {searchQuery.trim() ? (
             <Text style={styles.searchResultText}>
               {filteredData.length}개의 결과
             </Text>
-          )}
+          ) : null}
 
           {/* History List */}
           <View style={styles.historyList}>
@@ -878,6 +897,7 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     width: '100%',
     maxHeight: '80%',
+    minHeight: 200,
     ...SHADOWS.lg,
   },
   modalLoading: {
@@ -1099,5 +1119,16 @@ const styles = StyleSheet.create({
   },
   unresolveButtonTextInactive: {
     color: '#E8936A',
+  },
+  noDataContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.xxl,
+    gap: SPACING.sm,
+  },
+  noDataText: {
+    fontSize: FONT_SIZE.base,
+    color: COLORS.textMuted,
+    textAlign: 'center',
   },
 });

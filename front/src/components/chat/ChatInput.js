@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator, Image, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator, Image, Text, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, ImagePickerModal } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS, FONT_FAMILY, FONT_WEIGHT } from '../../constants/theme';
 import { useSpeechRecognition, useImagePicker } from '../../hooks';
@@ -21,6 +22,22 @@ export default function ChatInput({
   maxHeight = 100,
 }) {
   const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  // 키보드 상태 감지
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showListener = Keyboard.addListener(showEvent, () => setIsKeyboardVisible(true));
+    const hideListener = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   const isDisabled = disabled || isLoading;
 
@@ -72,8 +89,11 @@ export default function ChatInput({
   // 이미지만 있고 텍스트가 없으면 전송 불가 (텍스트 필수)
   const canActuallySend = value?.trim().length > 0 && !isDisabled;
 
+  // 키보드가 보이면 bottom inset 제거 (키보드가 이미 공간 차지)
+  const bottomPadding = isKeyboardVisible ? SPACING.sm : SPACING.sm + insets.bottom;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: bottomPadding }]}>
       {/* 첨부된 이미지 미리보기 */}
       {attachedImage && (
         <View style={styles.imagePreviewContainer}>

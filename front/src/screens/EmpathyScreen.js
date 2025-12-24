@@ -37,7 +37,8 @@ export default function EmpathyScreen({ navigation }) {
   const [attachedImage, setAttachedImage] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [feedbackAction, setFeedbackAction] = useState('back'); // 'back' | 'transform'
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const flatListRef = useRef(null);
   const sessionIdRef = useRef(null);
 
@@ -76,19 +77,46 @@ export default function EmpathyScreen({ navigation }) {
       return;
     }
     // 대화가 있으면 피드백 모달 표시
+    setFeedbackAction('back');
     setShowFeedbackModal(true);
   }, [messages, navigation]);
 
+  // 메세지 보내기 핸들러 - 피드백 모달 표시
+  const handleTransformPress = useCallback(() => {
+    setFeedbackAction('transform');
+    setShowFeedbackModal(true);
+  }, []);
+
   // 피드백 선택 후 세션 종료 및 네비게이션
   const handleFeedbackResolve = useCallback(async () => {
-    await endCurrentSession(sessionIdRef.current, true);
-    navigation.goBack();
-  }, [endCurrentSession, navigation]);
+    setIsFeedbackLoading(true);
+    try {
+      await endCurrentSession(sessionIdRef.current, true);
+      setShowFeedbackModal(false);
+      if (feedbackAction === 'transform') {
+        navigation.navigate('Transform', { sessionId: sessionIdRef.current });
+      } else {
+        navigation.goBack();
+      }
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  }, [endCurrentSession, navigation, feedbackAction]);
 
   const handleFeedbackUnresolve = useCallback(async () => {
-    await endCurrentSession(sessionIdRef.current, false);
-    navigation.goBack();
-  }, [endCurrentSession, navigation]);
+    setIsFeedbackLoading(true);
+    try {
+      await endCurrentSession(sessionIdRef.current, false);
+      setShowFeedbackModal(false);
+      if (feedbackAction === 'transform') {
+        navigation.navigate('Transform', { sessionId: sessionIdRef.current });
+      } else {
+        navigation.goBack();
+      }
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  }, [endCurrentSession, navigation, feedbackAction]);
 
   // 화면 포커스 시 스크롤 최하단으로 이동 (PerspectiveScreen에서 돌아올 때)
   useFocusEffect(
@@ -246,7 +274,7 @@ export default function EmpathyScreen({ navigation }) {
       {/* Chat Area */}
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <FlatList
@@ -271,32 +299,11 @@ export default function EmpathyScreen({ navigation }) {
         {canShowPerspectiveButton && (
           <View style={styles.bottomButtonContainer}>
             <TouchableOpacity
-              style={[styles.actionButton, isNavigating && styles.actionButtonDisabled]}
-              disabled={isNavigating}
-              onPress={async () => {
-                setIsNavigating(true);
-                try {
-                  // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
-                  await endCurrentSession(sessionIdRef.current, false);
-                  navigation.navigate('Transform', { sessionId: sessionIdRef.current });
-                } catch {
-                  // 에러 무시
-                } finally {
-                  setIsNavigating(false);
-                }
-              }}
+              style={styles.actionButton}
+              onPress={handleTransformPress}
             >
-              {isNavigating ? (
-                <>
-                  <ActivityIndicator size="small" color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>준비 중...</Text>
-                </>
-              ) : (
-                <>
-                  <Icon name="send" size={20} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>메세지 보내기</Text>
-                </>
-              )}
+              <Icon name="send" size={20} color={COLORS.primary} />
+              <Text style={styles.actionButtonText}>메세지 보내기</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -320,6 +327,7 @@ export default function EmpathyScreen({ navigation }) {
         onClose={() => setShowFeedbackModal(false)}
         onResolve={handleFeedbackResolve}
         onUnresolve={handleFeedbackUnresolve}
+        isLoading={isFeedbackLoading}
       />
     </SafeAreaView>
   );
