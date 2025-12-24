@@ -270,7 +270,7 @@ export default function EmpathyScreen({ navigation }) {
           <View style={styles.topButtonContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={handlePerspectivePress}>
               <Icon name="visibility" size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>{partnerName} 관점 보기</Text>
+              <Text style={styles.actionButtonText}>상대방의 관점 보기</Text>
             </TouchableOpacity>
           </View>
         )}

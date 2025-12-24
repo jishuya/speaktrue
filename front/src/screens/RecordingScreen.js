@@ -258,7 +258,7 @@ export default function RecordingScreen({ navigation }) {
       const uploadResult = await response.json();
 
       if (!uploadResult.success) {
-        setAlertModal({ visible: true, title: '오류', message: uploadResult.error || '업로드에 실패했습니다.', type: 'error' });
+        setAlertModal({ visible: true, title: 'CLOVA AI 오류', message: uploadResult.error || '음성 변환에 실패했습니다.', type: 'error' });
         return;
       }
 
@@ -301,7 +301,7 @@ export default function RecordingScreen({ navigation }) {
       }
     } catch (error) {
       console.error('분석 오류:', error);
-      setAlertModal({ visible: true, title: '오류', message: '분석 중 오류가 발생했습니다.', type: 'error' });
+      setAlertModal({ visible: true, title: 'CLOVA AI 오류', message: 'CLOVA AI 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', type: 'error' });
     } finally {
       setIsUploading(false);
       setIsAnalyzing(false);
@@ -680,7 +680,7 @@ export default function RecordingScreen({ navigation }) {
           </View>
         )}
 
-        <View style={{ height: SPACING.xxl }} />
+        <View style={{ height: SPACING.md }} />
       </ScrollView>
 
       {/* Alert Modal */}

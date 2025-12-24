@@ -691,7 +691,7 @@ export default function LoginScreen() {
               <Icon name="favorite" size={18} color={COLORS.textMuted} />
               <TextInput
                 style={styles.modalInput}
-                placeholder="배우자/파트너의 이름을 입력해주세요"
+                placeholder="배우자의 이름을 입력해주세요"
                 placeholderTextColor={COLORS.textMuted}
                 value={registerPartnerName}
                 onChangeText={setRegisterPartnerName}

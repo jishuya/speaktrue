@@ -228,7 +228,7 @@ export default function TransformScreen({ navigation, route }) {
         onBackPress={() => {
           // EmpathyScreen에서 왔으면 홈으로, 아니면 뒤로가기
           if (passedSessionId) {
-            navigation.navigate('MainTabs', { screen: 'HomeTab' });
+            navigation.navigate('Home');
           } else {
             navigation.goBack();
           }
