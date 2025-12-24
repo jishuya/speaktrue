@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
-import { Header, InsightCard, ProgressBar } from '../components/common';
+import { Header, InsightCard } from '../components/common';
+import { TopicPieChart, EmotionPieChart } from '../components/charts';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { mapEmotionsWithStyle } from '../constants/emotions';
 import api from '../services/api';
@@ -23,6 +24,7 @@ const PERIOD_OPTIONS = [
   { label: '지난 90일', value: '90days' },
   // { label: '전체 기간', value: 'all' },
 ];
+
 
 export default function PatternsScreen({ navigation }) {
   const { user } = useAuth();
@@ -276,46 +278,11 @@ export default function PatternsScreen({ navigation }) {
               </View>
             )}
 
-            {/* Conflict Topics Section */}
-            {data.conflictTopics?.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>빈번한 갈등 주제</Text>
-                </View>
-                <View style={styles.chartCard}>
-                  {data.conflictTopics.map((item, index) => (
-                    <ProgressBar
-                      key={index}
-                      label={item.topic}
-                      value={item.percentage}
-                      color={item.color}
-                      size="sm"
-                    />
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {/* Emotion Distribution Section */}
-            {data.emotions?.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>주요 감정 분포</Text>
-                </View>
-                <View style={styles.chartCard}>
-                  {data.emotions.map((item, index) => (
-                    <ProgressBar
-                      key={index}
-                      label={item.emotion}
-                      value={item.percentage}
-                      color={item.color}
-                      showIcon
-                      icon={item.icon}
-                      iconColor={item.color}
-                      size="sm"
-                    />
-                  ))}
-                </View>
+            {/* Conflict Topics & Emotion Distribution - Side by Side */}
+            {(data.conflictTopics?.length > 0 || data.emotions?.length > 0) && (
+              <View style={styles.chartsRow}>
+                <TopicPieChart data={data.conflictTopics} />
+                <EmotionPieChart data={data.emotions} />
               </View>
             )}
 
@@ -697,24 +664,10 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: SPACING.md,
   },
-  sectionHeader: {
+  chartsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZE.base,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.textPrimary,
-  },
-  chartCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-    ...SHADOWS.sm,
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
 
   // Modal Styles

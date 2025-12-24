@@ -156,8 +156,8 @@ router.get('/patterns', async (req, res) => {
     const resolvedCount = parseInt(resolved.resolved_count) || 0;
     const totalCount = parseInt(resolved.total_count) || 0;
 
-    // 주제 색상 (primary 기준으로 투명도 조절)
-    const topicColors = ['#5B8DEF', '#5B8DEFCC', '#5B8DEF99', '#5B8DEF66', '#5B8DEF33'];
+    // 주제 색상 (모던한 파스텔 팔레트)
+    const topicColors = ['#6C5CE7', '#00CEC9', '#FDCB6E', '#E17055', '#74B9FF'];
 
     const conflictTopics = topicsResult.rows.map((row, index) => ({
       topic: row.topic,
