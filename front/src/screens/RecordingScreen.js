@@ -236,6 +236,11 @@ export default function RecordingScreen({ navigation }) {
   const uploadAndAnalyze = async () => {
     if (!recordedUri) return;
 
+    if (!user?.id) {
+      setAlertModal({ visible: true, title: '로그인 필요', message: '녹음 분석을 위해 로그인이 필요합니다.', type: 'warning' });
+      return;
+    }
+
     setIsUploading(true);
 
     try {
@@ -251,14 +256,14 @@ export default function RecordingScreen({ navigation }) {
           audioData: base64Audio,
           filename: 'recording.m4a',
           duration: playbackDuration,
-          userId: user?.id,
+          userId: user.id,
         }),
       });
 
       const uploadResult = await response.json();
 
       if (!uploadResult.success) {
-        setAlertModal({ visible: true, title: 'CLOVA AI 오류', message: uploadResult.error || '음성 변환에 실패했습니다.', type: 'error' });
+        setAlertModal({ visible: true, title: '오류', message: uploadResult.error || '음성 변환에 실패했습니다.', type: 'error' });
         return;
       }
 

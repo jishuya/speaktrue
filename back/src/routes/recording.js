@@ -37,11 +37,13 @@ router.post('/upload', async (req, res) => {
       return res.status(400).json({ error: '오디오 데이터가 필요합니다.' });
     }
 
+    if (!userId) {
+      return res.status(401).json({ error: '로그인이 필요합니다.' });
+    }
+
     // 1. 세션 생성
     const sessionId = uuidv4();
-    // 프론트엔드에서 전달받은 userId 사용, 없으면 임시 ID 사용
-    const FALLBACK_USER_ID = '11111111-1111-1111-1111-111111111111';
-    const effectiveUserId = userId || FALLBACK_USER_ID;
+    const effectiveUserId = userId;
 
     await db.query(
       `INSERT INTO sessions (id, user_id, session_type, status, started_at)
