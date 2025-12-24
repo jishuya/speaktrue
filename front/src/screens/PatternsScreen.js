@@ -21,7 +21,7 @@ const PERIOD_OPTIONS = [
   { label: '지난 7일', value: '7days' },
   { label: '지난 30일', value: '30days' },
   { label: '지난 90일', value: '90days' },
-  { label: '전체 기간', value: 'all' },
+  // { label: '전체 기간', value: 'all' },
 ];
 
 export default function PatternsScreen({ navigation }) {
@@ -340,9 +340,6 @@ export default function PatternsScreen({ navigation }) {
             )}
           </>
         )}
-
-        {/* Bottom spacing */}
-        <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* AI Insight Modal */}
@@ -710,10 +707,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-  },
-  sectionLink: {
-    fontSize: FONT_SIZE.md,
-    color: COLORS.textSecondary,
   },
   chartCard: {
     backgroundColor: COLORS.surface,
