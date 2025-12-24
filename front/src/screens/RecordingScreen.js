@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
-import { readAsStringAsync } from 'expo-file-system/legacy';
-import { Icon, AlertModal, ConfirmModal } from '../components/ui';
+import { readAsStringAsync, deleteAsync } from 'expo-file-system/legacy';
+import { Icon, AlertModal, ConfirmModal, SessionFeedbackModal } from '../components/ui';
 import { Header, EmotionBadge } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { API_URL } from '../constants/config';
@@ -41,11 +41,24 @@ export default function RecordingScreen({ navigation }) {
   // 모달 상태
   const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'info' });
   const [confirmModal, setConfirmModal] = useState({ visible: false, title: '', message: '', onConfirm: null, confirmType: 'primary' });
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
 
   // Refs
   const recordingRef = useRef(null);
   const soundRef = useRef(null);
   const timerRef = useRef(null);
+  const recordedUriRef = useRef(null);
+  const sessionIdRef = useRef(null);
+
+  // recordedUri와 sessionId를 ref에 동기화
+  useEffect(() => {
+    recordedUriRef.current = recordedUri;
+  }, [recordedUri]);
+
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
 
   useEffect(() => {
     return () => {
@@ -55,6 +68,10 @@ export default function RecordingScreen({ navigation }) {
       }
       if (soundRef.current) {
         soundRef.current.unloadAsync();
+      }
+      // 업로드하지 않은 녹음 파일 삭제
+      if (recordedUriRef.current && !sessionIdRef.current) {
+        deleteAsync(recordedUriRef.current, { idempotent: true }).catch(() => {});
       }
     };
   }, []);
@@ -215,13 +232,14 @@ export default function RecordingScreen({ navigation }) {
     });
   };
 
-  // 서버에 업로드 및 STT 변환
-  const uploadAndTranscribe = async () => {
+  // 업로드 + STT + AI 분석을 한 번에 처리
+  const uploadAndAnalyze = async () => {
     if (!recordedUri) return;
 
     setIsUploading(true);
 
     try {
+      // 1단계: 업로드 및 STT 변환
       const base64Audio = await readAsStringAsync(recordedUri, {
         encoding: 'base64',
       });
@@ -237,45 +255,33 @@ export default function RecordingScreen({ navigation }) {
         }),
       });
 
-      const result = await response.json();
+      const uploadResult = await response.json();
 
-      if (result.success) {
-        setTranscripts(result.transcripts || []);
-        setSessionId(result.sessionId);
-        setAlertModal({ visible: true, title: '변환 완료', message: '음성이 텍스트로 변환되었습니다.', type: 'success' });
-      } else {
-        setAlertModal({ visible: true, title: '오류', message: result.error || '변환에 실패했습니다.', type: 'error' });
+      if (!uploadResult.success) {
+        setAlertModal({ visible: true, title: '오류', message: uploadResult.error || '업로드에 실패했습니다.', type: 'error' });
+        return;
       }
-    } catch (error) {
-      console.error('업로드 오류:', error);
-      setAlertModal({ visible: true, title: '오류', message: '서버 연결에 실패했습니다.', type: 'error' });
-    } finally {
+
+      // STT 결과 저장
+      setTranscripts(uploadResult.transcripts || []);
+      setSessionId(uploadResult.sessionId);
+
+      // 대화 내용이 없으면 분석 불가
+      if (!uploadResult.transcripts || uploadResult.transcripts.length === 0) {
+        setAlertModal({ visible: true, title: '알림', message: '인식된 대화 내용이 없습니다.', type: 'info' });
+        return;
+      }
+
+      // 2단계: AI 분석
       setIsUploading(false);
-    }
-  };
+      setIsAnalyzing(true);
 
-  // AI 분석
-  const analyzeConversation = async () => {
-    if (transcripts.length === 0) {
-      setAlertModal({ visible: true, title: '알림', message: '먼저 녹음을 업로드하여 대화 내용을 변환해주세요.', type: 'info' });
-      return;
-    }
+      const analysisResult = await api.analyzeRecording(uploadResult.sessionId);
 
-    if (!sessionId) {
-      setAlertModal({ visible: true, title: '오류', message: '세션 정보가 없습니다. 다시 업로드해주세요.', type: 'error' });
-      return;
-    }
+      if (analysisResult.success && analysisResult.analysis) {
+        const analysis = analysisResult.analysis;
 
-    setIsAnalyzing(true);
-
-    try {
-      // api.analyzeRecording 사용 (sessions, session_summaries, session_tags에 저장)
-      const result = await api.analyzeRecording(sessionId);
-
-      if (result.success && result.analysis) {
-        const analysis = result.analysis;
-
-        // AI 인사이트 객체로 저장 (구조화된 데이터)
+        // AI 인사이트 객체로 저장
         setAiInsight({
           rootCause: analysis.rootCause,
           summary: analysis.summary,
@@ -286,33 +292,89 @@ export default function RecordingScreen({ navigation }) {
           actionItems: analysis.actionItems || [],
         });
 
-        // 감정 태그 설정 (분석 결과에서 가져옴)
+        // 감정 태그 설정
         const detectedEmotions = analysis.myEmotions?.slice(0, 4) || [];
         if (detectedEmotions.length === 0) detectedEmotions.push('분석 완료');
         setEmotions(detectedEmotions);
       } else {
-        setAlertModal({ visible: true, title: '오류', message: result.error || 'AI 분석에 실패했습니다.', type: 'error' });
+        setAlertModal({ visible: true, title: '오류', message: analysisResult.error || 'AI 분석에 실패했습니다.', type: 'error' });
       }
     } catch (error) {
       console.error('분석 오류:', error);
-      setAlertModal({ visible: true, title: '오류', message: 'AI 분석에 실패했습니다.', type: 'error' });
+      setAlertModal({ visible: true, title: '오류', message: '분석 중 오류가 발생했습니다.', type: 'error' });
     } finally {
+      setIsUploading(false);
       setIsAnalyzing(false);
     }
   };
 
+  // 세션 종료 함수
+  const endCurrentSession = async (currentSessionId, isResolved = false) => {
+    if (!currentSessionId) return;
+
+    try {
+      await api.endSession(currentSessionId, isResolved);
+    } catch {
+      // 세션 종료 실패해도 진행
+    }
+  };
+
+  // 피드백 후 해결됨 선택
+  const handleFeedbackResolve = async () => {
+    setIsFeedbackLoading(true);
+    try {
+      await endCurrentSession(sessionId, true);
+      setShowFeedbackModal(false);
+      navigation.goBack();
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
+
+  // 피드백 후 미해결 선택
+  const handleFeedbackUnresolve = async () => {
+    setIsFeedbackLoading(true);
+    try {
+      await endCurrentSession(sessionId, false);
+      setShowFeedbackModal(false);
+      navigation.goBack();
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
+
   const handleBack = () => {
-    if (isRecording || recordedUri) {
+    // 녹음 중이면 녹음 중지 확인
+    if (isRecording) {
       setConfirmModal({
         visible: true,
         title: '나가기',
-        message: '현재 녹음 내용이 저장되지 않습니다. 나가시겠습니까?',
+        message: '녹음 중입니다. 녹음을 중단하고 나가시겠습니까?',
         confirmType: 'danger',
         onConfirm: () => navigation.goBack(),
       });
-    } else {
-      navigation.goBack();
+      return;
     }
+
+    // 세션이 있고 대화 내용이 있으면 피드백 모달 표시
+    if (sessionId && transcripts.length > 0) {
+      setShowFeedbackModal(true);
+      return;
+    }
+
+    // 녹음만 있고 아직 업로드 안 했으면 확인
+    if (recordedUri) {
+      setConfirmModal({
+        visible: true,
+        title: '나가기',
+        message: '녹음 내용이 저장되지 않습니다. 나가시겠습니까?',
+        confirmType: 'danger',
+        onConfirm: () => navigation.goBack(),
+      });
+      return;
+    }
+
+    navigation.goBack();
   };
 
   // 대화 데이터 변환
@@ -417,19 +479,27 @@ export default function RecordingScreen({ navigation }) {
             </View>
           </View>
 
-          {/* 업로드 버튼 */}
-          {recordedUri && transcripts.length === 0 && (
+          {/* 분석하기 버튼 - 녹음 완료 후, 아직 분석 안 했을 때 */}
+          {recordedUri && !aiInsight && !isRecording && (
             <TouchableOpacity
-              style={[styles.uploadButton, isUploading && styles.buttonDisabled]}
-              onPress={uploadAndTranscribe}
-              disabled={isUploading}
+              style={[styles.analyzeButton, (isUploading || isAnalyzing) && styles.buttonDisabled]}
+              onPress={uploadAndAnalyze}
+              disabled={isUploading || isAnalyzing}
             >
               {isUploading ? (
-                <ActivityIndicator size="small" color={COLORS.surface} />
+                <>
+                  <ActivityIndicator size="small" color={COLORS.surface} />
+                  <Text style={styles.analyzeButtonText}>음성 변환 중...</Text>
+                </>
+              ) : isAnalyzing ? (
+                <>
+                  <ActivityIndicator size="small" color={COLORS.surface} />
+                  <Text style={styles.analyzeButtonText}>AI 분석 중...</Text>
+                </>
               ) : (
                 <>
-                  <Icon name="upload" size={18} color={COLORS.surface} />
-                  <Text style={styles.uploadButtonText}>텍스트로 변환</Text>
+                  <Icon name="auto-awesome" size={20} color={COLORS.surface} />
+                  <Text style={styles.analyzeButtonText}>분석하기</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -491,24 +561,6 @@ export default function RecordingScreen({ navigation }) {
           </View>
         )}
 
-        {/* AI 분석 버튼 */}
-        {transcripts.length > 0 && !aiInsight && (
-          <TouchableOpacity
-            style={[styles.analyzeButton, isAnalyzing && styles.buttonDisabled]}
-            onPress={analyzeConversation}
-            disabled={isAnalyzing}
-          >
-            {isAnalyzing ? (
-              <ActivityIndicator size="small" color={COLORS.surface} />
-            ) : (
-              <>
-                <Icon name="auto-awesome" size={20} color={COLORS.surface} />
-                <Text style={styles.analyzeButtonText}>AI 분석하기</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        )}
-
         {/* AI 인사이트 섹션 */}
         {(aiInsight || isAnalyzing) && (
           <View style={styles.section}>
@@ -546,7 +598,7 @@ export default function RecordingScreen({ navigation }) {
                 {aiInsight.rootCause && (
                   <View style={[styles.insightCard, styles.keyInsightCard]}>
                     <View style={styles.insightCardHeader}>
-                      <Icon name="gps-fixed" size={18} color={COLORS.warning} />
+                      <Icon name="alert-circle" size={18} color={COLORS.warning} />
                       <Text style={styles.insightCardTitle}>핵심 갈등</Text>
                     </View>
                     <Text style={styles.keyInsightText}>{aiInsight.rootCause}</Text>
@@ -590,7 +642,7 @@ export default function RecordingScreen({ navigation }) {
                 {aiInsight.conflictPattern && (
                   <View style={styles.insightCard}>
                     <View style={styles.insightCardHeader}>
-                      <Icon name="sync" size={18} color={COLORS.primary} />
+                      <Icon name="infinite" size={18} color={COLORS.primary} />
                       <Text style={styles.insightCardTitle}>갈등 패턴</Text>
                     </View>
                     <Text style={styles.insightCardText}>{aiInsight.conflictPattern}</Text>
@@ -647,9 +699,18 @@ export default function RecordingScreen({ navigation }) {
         onConfirm={confirmModal.onConfirm}
         title={confirmModal.title}
         message={confirmModal.message}
-        confirmText={confirmModal.confirmType === 'danger' ? '삭제' : '확인'}
-        cancelText="취소"
+        confirmText={confirmModal.confirmType === 'danger' ? '예' : '확인'}
+        cancelText={confirmModal.confirmType === 'danger' ? '아니오' : '취소'}
         confirmType={confirmModal.confirmType}
+      />
+
+      {/* Session Feedback Modal */}
+      <SessionFeedbackModal
+        visible={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        onResolve={handleFeedbackResolve}
+        onUnresolve={handleFeedbackUnresolve}
+        isLoading={isFeedbackLoading}
       />
     </SafeAreaView>
   );
@@ -758,23 +819,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 
-  // Upload Button
-  uploadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: BORDER_RADIUS.full,
-    marginTop: SPACING.md,
-    gap: SPACING.xs,
-  },
-  uploadButtonText: {
-    fontFamily: FONT_FAMILY.bold,
-    fontSize: FONT_SIZE.md,
-    color: COLORS.surface,
-  },
   buttonDisabled: {
     opacity: 0.6,
   },

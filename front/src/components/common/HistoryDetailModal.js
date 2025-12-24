@@ -7,10 +7,14 @@ import {
   Modal,
   ActivityIndicator,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import { Icon } from '../ui';
 import StatusBadge from './StatusBadge';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const MODAL_MAX_HEIGHT = SCREEN_HEIGHT * 0.75;
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
@@ -52,32 +56,37 @@ export function HistoryDetailModal({
       onRequestClose={onClose}
     >
       <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+        <View style={styles.modalContent}>
           {loading ? (
             <View style={styles.modalLoading}>
               <ActivityIndicator size="large" color={COLORS.primary} />
             </View>
           ) : session ? (
             <>
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScrollView}>
-                {/* 헤더 */}
-                <View style={styles.modalHeader}>
-                  <View style={styles.modalHeaderLeft}>
-                    <Text style={styles.modalDate}>
-                      {formatDate(session.startedAt)} 상담
-                    </Text>
-                    <StatusBadge status={session.isResolved ? 'resolved' : 'unresolved'} />
-                    {session.summaryOnly && (
-                      <View style={styles.summaryOnlyBadge}>
-                        <Text style={styles.summaryOnlyText}>요약만</Text>
-                      </View>
-                    )}
-                  </View>
-                  <TouchableOpacity onPress={onClose}>
-                    <Icon name="close" size={24} color={COLORS.textSecondary} />
-                  </TouchableOpacity>
+              {/* 헤더 - ScrollView 밖에 고정 */}
+              <View style={styles.modalHeader}>
+                <View style={styles.modalHeaderLeft}>
+                  <Text style={styles.modalDate}>
+                    {formatDate(session.startedAt)} 상담
+                  </Text>
+                  <StatusBadge status={session.isResolved ? 'resolved' : 'unresolved'} />
+                  {session.summaryOnly && (
+                    <View style={styles.summaryOnlyBadge}>
+                      <Text style={styles.summaryOnlyText}>요약만</Text>
+                    </View>
+                  )}
                 </View>
+                <TouchableOpacity onPress={onClose}>
+                  <Icon name="close" size={24} color={COLORS.textSecondary} />
+                </TouchableOpacity>
+              </View>
 
+              {/* 스크롤 가능한 내용 영역 */}
+              <ScrollView
+                style={styles.modalScrollView}
+                contentContainerStyle={styles.modalScrollContent}
+                showsVerticalScrollIndicator={true}
+              >
                 {/* 근본 원인 */}
                 {session.summary?.rootCause && (
                   <View style={styles.modalSection}>
@@ -207,7 +216,7 @@ export function HistoryDetailModal({
                   </View>
                 )}
 
-                {/* 3개월 지난 세션 안내 - 맨 마지막에 표시 */}
+                {/* 3개월 지난 세션 안내 */}
                 {session.summaryOnly && (
                   <View style={styles.summaryOnlyNotice}>
                     <Icon name="info" size={16} color={COLORS.textMuted} />
@@ -218,7 +227,7 @@ export function HistoryDetailModal({
                 )}
               </ScrollView>
 
-              {/* 하단 버튼 영역 */}
+              {/* 하단 버튼 영역 - ScrollView 밖에 고정 */}
               {showSelectButton ? (
                 <View style={styles.selectButtonContainer}>
                   <TouchableOpacity
@@ -263,7 +272,7 @@ export function HistoryDetailModal({
               ) : null}
             </>
           ) : null}
-        </Pressable>
+        </View>
       </Pressable>
     </Modal>
   );
@@ -282,7 +291,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
     width: '100%',
-    maxHeight: '80%',
+    maxHeight: MODAL_MAX_HEIGHT,
     ...SHADOWS.lg,
   },
   modalLoading: {
@@ -294,7 +303,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
     paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderLight,
@@ -303,7 +312,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
+    flexWrap: 'wrap',
     flex: 1,
+    paddingRight: SPACING.sm,
   },
   modalDate: {
     fontSize: FONT_SIZE.lg,
@@ -311,7 +322,10 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   modalScrollView: {
-    flex: 1,
+    maxHeight: MODAL_MAX_HEIGHT - 150, // 헤더와 버튼 영역 제외
+  },
+  modalScrollContent: {
+    paddingBottom: SPACING.md,
   },
   modalSection: {
     marginBottom: SPACING.lg,
@@ -445,7 +459,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight,
     padding: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
     gap: SPACING.xs,
   },
   summaryOnlyNoticeText: {

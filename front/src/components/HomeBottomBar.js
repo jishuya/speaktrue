@@ -6,8 +6,13 @@ import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from 
 export default function HomeBottomBar({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  const navItems = [
+  const leftItems = [
+    { name: 'Transform', icon: 'chat-bubble-outline', label: '메세지' },
     { name: 'Patterns', icon: 'analytics', label: '패턴분석' },
+  ];
+
+  const rightItems = [
+    { name: 'Recording', icon: 'mic', label: '녹음분석' },
     { name: 'History', icon: 'history', label: '기록' },
   ];
 
@@ -15,14 +20,14 @@ export default function HomeBottomBar({ navigation }) {
     <View style={[styles.container, { paddingBottom: insets.bottom + SPACING.sm }]}>
       <View style={styles.bar}>
         {/* 왼쪽 아이템들 */}
-        {navItems.slice(0, 1).map((item) => (
+        {leftItems.map((item) => (
           <TouchableOpacity
             key={item.name}
             style={styles.navItem}
             onPress={() => navigation.navigate(item.name)}
             activeOpacity={0.7}
           >
-            <Icon name={item.icon} size={24} color={COLORS.textMuted} />
+            <Icon name={item.icon} size={22} color={COLORS.textMuted} />
             <Text style={styles.navLabel}>{item.label}</Text>
           </TouchableOpacity>
         ))}
@@ -40,14 +45,14 @@ export default function HomeBottomBar({ navigation }) {
         </View>
 
         {/* 오른쪽 아이템들 */}
-        {navItems.slice(1).map((item) => (
+        {rightItems.map((item) => (
           <TouchableOpacity
             key={item.name}
             style={styles.navItem}
             onPress={() => navigation.navigate(item.name)}
             activeOpacity={0.7}
           >
-            <Icon name={item.icon} size={24} color={COLORS.textMuted} />
+            <Icon name={item.icon} size={22} color={COLORS.textMuted} />
             <Text style={styles.navLabel}>{item.label}</Text>
           </TouchableOpacity>
         ))}

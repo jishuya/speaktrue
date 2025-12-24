@@ -285,9 +285,10 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     backgroundColor: COLORS.borderLight,
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelButtonText: {
     fontFamily: FONT_FAMILY.base,
@@ -297,9 +298,10 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     flex: 1,
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   confirmButtonText: {
     fontFamily: FONT_FAMILY.base,

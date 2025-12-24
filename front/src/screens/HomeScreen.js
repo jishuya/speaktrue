@@ -124,11 +124,11 @@ export default function HomeScreen({ navigation }) {
             activeOpacity={0.9}
           >
             <View style={[styles.featureIconContainer, styles.featureIconWarm]}>
-              <Icon name="psychology" size={20} color="#9C7C58" />
+              <Icon name="chat-bubble-outline" size={20} color="#9C7C58" />
             </View>
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>내가 진짜{'\n'}하고 싶은 말은</Text>
-              <Text style={styles.featureSubtitle}>진심 전달하기</Text>
+              <Text style={styles.featureSubtitle}>상대에게 메세지 보내기</Text>
             </View>
             <View style={styles.featureCardGlow} />
           </TouchableOpacity>
