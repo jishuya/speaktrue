@@ -23,7 +23,6 @@ class AuthService {
       scheme: 'speaktrue',
       path: 'auth/google',
     });
-    console.log('=== Google Redirect URI ===', redirectUri);
 
     const [request, response, promptAsync] = Google.useAuthRequest({
       clientId: GOOGLE_CLIENT_ID,
@@ -55,7 +54,6 @@ class AuthService {
         scheme: 'speaktrue',
         path: 'auth/kakao',
       });
-      console.log('=== Kakao Redirect URI ===', redirectUri);
 
       const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=profile_nickname,profile_image,account_email`;
 
@@ -106,7 +104,6 @@ class AuthService {
         scheme: 'speaktrue',
         path: 'auth/naver',
       });
-      console.log('=== Naver Redirect URI ===', redirectUri);
 
       const state = Math.random().toString(36).substring(7);
       const authUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}`;

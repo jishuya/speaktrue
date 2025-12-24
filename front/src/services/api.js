@@ -38,9 +38,10 @@ class ApiService {
   }
 
   // Session - 새 세션 생성
-  async createSession() {
+  async createSession(userId) {
     return this.request('/api/chat/session', {
       method: 'POST',
+      body: JSON.stringify({ userId }),
     });
   }
 

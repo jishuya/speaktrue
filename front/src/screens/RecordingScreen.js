@@ -15,8 +15,10 @@ import { Header, EmotionBadge } from '../components/common';
 import { COLORS, SPACING, FONT_SIZE, FONT_FAMILY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { API_URL } from '../constants/config';
 import { api } from '../services';
+import { useAuth } from '../store/AuthContext';
 
 export default function RecordingScreen({ navigation }) {
+  const { user } = useAuth();
   // 녹음 상태
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -231,6 +233,7 @@ export default function RecordingScreen({ navigation }) {
           audioData: base64Audio,
           filename: 'recording.m4a',
           duration: playbackDuration,
+          userId: user?.id,
         }),
       });
 

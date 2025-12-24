@@ -54,19 +54,28 @@ export default function TransformScreen({ navigation, route }) {
 
   // EmpathyScreen에서 전달받은 sessionId로 자동 연결
   useEffect(() => {
+    console.log('=== TransformScreen useEffect ===');
+    console.log('passedSessionId:', passedSessionId);
+
     if (passedSessionId) {
       const fetchPassedSession = async () => {
         try {
+          console.log('📤 Fetching session:', passedSessionId);
           const sessionData = await api.getSession(passedSessionId);
+          console.log('✅ Session data received:', sessionData);
 
           if (sessionData) {
             const content = sessionData.summary?.rootCause || '방금 진행한 상담';
+            console.log('📝 Setting selectedSession with content:', content);
             setSelectedSession({
               id: passedSessionId,
               content,
             });
+          } else {
+            console.log('⚠️ No session data returned');
           }
-        } catch {
+        } catch (error) {
+          console.error('❌ Failed to fetch session:', error);
           // 세션이 삭제되었거나 찾을 수 없으면 연결하지 않음
         }
       };
@@ -99,12 +108,22 @@ export default function TransformScreen({ navigation, route }) {
 
   // 세션 목록 불러오기
   const fetchSessions = async () => {
-    if (!user?.id) return;
+    console.log('=== fetchSessions called ===');
+    console.log('user:', user);
+    console.log('user?.id:', user?.id);
+
+    if (!user?.id) {
+      console.log('❌ No user.id - skipping fetch');
+      return;
+    }
 
     try {
       setSessionsLoading(true);
+      console.log('📤 Fetching history summary for user:', user.id);
       const data = await api.getHistorySummary(user.id);
+      console.log('✅ History summary received:', data);
       let sessionList = data.sessions || [];
+      console.log('📝 Session list count:', sessionList.length);
 
       // 전달받은 세션이 있고 목록에 없으면 API에서 정보 가져와서 맨 위에 추가
       if (passedSessionId && !sessionList.find(s => s.id === passedSessionId)) {

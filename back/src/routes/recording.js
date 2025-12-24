@@ -31,7 +31,7 @@ async function ensureUploadDir() {
  */
 router.post('/upload', async (req, res) => {
   try {
-    const { audioData, filename = 'recording.m4a', duration, location } = req.body;
+    const { audioData, filename = 'recording.m4a', duration, location, userId } = req.body;
 
     if (!audioData) {
       return res.status(400).json({ error: '오디오 데이터가 필요합니다.' });
@@ -39,13 +39,15 @@ router.post('/upload', async (req, res) => {
 
     // 1. 세션 생성
     const sessionId = uuidv4();
-    // 임시 사용자 ID (나중에 인증 연동 시 교체)
-    const TEMP_USER_ID = '11111111-1111-1111-1111-111111111111';
+    // 프론트엔드에서 전달받은 userId 사용, 없으면 임시 ID 사용
+    const FALLBACK_USER_ID = '11111111-1111-1111-1111-111111111111';
+    const effectiveUserId = userId || FALLBACK_USER_ID;
+    console.log('Recording upload - Using userId:', effectiveUserId);
 
     await db.query(
       `INSERT INTO sessions (id, user_id, session_type, status, started_at)
        VALUES ($1, $2, 'recording', 'active', NOW())`,
-      [sessionId, TEMP_USER_ID]
+      [sessionId, effectiveUserId]
     );
 
     // 2. 오디오 파일 저장
@@ -81,7 +83,7 @@ router.post('/upload', async (req, res) => {
 
     // 6. 세션 완료 처리
     await db.query(
-      `UPDATE sessions SET status = 'completed', ended_at = NOW() WHERE id = $1`,
+      `UPDATE sessions SET status = 'ended', ended_at = NOW() WHERE id = $1`,
       [sessionId]
     );
 
@@ -255,7 +257,7 @@ router.post('/analyze/:sessionId', async (req, res) => {
 
     // 7. 세션 상태 업데이트 (분석 완료)
     await db.query(
-      `UPDATE sessions SET status = 'analyzed', ended_at = NOW() WHERE id = $1`,
+      `UPDATE sessions SET status = 'ended', ended_at = NOW() WHERE id = $1`,
       [sessionId]
     );
 

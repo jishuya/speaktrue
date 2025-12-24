@@ -1129,7 +1129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     marginTop: SPACING.xs,
     gap: SPACING.xs,
     shadowColor: COLORS.primary,

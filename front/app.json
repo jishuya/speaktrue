@@ -19,7 +19,7 @@
         "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
       },
-      "bundleIdentifier": "com.anonymous.truespeak"
+      "bundleIdentifier": "com.speaktrue.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +30,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.anonymous.truespeak"
+      "package": "com.speaktrue.app"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
@@ -39,6 +39,12 @@
       "expo-font",
       "expo-asset",
       "expo-speech-recognition"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cc0dfa8d-c89d-4f6f-ae34-eb3f61dd6ca5"
+      }
+    },
+    "owner": "jishuya"
   }
 }

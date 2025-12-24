@@ -123,7 +123,6 @@ export default function SettingsScreen({ navigation }) {
   };
 
   const handleLogout = () => {
-    console.log('=== handleLogout called ===');
     setLogoutModalVisible(true);
   };
 

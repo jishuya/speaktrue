@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,6 +18,7 @@ import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../compone
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { api } from '../services';
 import { getCurrentTime, shouldShowDateSeparator } from '../utils';
+import { useAuth } from '../store/AuthContext';
 
 const INITIAL_MESSAGES = [
   {
@@ -28,6 +30,7 @@ const INITIAL_MESSAGES = [
 ];
 
 export default function EmpathyScreen({ navigation }) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,11 +43,21 @@ export default function EmpathyScreen({ navigation }) {
 
   // 세션 종료 함수 (안정적인 종료 처리)
   const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
-    if (!currentSessionId) return;
+    console.log('=== endCurrentSession called ===');
+    console.log('currentSessionId:', currentSessionId);
+    console.log('isResolved:', isResolved);
+
+    if (!currentSessionId) {
+      console.log('❌ No sessionId - skipping end session');
+      return;
+    }
 
     try {
-      await api.endSession(currentSessionId, isResolved);
-    } catch {
+      console.log('📤 Calling api.endSession...');
+      const result = await api.endSession(currentSessionId, isResolved);
+      console.log('✅ endSession result:', result);
+    } catch (error) {
+      console.error('❌ endSession error:', error);
       // 세션 종료 실패해도 진행
     }
   }, []);
@@ -52,16 +65,23 @@ export default function EmpathyScreen({ navigation }) {
   // 화면 진입 시 새 세션 생성
   useEffect(() => {
     const initSession = async () => {
+      console.log('=== initSession called ===');
+      console.log('user?.id:', user?.id);
       try {
-        const { sessionId: newSessionId } = await api.createSession();
+        console.log('📤 Calling api.createSession with userId:', user?.id);
+        const result = await api.createSession(user?.id);
+        console.log('✅ createSession result:', result);
+        const { sessionId: newSessionId } = result;
+        console.log('📝 Setting sessionId:', newSessionId);
         sessionIdRef.current = newSessionId;
         setSessionId(newSessionId);
-      } catch {
+      } catch (error) {
+        console.error('❌ createSession error:', error);
         // 세션 생성 실패
       }
     };
     initSession();
-  }, []);
+  }, [user?.id]);
 
   // 뒤로가기 핸들러 - 피드백 모달 표시
   const handleBackPress = useCallback(() => {
@@ -77,11 +97,15 @@ export default function EmpathyScreen({ navigation }) {
 
   // 피드백 선택 후 세션 종료 및 네비게이션
   const handleFeedbackResolve = useCallback(async () => {
+    console.log('=== handleFeedbackResolve called ===');
+    console.log('sessionIdRef.current:', sessionIdRef.current);
     await endCurrentSession(sessionIdRef.current, true);
     navigation.goBack();
   }, [endCurrentSession, navigation]);
 
   const handleFeedbackUnresolve = useCallback(async () => {
+    console.log('=== handleFeedbackUnresolve called ===');
+    console.log('sessionIdRef.current:', sessionIdRef.current);
     await endCurrentSession(sessionIdRef.current, false);
     navigation.goBack();
   }, [endCurrentSession, navigation]);
@@ -96,6 +120,22 @@ export default function EmpathyScreen({ navigation }) {
       return () => clearTimeout(timer);
     }, [])
   );
+
+  // 키보드가 올라올 때 스크롤 최하단으로 이동
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => {
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   // 관점 전환 버튼 표시 조건 계산
   // 백엔드에서 세션 저장 조건이 사용자 메시지 4개 이상이므로 맞춤
@@ -233,7 +273,7 @@ export default function EmpathyScreen({ navigation }) {
       {/* Chat Area */}
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <FlatList
@@ -242,6 +282,7 @@ export default function EmpathyScreen({ navigation }) {
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.messageList}
+          keyboardShouldPersistTaps="handled"
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           ListFooterComponent={
             isLoading && (
@@ -260,10 +301,15 @@ export default function EmpathyScreen({ navigation }) {
               style={[styles.actionButton, isNavigating && styles.actionButtonDisabled]}
               disabled={isNavigating}
               onPress={async () => {
+                console.log('=== 메세지 보내기 버튼 clicked ===');
+                console.log('sessionIdRef.current:', sessionIdRef.current);
+                console.log('sessionId state:', sessionId);
                 setIsNavigating(true);
                 try {
                   // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
+                  console.log('📤 Ending session before navigate...');
                   await endCurrentSession(sessionIdRef.current, false);
+                  console.log('✅ Session ended, navigating to Transform with sessionId:', sessionId);
                   navigation.navigate('Transform', { sessionId });
                 } finally {
                   setIsNavigating(false);
@@ -319,7 +365,7 @@ const styles = StyleSheet.create({
   },
   messageList: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: 120,
+    paddingBottom: SPACING.md,
   },
   emotionContainer: {
     marginLeft: 48,

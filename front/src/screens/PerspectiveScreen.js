@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: 100,
+    paddingBottom: SPACING.md,
   },
   loadingContainer: {
     flex: 1,
@@ -463,12 +463,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   bottomCta: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     backgroundColor: COLORS.backgroundLight,
   },
 });
