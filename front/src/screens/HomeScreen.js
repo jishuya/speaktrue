@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '../components/ui';
 import { Header, StatusBadge } from '../components/common';
+import HomeBottomBar from '../components/HomeBottomBar';
 import { COLORS, FEATURE_CARD_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import api from '../services/api';
 import { useAuth } from '../store/AuthContext';
@@ -229,6 +230,9 @@ export default function HomeScreen({ navigation }) {
           )}
         </View>
       </ScrollView>
+
+      {/* 홈 전용 바텀 바 */}
+      <HomeBottomBar navigation={navigation} />
     </SafeAreaView>
   );
 }
@@ -245,6 +249,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.lg,
+    paddingBottom: 100, // 바텀 바 공간
   },
 
   // Greeting

@@ -517,10 +517,6 @@ export default function TransformScreen({ navigation, route }) {
                 <Icon name="close" size={24} color={COLORS.textSecondary} />
               </TouchableOpacity>
             </View>
-            {/* <Text style={styles.sessionModalSubtitle}>
-              이전 상담을 연결하면 AI가 맥락을 이해하고 더 적절한 표현을 제안해요
-            </Text> */}
-
             {/* 검색 입력 */}
             {sessions.length > 0 && (
               <View style={styles.sessionSearchContainer}>
@@ -1013,13 +1009,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-  },
-  sessionModalSubtitle: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.sm,
-    lineHeight: 20,
   },
   sessionLoadingContainer: {
     padding: SPACING.xxl,
