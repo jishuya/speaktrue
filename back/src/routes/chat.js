@@ -404,12 +404,24 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
       }
     }
 
-    // 감정 태그 저장
+    // 감정 태그 저장 (나의 감정)
     if (summary.myEmotions && summary.myEmotions.length > 0) {
       for (const emotion of summary.myEmotions.slice(0, 3)) {
         await db.query(
           `INSERT INTO session_tags (session_id, tag_type, tag_name)
            VALUES ($1, 'my_emotion', $2)
+           ON CONFLICT (session_id, tag_type, tag_name) DO NOTHING`,
+          [sessionId, emotion]
+        );
+      }
+    }
+
+    // 감정 태그 저장 (상대방 감정)
+    if (summary.partnerEmotions && summary.partnerEmotions.length > 0) {
+      for (const emotion of summary.partnerEmotions.slice(0, 3)) {
+        await db.query(
+          `INSERT INTO session_tags (session_id, tag_type, tag_name)
+           VALUES ($1, 'partner_emotion', $2)
            ON CONFLICT (session_id, tag_type, tag_name) DO NOTHING`,
           [sessionId, emotion]
         );

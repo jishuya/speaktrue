@@ -103,7 +103,7 @@ router.get('/patterns', async (req, res) => {
       LIMIT 5
     `;
 
-    // 4. 감정 분포 통계 (기간 필터 적용)
+    // 4. 나의 감정 분포 통계 (기간 필터 적용)
     const emotionsQuery = `
       SELECT
         st.tag_name as emotion,
@@ -121,7 +121,43 @@ router.get('/patterns', async (req, res) => {
       LIMIT 5
     `;
 
-    // 5. 해결된 세션 비율
+    // 5. 상대방 감정 분포 통계 (기간 필터 적용)
+    const partnerEmotionsQuery = `
+      SELECT
+        st.tag_name as emotion,
+        COUNT(*) as count,
+        ROUND(COUNT(*) * 100.0 / NULLIF(SUM(COUNT(*)) OVER(), 0), 1) as percentage
+      FROM session_tags st
+      JOIN sessions s ON st.session_id = s.id
+      WHERE s.user_id = $1
+        AND st.tag_type = 'partner_emotion'
+        AND s.status = 'ended'
+        AND s.started_at >= $2
+        AND s.started_at < $3
+      GROUP BY st.tag_name
+      ORDER BY count DESC
+      LIMIT 5
+    `;
+
+    // 6. 갈등 패턴 분포 통계 (기간 필터 적용)
+    const conflictPatternsQuery = `
+      SELECT
+        ss.conflict_pattern as pattern,
+        COUNT(*) as count
+      FROM session_summaries ss
+      JOIN sessions s ON ss.session_id = s.id
+      WHERE s.user_id = $1
+        AND s.status = 'ended'
+        AND s.started_at >= $2
+        AND s.started_at < $3
+        AND ss.conflict_pattern IS NOT NULL
+        AND ss.conflict_pattern != ''
+      GROUP BY ss.conflict_pattern
+      ORDER BY count DESC
+      LIMIT 5
+    `;
+
+    // 7. 해결된 세션 비율
     const resolvedQuery = `
       SELECT
         COUNT(*) FILTER (WHERE is_resolved = true) as resolved_count,
@@ -139,12 +175,16 @@ router.get('/patterns', async (req, res) => {
       prevSessionsResult,
       topicsResult,
       emotionsResult,
+      partnerEmotionsResult,
+      conflictPatternsResult,
       resolvedResult,
     ] = await Promise.all([
       db.query(currentSessionsQuery, [userId, startDate, endDate]),
       db.query(prevSessionsQuery, [userId, prevStartDate, prevEndDate]),
       db.query(topicsQuery, [userId, startDate, endDate]),
       db.query(emotionsQuery, [userId, startDate, endDate]),
+      db.query(partnerEmotionsQuery, [userId, startDate, endDate]),
+      db.query(conflictPatternsQuery, [userId, startDate, endDate]),
       db.query(resolvedQuery, [userId, startDate, endDate]),
     ]);
 
@@ -171,6 +211,19 @@ router.get('/patterns', async (req, res) => {
       emotion: row.emotion,
       count: parseInt(row.count),
       percentage: parseFloat(row.percentage) || 0,
+    }));
+
+    // 상대방 감정 데이터
+    const partnerEmotions = partnerEmotionsResult.rows.map((row) => ({
+      emotion: row.emotion,
+      count: parseInt(row.count),
+      percentage: parseFloat(row.percentage) || 0,
+    }));
+
+    // 갈등 패턴 데이터
+    const conflictPatterns = conflictPatternsResult.rows.map((row) => ({
+      pattern: row.pattern,
+      count: parseInt(row.count),
     }));
 
     // 인사이트 메시지 생성
@@ -210,6 +263,8 @@ router.get('/patterns', async (req, res) => {
       },
       conflictTopics,
       emotions,
+      partnerEmotions,
+      conflictPatterns,
       insight,
     });
   } catch (error) {

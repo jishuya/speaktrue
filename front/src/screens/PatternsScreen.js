@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,12 @@ import {
   ActivityIndicator,
   RefreshControl,
   Modal,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/ui';
 import { Header, InsightCard } from '../components/common';
-import { TopicPieChart, EmotionPieChart } from '../components/charts';
+import { TopicBarChart, EmotionPieChart, ConflictPatternChart } from '../components/charts';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { mapEmotionsWithStyle } from '../constants/emotions';
 import api from '../services/api';
@@ -24,6 +25,38 @@ const PERIOD_OPTIONS = [
   { label: '지난 90일', value: '90days' },
   // { label: '전체 기간', value: 'all' },
 ];
+
+// 애니메이션 프로그레스바 컴포넌트
+function AnimatedResolvedBar({ percentage }) {
+  const animatedWidth = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 애니메이션 시작
+    animatedWidth.setValue(0);
+    Animated.timing(animatedWidth, {
+      toValue: percentage,
+      duration: 800,
+      delay: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [percentage]);
+
+  const width = animatedWidth.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  });
+
+  return (
+    <View style={styles.resolvedBar}>
+      <Animated.View
+        style={[
+          styles.resolvedBarFill,
+          { width },
+        ]}
+      />
+    </View>
+  );
+}
 
 
 export default function PatternsScreen({ navigation }) {
@@ -50,6 +83,9 @@ export default function PatternsScreen({ navigation }) {
       // 프론트엔드에서 감정 아이콘/색상 매핑 적용
       if (result.emotions) {
         result.emotions = mapEmotionsWithStyle(result.emotions);
+      }
+      if (result.partnerEmotions) {
+        result.partnerEmotions = mapEmotionsWithStyle(result.partnerEmotions);
       }
       setData(result);
     } catch {
@@ -264,26 +300,27 @@ export default function PatternsScreen({ navigation }) {
                     {data.summary.resolvedRate}%
                   </Text>
                 </View>
-                <View style={styles.resolvedBar}>
-                  <View
-                    style={[
-                      styles.resolvedBarFill,
-                      { width: `${data.summary.resolvedRate}%` },
-                    ]}
-                  />
-                </View>
+                <AnimatedResolvedBar percentage={data.summary.resolvedRate} />
                 <Text style={styles.resolvedDetail}>
                   {data.summary.resolvedCount}개 해결 / {data.summary.unresolvedCount}개 미해결
                 </Text>
               </View>
             )}
 
-            {/* Conflict Topics & Emotion Distribution - Side by Side */}
-            {(data.conflictTopics?.length > 0 || data.emotions?.length > 0) && (
-              <View style={styles.chartsRow}>
-                <TopicPieChart data={data.conflictTopics} />
-                <EmotionPieChart data={data.emotions} />
-              </View>
+            {/* Conflict Topics - Bar Chart */}
+            {data.conflictTopics?.length > 0 && (
+              <TopicBarChart data={data.conflictTopics} />
+            )}
+
+            {/* Emotion Distribution - Two Pie Charts Side by Side */}
+            <View style={styles.chartsRow}>
+              <EmotionPieChart data={data.emotions} title="나의 감정" />
+              <EmotionPieChart data={data.partnerEmotions} title="상대방 감정" isPartner />
+            </View>
+
+            {/* Conflict Patterns - Progress Bar Style */}
+            {data.conflictPatterns?.length > 0 && (
+              <ConflictPatternChart data={data.conflictPatterns} />
             )}
 
             {/* AI Insight */}
