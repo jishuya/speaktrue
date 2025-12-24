@@ -3,12 +3,11 @@ import {
   View,
   Text,
   FlatList,
-  Platform,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Keyboard,
-  Animated,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -29,6 +28,9 @@ const INITIAL_MESSAGES = [
   },
 ];
 
+// ChatInput 예상 높이 (대략적인 값)
+const INPUT_AREA_HEIGHT = 70;
+
 export default function EmpathyScreen({ navigation }) {
   const { user } = useAuth();
   const partnerName = user?.partnerName || '상대';
@@ -39,17 +41,37 @@ export default function EmpathyScreen({ navigation }) {
   const [attachedImage, setAttachedImage] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [feedbackAction, setFeedbackAction] = useState('back'); // 'back' | 'transform'
+  const [feedbackAction, setFeedbackAction] = useState('back');
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef(null);
   const sessionIdRef = useRef(null);
-  const keyboardAnim = useRef(new Animated.Value(0)).current;
 
-  // 세션 종료 함수 (안정적인 종료 처리)
+  // 키보드 이벤트 처리
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const keyboardShowListener = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    });
+
+    const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      keyboardShowListener.remove();
+      keyboardHideListener.remove();
+    };
+  }, []);
+
+  // 세션 종료 함수
   const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
     if (!currentSessionId) return;
-
     try {
       await api.endSession(currentSessionId, isResolved);
     } catch {
@@ -72,20 +94,18 @@ export default function EmpathyScreen({ navigation }) {
     initSession();
   }, [user?.id]);
 
-  // 뒤로가기 핸들러 - 피드백 모달 표시
+  // 뒤로가기 핸들러
   const handleBackPress = useCallback(() => {
-    // 대화가 진행되지 않았으면 (초기 메시지만 있으면) 바로 나가기
     const userMessages = messages.filter(m => m.isUser);
     if (userMessages.length === 0) {
       navigation.goBack();
       return;
     }
-    // 대화가 있으면 피드백 모달 표시
     setFeedbackAction('back');
     setShowFeedbackModal(true);
   }, [messages, navigation]);
 
-  // 메세지 보내기 핸들러 - 피드백 모달 표시
+  // 메세지 보내기 핸들러
   const handleTransformPress = useCallback(() => {
     setFeedbackAction('transform');
     setShowFeedbackModal(true);
@@ -122,10 +142,9 @@ export default function EmpathyScreen({ navigation }) {
     }
   }, [endCurrentSession, navigation, feedbackAction]);
 
-  // 화면 포커스 시 스크롤 최하단으로 이동 (PerspectiveScreen에서 돌아올 때)
+  // 화면 포커스 시 스크롤 최하단으로 이동
   useFocusEffect(
     useCallback(() => {
-      // 약간의 딜레이를 줘서 레이아웃이 완료된 후 스크롤
       const timer = setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -133,58 +152,16 @@ export default function EmpathyScreen({ navigation }) {
     }, [])
   );
 
-  // 키보드 높이 감지 및 스크롤 처리
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-
-    const keyboardShowListener = Keyboard.addListener(showEvent, (e) => {
-      const height = e.endCoordinates.height;
-      setKeyboardHeight(height);
-      Animated.timing(keyboardAnim, {
-        toValue: height,
-        duration: Platform.OS === 'ios' ? 250 : 100,
-        useNativeDriver: false,
-      }).start();
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    });
-
-    const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
-      setKeyboardHeight(0);
-      Animated.timing(keyboardAnim, {
-        toValue: 0,
-        duration: Platform.OS === 'ios' ? 250 : 100,
-        useNativeDriver: false,
-      }).start();
-    });
-
-    return () => {
-      keyboardShowListener.remove();
-      keyboardHideListener.remove();
-    };
-  }, [keyboardAnim]);
-
-  // 관점 전환 버튼 표시 조건 계산
-  // 백엔드에서 세션 저장 조건이 사용자 메시지 4개 이상이므로 맞춤
+  // 관점 전환 버튼 표시 조건
   const canShowPerspectiveButton = (() => {
     const userMessages = messages.filter(m => m.isUser);
     const aiMessages = messages.filter(m => !m.isUser);
-
-    // 조건: 사용자 메시지 4개 이상 + AI 응답 3개 이상
     return userMessages.length >= 4 && aiMessages.length >= 3;
   })();
 
   // 이미지 첨부 핸들러
-  const handleAttach = (image) => {
-    setAttachedImage(image);
-  };
-
-  // 이미지 제거 핸들러
-  const handleRemoveImage = () => {
-    setAttachedImage(null);
-  };
+  const handleAttach = (image) => setAttachedImage(image);
+  const handleRemoveImage = () => setAttachedImage(null);
 
   const handleSend = async (text) => {
     const now = new Date();
@@ -200,11 +177,14 @@ export default function EmpathyScreen({ navigation }) {
     };
     setMessages(prev => [...prev, newMessage]);
     setInputText('');
-    setAttachedImage(null); // 전송 후 이미지 초기화
+    setAttachedImage(null);
     setIsLoading(true);
 
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
     try {
-      // 이미지가 있으면 이미지와 함께 전송
       const response = hasImage
         ? await api.sendChatMessageWithImage(text, attachedImage, 'empathy', sessionId)
         : await api.sendChatMessage(text, 'empathy', sessionId);
@@ -216,6 +196,10 @@ export default function EmpathyScreen({ navigation }) {
         createdAt: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
+
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     } catch {
       const errorResponse = {
         id: (Date.now() + 1).toString(),
@@ -231,21 +215,18 @@ export default function EmpathyScreen({ navigation }) {
 
   // 관점 전환 버튼 클릭 핸들러
   const handlePerspectivePress = () => {
-    // 대화 히스토리를 Claude API 형식으로 변환
     const conversationHistory = messages
-      .filter(m => m.id !== '1') // 초기 AI 인사 메시지 제외
+      .filter(m => m.id !== '1')
       .map(m => ({
         role: m.isUser ? 'user' : 'assistant',
         content: m.text,
       }));
-
-    // PerspectiveScreen으로 대화 기록과 세션 ID 전달
     navigation.navigate('Perspective', { conversationHistory, sessionId });
   };
 
   const renderMessage = ({ item, index }) => {
     const showAvatar = !item.isUser && (index === 0 || messages[index - 1]?.isUser);
-    const prevMessage = messages[index - 1];
+    const prevMessage = index > 0 ? messages[index - 1] : null;
     const showDateSeparator = shouldShowDateSeparator(item.createdAt, prevMessage?.createdAt);
 
     return (
@@ -261,84 +242,94 @@ export default function EmpathyScreen({ navigation }) {
     );
   };
 
+  // Input 영역 높이 계산 (키보드 없을 때 safe area 포함)
+  const inputBottomPadding = keyboardHeight > 0 ? 0 : insets.bottom;
+  const totalInputHeight = INPUT_AREA_HEIGHT + inputBottomPadding + (canShowPerspectiveButton ? 50 : 0);
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <Header
-        showBack
-        borderBottom
-        darkBackground
-        onBackPress={handleBackPress}
-        leftComponent={
-          <HeaderWithAvatar
-            avatarText="AI"
-            title="부부코칭 전문가"
-            subtitle="항상 경청 중"
-            showOnlineDot
-          />
-        }
-      />
-
-      {/* Perspective Button - 채팅창 상단에 표시 */}
-      {canShowPerspectiveButton && (
-        <View style={styles.topButtonContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handlePerspectivePress}
-          >
-            <Icon name="visibility" size={20} color={COLORS.primary} />
-            <Text style={styles.actionButtonText}>{partnerName} 관점 보기</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Chat Area */}
-      <Animated.View style={[styles.chatContainer, { paddingBottom: keyboardAnim }]}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.messageList}
-          keyboardShouldPersistTaps="handled"
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-          ListFooterComponent={
-            isLoading && (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color={COLORS.primary} />
-                <Text style={styles.loadingText}>응답 작성 중...</Text>
-              </View>
-            )
+    <View style={styles.container}>
+      {/* Header - 고정 */}
+      <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+        <Header
+          showBack
+          borderBottom
+          darkBackground
+          onBackPress={handleBackPress}
+          leftComponent={
+            <HeaderWithAvatar
+              avatarText="AI"
+              title="부부코칭 전문가"
+              subtitle="항상 경청 중"
+              showOnlineDot
+            />
           }
         />
 
-        {/* Send Message Button - 채팅창 하단에 표시 (상대방 관점 보기와 같은 시점에) */}
+        {/* Perspective Button */}
+        {canShowPerspectiveButton && (
+          <View style={styles.topButtonContainer}>
+            <TouchableOpacity style={styles.actionButton} onPress={handlePerspectivePress}>
+              <Icon name="visibility" size={20} color={COLORS.primary} />
+              <Text style={styles.actionButtonText}>{partnerName} 관점 보기</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </SafeAreaView>
+
+      {/* Chat Messages */}
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={[
+          styles.messageList,
+          { paddingBottom: totalInputHeight + SPACING.md }
+        ]}
+        keyboardShouldPersistTaps="handled"
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+        ListFooterComponent={
+          isLoading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+              <Text style={styles.loadingText}>응답 작성 중...</Text>
+            </View>
+          )
+        }
+      />
+
+      {/* Input Area - 하단 고정 */}
+      <View
+        style={[
+          styles.inputWrapper,
+          {
+            bottom: keyboardHeight,
+            paddingBottom: inputBottomPadding,
+          }
+        ]}
+      >
+        {/* Send Message Button */}
         {canShowPerspectiveButton && (
           <View style={styles.bottomButtonContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={handleTransformPress}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
               <Icon name="send" size={20} color={COLORS.primary} />
               <Text style={styles.actionButtonText}>메세지 보내기</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Input Area */}
-        <View style={{ paddingBottom: keyboardHeight > 0 ? 0 : insets.bottom }}>
-          <ChatInput
-            value={inputText}
-            onChangeText={setInputText}
-            onSend={handleSend}
-            onAttach={handleAttach}
-            attachedImage={attachedImage}
-            onRemoveImage={handleRemoveImage}
-            isLoading={isLoading}
-            placeholder="감정을 입력해 주세요..."
-          />
-        </View>
-      </Animated.View>
+        <ChatInput
+          value={inputText}
+          onChangeText={setInputText}
+          onSend={handleSend}
+          onAttach={handleAttach}
+          attachedImage={attachedImage}
+          onRemoveImage={handleRemoveImage}
+          isLoading={isLoading}
+          placeholder="감정을 입력해 주세요..."
+          disableInternalKeyboardHandling
+        />
+      </View>
 
       {/* Session Feedback Modal */}
       <SessionFeedbackModal
@@ -348,7 +339,7 @@ export default function EmpathyScreen({ navigation }) {
         onUnresolve={handleFeedbackUnresolve}
         isLoading={isFeedbackLoading}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -357,12 +348,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
   },
-  chatContainer: {
-    flex: 1,
+  headerSafeArea: {
+    backgroundColor: COLORS.backgroundLight,
   },
   messageList: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.md,
+  },
+  inputWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    backgroundColor: COLORS.backgroundLight,
   },
   topButtonContainer: {
     alignItems: 'center',
@@ -389,9 +385,6 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,
-  },
-  actionButtonDisabled: {
-    opacity: 0.7,
   },
   loadingContainer: {
     flexDirection: 'row',

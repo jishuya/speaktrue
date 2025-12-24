@@ -93,7 +93,7 @@ export function HistoryDetailModal({
                   <ScrollView
                     style={styles.modalScrollView}
                     contentContainerStyle={styles.modalScrollContent}
-                    showsVerticalScrollIndicator={true}
+                    showsVerticalScrollIndicator={false}
                     nestedScrollEnabled={true}
                     bounces={true}
                   >

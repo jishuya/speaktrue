@@ -20,6 +20,7 @@ export default function ChatInput({
   showAttach = true,
   showVoice = true,
   maxHeight = 100,
+  disableInternalKeyboardHandling = false,
 }) {
   const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -90,7 +91,10 @@ export default function ChatInput({
   const canActuallySend = value?.trim().length > 0 && !isDisabled;
 
   // 키보드가 보이면 bottom inset 제거 (키보드가 이미 공간 차지)
-  const bottomPadding = isKeyboardVisible ? SPACING.sm : SPACING.sm + insets.bottom;
+  // disableInternalKeyboardHandling이 true면 외부에서 패딩 처리
+  const bottomPadding = disableInternalKeyboardHandling
+    ? SPACING.sm
+    : (isKeyboardVisible ? SPACING.sm : SPACING.sm + insets.bottom);
 
   return (
     <View style={[styles.container, { paddingBottom: bottomPadding }]}>
