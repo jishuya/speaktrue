@@ -43,21 +43,11 @@ export default function EmpathyScreen({ navigation }) {
 
   // 세션 종료 함수 (안정적인 종료 처리)
   const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
-    console.log('=== endCurrentSession called ===');
-    console.log('currentSessionId:', currentSessionId);
-    console.log('isResolved:', isResolved);
-
-    if (!currentSessionId) {
-      console.log('❌ No sessionId - skipping end session');
-      return;
-    }
+    if (!currentSessionId) return;
 
     try {
-      console.log('📤 Calling api.endSession...');
-      const result = await api.endSession(currentSessionId, isResolved);
-      console.log('✅ endSession result:', result);
-    } catch (error) {
-      console.error('❌ endSession error:', error);
+      await api.endSession(currentSessionId, isResolved);
+    } catch {
       // 세션 종료 실패해도 진행
     }
   }, []);
@@ -65,18 +55,12 @@ export default function EmpathyScreen({ navigation }) {
   // 화면 진입 시 새 세션 생성
   useEffect(() => {
     const initSession = async () => {
-      console.log('=== initSession called ===');
-      console.log('user?.id:', user?.id);
       try {
-        console.log('📤 Calling api.createSession with userId:', user?.id);
         const result = await api.createSession(user?.id);
-        console.log('✅ createSession result:', result);
         const { sessionId: newSessionId } = result;
-        console.log('📝 Setting sessionId:', newSessionId);
         sessionIdRef.current = newSessionId;
         setSessionId(newSessionId);
-      } catch (error) {
-        console.error('❌ createSession error:', error);
+      } catch {
         // 세션 생성 실패
       }
     };
@@ -97,15 +81,11 @@ export default function EmpathyScreen({ navigation }) {
 
   // 피드백 선택 후 세션 종료 및 네비게이션
   const handleFeedbackResolve = useCallback(async () => {
-    console.log('=== handleFeedbackResolve called ===');
-    console.log('sessionIdRef.current:', sessionIdRef.current);
     await endCurrentSession(sessionIdRef.current, true);
     navigation.goBack();
   }, [endCurrentSession, navigation]);
 
   const handleFeedbackUnresolve = useCallback(async () => {
-    console.log('=== handleFeedbackUnresolve called ===');
-    console.log('sessionIdRef.current:', sessionIdRef.current);
     await endCurrentSession(sessionIdRef.current, false);
     navigation.goBack();
   }, [endCurrentSession, navigation]);
@@ -294,28 +274,13 @@ export default function EmpathyScreen({ navigation }) {
               style={[styles.actionButton, isNavigating && styles.actionButtonDisabled]}
               disabled={isNavigating}
               onPress={async () => {
-                console.log('========================================');
-                console.log('=== 메세지 보내기 버튼 clicked ===');
-                console.log('========================================');
-                console.log('sessionIdRef.current:', sessionIdRef.current);
-                console.log('sessionId state:', sessionId);
-                console.log('두 값이 같은지:', sessionIdRef.current === sessionId);
                 setIsNavigating(true);
                 try {
                   // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
-                  console.log('📤 Ending session before navigate...');
-                  const endResult = await endCurrentSession(sessionIdRef.current, false);
-                  console.log('✅ endCurrentSession 완료, result:', endResult);
-
-                  // sessionIdRef.current 사용 (state보다 더 안정적)
-                  const sessionIdToPass = sessionIdRef.current;
-                  console.log('🚀 TransformScreen으로 이동합니다');
-                  console.log('🚀 전달할 sessionId:', sessionIdToPass);
-                  console.log('🚀 typeof sessionId:', typeof sessionIdToPass);
-
-                  navigation.navigate('Transform', { sessionId: sessionIdToPass });
-                } catch (error) {
-                  console.error('❌ 메세지 보내기 에러:', error);
+                  await endCurrentSession(sessionIdRef.current, false);
+                  navigation.navigate('Transform', { sessionId: sessionIdRef.current });
+                } catch {
+                  // 에러 무시
                 } finally {
                   setIsNavigating(false);
                 }

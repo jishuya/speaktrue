@@ -92,7 +92,6 @@ class AuthService {
 
       return { success: false, error: 'Kakao login cancelled or failed' };
     } catch (error) {
-      console.error('Kakao login error:', error);
       return { success: false, error: error.message };
     }
   }
@@ -134,7 +133,6 @@ class AuthService {
 
       return { success: false, error: 'Naver login cancelled or failed' };
     } catch (error) {
-      console.error('Naver login error:', error);
       return { success: false, error: error.message };
     }
   }

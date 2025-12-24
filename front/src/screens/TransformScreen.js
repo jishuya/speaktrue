@@ -54,44 +54,22 @@ export default function TransformScreen({ navigation, route }) {
 
   // EmpathyScreen에서 전달받은 sessionId로 자동 연결
   useEffect(() => {
-    console.log('========================================');
-    console.log('=== TransformScreen useEffect 실행 ===');
-    console.log('========================================');
-    console.log('route.params:', JSON.stringify(route?.params, null, 2));
-    console.log('passedSessionId:', passedSessionId);
-    console.log('typeof passedSessionId:', typeof passedSessionId);
-    console.log('passedSessionId truthy?:', !!passedSessionId);
-
     if (passedSessionId) {
       const fetchPassedSession = async () => {
         try {
-          console.log('📤 api.getSession 호출:', passedSessionId);
           const sessionData = await api.getSession(passedSessionId);
-          console.log('✅ Session data received:');
-          console.log(JSON.stringify(sessionData, null, 2));
-
           if (sessionData) {
             const content = sessionData.summary?.rootCause || '방금 진행한 상담';
-            console.log('📝 Setting selectedSession');
-            console.log('📝 id:', passedSessionId);
-            console.log('📝 content:', content);
             setSelectedSession({
               id: passedSessionId,
               content,
             });
-          } else {
-            console.log('⚠️ No session data returned (sessionData is falsy)');
           }
-        } catch (error) {
-          console.error('❌ Failed to fetch session:');
-          console.error('Error message:', error.message);
-          console.error('Error:', error);
+        } catch {
           // 세션이 삭제되었거나 찾을 수 없으면 연결하지 않음
         }
       };
       fetchPassedSession();
-    } else {
-      console.log('⚠️ passedSessionId가 없어서 fetchPassedSession 스킵');
     }
   }, [passedSessionId]);
 
@@ -120,35 +98,17 @@ export default function TransformScreen({ navigation, route }) {
 
   // 세션 목록 불러오기
   const fetchSessions = async () => {
-    console.log('========================================');
-    console.log('=== fetchSessions called ===');
-    console.log('========================================');
-    console.log('user:', user);
-    console.log('user?.id:', user?.id);
-    console.log('passedSessionId:', passedSessionId);
-    console.log('selectedSession:', selectedSession);
-
-    if (!user?.id) {
-      console.log('❌ No user.id - skipping fetch');
-      return;
-    }
+    if (!user?.id) return;
 
     try {
       setSessionsLoading(true);
-      console.log('📤 Fetching history summary for user:', user.id);
       const data = await api.getHistorySummary(user.id);
-      console.log('✅ History summary received:');
-      console.log(JSON.stringify(data, null, 2));
       let sessionList = data.sessions || [];
-      console.log('📝 Session list count:', sessionList.length);
-      console.log('📝 Session list:', JSON.stringify(sessionList, null, 2));
 
       // 전달받은 세션이 있고 목록에 없으면 API에서 정보 가져와서 맨 위에 추가
       if (passedSessionId && !sessionList.find(s => s.id === passedSessionId)) {
-        console.log('📝 passedSessionId가 목록에 없음, API에서 직접 조회');
         try {
           const sessionData = await api.getSession(passedSessionId);
-          console.log('📝 passedSession data:', JSON.stringify(sessionData, null, 2));
           const content = sessionData?.summary?.rootCause || '방금 진행한 상담';
           sessionList = [
             {
@@ -158,9 +118,7 @@ export default function TransformScreen({ navigation, route }) {
             },
             ...sessionList,
           ];
-          console.log('📝 Updated sessionList with passedSession:', JSON.stringify(sessionList[0], null, 2));
-        } catch (err) {
-          console.error('❌ passedSession 조회 실패:', err.message);
+        } catch {
           // 세션 조회 실패 시 기본 정보로 추가
           sessionList = [
             {
@@ -174,9 +132,7 @@ export default function TransformScreen({ navigation, route }) {
       }
 
       setSessions(sessionList);
-      console.log('✅ setSessions 완료');
-    } catch (err) {
-      console.error('❌ fetchSessions 에러:', err.message);
+    } catch {
       setAlertModal({ visible: true, title: '오류', message: '상담 기록을 불러오지 못했습니다.', type: 'error' });
     } finally {
       setSessionsLoading(false);

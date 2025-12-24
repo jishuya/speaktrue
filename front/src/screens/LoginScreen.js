@@ -392,7 +392,6 @@ export default function LoginScreen() {
         );
       }
     } catch (error) {
-      console.log('회원가입 에러:', error);
       // 에러 메시지 분류
       const errorMessage = error.message || '회원가입 중 오류가 발생했습니다.';
       const isEmailDuplicate = errorMessage.includes('이미 사용 중인 이메일') || errorMessage.includes('already');

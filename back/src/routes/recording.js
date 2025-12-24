@@ -42,7 +42,6 @@ router.post('/upload', async (req, res) => {
     // 프론트엔드에서 전달받은 userId 사용, 없으면 임시 ID 사용
     const FALLBACK_USER_ID = '11111111-1111-1111-1111-111111111111';
     const effectiveUserId = userId || FALLBACK_USER_ID;
-    console.log('Recording upload - Using userId:', effectiveUserId);
 
     await db.query(
       `INSERT INTO sessions (id, user_id, session_type, status, started_at)
@@ -66,9 +65,7 @@ router.post('/upload', async (req, res) => {
     );
 
     // 4. Clova Speech API로 STT + 화자 분리
-    console.log('Clova Speech API 호출 중...');
     const clovaResult = await clovaSpeech.transcribeAudio(audioBuffer, filename);
-    console.log('Clova Speech API 응답:', JSON.stringify(clovaResult, null, 2));
 
     // 5. 결과 파싱 및 DB 저장
     const transcripts = clovaSpeech.parseTranscriptResult(clovaResult);

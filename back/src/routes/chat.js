@@ -77,11 +77,8 @@ async function createOrUpdateConversationSummary(sessionId) {
 
 // POST /api/chat/session - 새 세션 생성
 router.post('/session', async (req, res) => {
-  console.log('=== POST /api/chat/session called ===');
-
   // 프론트엔드에서 전달받은 userId 사용, 없으면 TEMP_USER_ID 사용
   const userId = req.body.userId || TEMP_USER_ID;
-  console.log('Using userId:', userId);
 
   try {
     const result = await db.query(
@@ -92,7 +89,6 @@ router.post('/session', async (req, res) => {
     );
 
     const session = result.rows[0];
-    console.log('✅ Session created:', session);
 
     res.json({
       sessionId: session.id,
@@ -101,7 +97,7 @@ router.post('/session', async (req, res) => {
       startedAt: session.started_at,
     });
   } catch (error) {
-    console.error('❌ Session creation error:', error);
+    console.error('Session creation error:', error);
     res.status(500).json({ error: '세션 생성 중 오류가 발생했습니다.' });
   }
 });
@@ -308,30 +304,21 @@ const MIN_USER_MESSAGES_TO_SAVE = 4;
 
 // PATCH /api/chat/session/:id/end - 세션 종료 및 요약 생성
 router.patch('/session/:id/end', async (req, res) => {
-  console.log('=== PATCH /api/chat/session/:id/end called ===');
-  console.log('Session ID:', req.params.id);
-  console.log('Request body:', req.body);
-
   try {
     const { id } = req.params;
     const { isResolved = false } = req.body;
 
     // 1. 세션의 메시지 조회
-    console.log('📤 Fetching messages for session:', id);
     const messagesResult = await db.query(
       `SELECT role, content FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
       [id]
     );
-    console.log('📝 Total messages:', messagesResult.rows.length);
 
     // 2. 사용자 메시지 수 확인
     const userMessageCount = messagesResult.rows.filter(m => m.role === 'user').length;
-    console.log('📝 User message count:', userMessageCount);
-    console.log('📝 MIN_USER_MESSAGES_TO_SAVE:', MIN_USER_MESSAGES_TO_SAVE);
 
-    // 3. 사용자 메시지가 3개 미만이면 세션 삭제 (영양가 없음)
+    // 3. 사용자 메시지가 4개 미만이면 세션 삭제 (영양가 없음)
     if (userMessageCount < MIN_USER_MESSAGES_TO_SAVE) {
-      console.log('⚠️ Insufficient messages - deleting session');
       await db.query('DELETE FROM sessions WHERE id = $1', [id]);
       return res.json({
         message: '세션이 종료되었습니다.',
@@ -341,7 +328,6 @@ router.patch('/session/:id/end', async (req, res) => {
     }
 
     // 4. 세션 종료 처리
-    console.log('📤 Updating session status to ended...');
     const result = await db.query(
       `UPDATE sessions
        SET status = 'ended', is_resolved = $2, ended_at = NOW()
@@ -351,19 +337,13 @@ router.patch('/session/:id/end', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      console.log('❌ Session not found');
       return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
     }
 
-    console.log('✅ Session ended:', result.rows[0]);
-
     // 5. 최종 요약 생성 (동기 처리 - TransformScreen에서 바로 사용할 수 있도록)
-    console.log('📤 Generating session summary...');
     try {
       await generateAndSaveSessionSummary(id, messagesResult.rows);
-      console.log('✅ Session summary generated successfully');
-    } catch (err) {
-      console.error('❌ Session summary generation failed:', err);
+    } catch {
       // summary 생성 실패해도 세션 종료는 성공으로 처리
     }
 
@@ -372,7 +352,7 @@ router.patch('/session/:id/end', async (req, res) => {
       session: result.rows[0],
     });
   } catch (error) {
-    console.error('❌ Session end error:', error);
+    console.error('Session end error:', error);
     res.status(500).json({ error: '세션 종료 중 오류가 발생했습니다.' });
   }
 });
