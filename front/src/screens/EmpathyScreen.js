@@ -3,14 +3,14 @@ import {
   View,
   Text,
   FlatList,
-  KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Keyboard,
+  Animated,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon, SessionFeedbackModal } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
@@ -31,6 +31,8 @@ const INITIAL_MESSAGES = [
 
 export default function EmpathyScreen({ navigation }) {
   const { user } = useAuth();
+  const partnerName = user?.partnerName || '상대';
+  const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +41,10 @@ export default function EmpathyScreen({ navigation }) {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackAction, setFeedbackAction] = useState('back'); // 'back' | 'transform'
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef(null);
   const sessionIdRef = useRef(null);
+  const keyboardAnim = useRef(new Animated.Value(0)).current;
 
   // 세션 종료 함수 (안정적인 종료 처리)
   const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
@@ -129,21 +133,38 @@ export default function EmpathyScreen({ navigation }) {
     }, [])
   );
 
-  // 키보드가 올라올 때 스크롤 최하단으로 이동
+  // 키보드 높이 감지 및 스크롤 처리
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => {
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd({ animated: true });
-        }, 100);
-      }
-    );
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const keyboardShowListener = Keyboard.addListener(showEvent, (e) => {
+      const height = e.endCoordinates.height;
+      setKeyboardHeight(height);
+      Animated.timing(keyboardAnim, {
+        toValue: height,
+        duration: Platform.OS === 'ios' ? 250 : 100,
+        useNativeDriver: false,
+      }).start();
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    });
+
+    const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+      Animated.timing(keyboardAnim, {
+        toValue: 0,
+        duration: Platform.OS === 'ios' ? 250 : 100,
+        useNativeDriver: false,
+      }).start();
+    });
 
     return () => {
-      keyboardDidShowListener.remove();
+      keyboardShowListener.remove();
+      keyboardHideListener.remove();
     };
-  }, []);
+  }, [keyboardAnim]);
 
   // 관점 전환 버튼 표시 조건 계산
   // 백엔드에서 세션 저장 조건이 사용자 메시지 4개 이상이므로 맞춤
@@ -266,17 +287,13 @@ export default function EmpathyScreen({ navigation }) {
             onPress={handlePerspectivePress}
           >
             <Icon name="visibility" size={20} color={COLORS.primary} />
-            <Text style={styles.actionButtonText}>상대방 관점 보기</Text>
+            <Text style={styles.actionButtonText}>{partnerName} 관점 보기</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {/* Chat Area */}
-      <KeyboardAvoidingView
-        style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      >
+      <Animated.View style={[styles.chatContainer, { paddingBottom: keyboardAnim }]}>
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -309,17 +326,19 @@ export default function EmpathyScreen({ navigation }) {
         )}
 
         {/* Input Area */}
-        <ChatInput
-          value={inputText}
-          onChangeText={setInputText}
-          onSend={handleSend}
-          onAttach={handleAttach}
-          attachedImage={attachedImage}
-          onRemoveImage={handleRemoveImage}
-          isLoading={isLoading}
-          placeholder="감정을 입력해 주세요..."
-        />
-      </KeyboardAvoidingView>
+        <View style={{ paddingBottom: keyboardHeight > 0 ? 0 : insets.bottom }}>
+          <ChatInput
+            value={inputText}
+            onChangeText={setInputText}
+            onSend={handleSend}
+            onAttach={handleAttach}
+            attachedImage={attachedImage}
+            onRemoveImage={handleRemoveImage}
+            isLoading={isLoading}
+            placeholder="감정을 입력해 주세요..."
+          />
+        </View>
+      </Animated.View>
 
       {/* Session Feedback Modal */}
       <SessionFeedbackModal

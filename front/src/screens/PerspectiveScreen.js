@@ -12,8 +12,11 @@ import { Icon } from '../components/ui';
 import { Header, HeaderWithIcon, Button } from '../components/common';
 import { COLORS, EMOTION_STYLES, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { api } from '../services';
+import { useAuth } from '../store/AuthContext';
 
 export default function PerspectiveScreen({ navigation, route }) {
+  const { user } = useAuth();
+  const partnerName = user?.partnerName || '상대';
   const { conversationHistory, sessionId } = route.params || {};
   const [isLoading, setIsLoading] = useState(true);
   const [perspectiveData, setPerspectiveData] = useState(null);
@@ -65,7 +68,7 @@ export default function PerspectiveScreen({ navigation, route }) {
   const sectionTitles = {
     summary: '대화 요약',
     emotionReaffirm: '사용자 감정 재확인',
-    partnerPerspective: '상대방(남편)의 입장 해석',
+    partnerPerspective: `${partnerName}의 입장 해석`,
     hiddenNeedAnalysis: '숨겨진 욕구 분석',
     communicationTip: '실질적인 소통 방안',
   };
@@ -109,13 +112,13 @@ export default function PerspectiveScreen({ navigation, route }) {
             <HeaderWithIcon
               icon="favorite"
               title="관점 전환"
-              subtitle="상대방 입장에서"
+              subtitle={`상대의 입장에서`}
             />
           }
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>상대방의 관점을 분석하고 있어요...</Text>
+          <Text style={styles.loadingText}>{partnerName}의 관점을 분석하고 있어요...</Text>
           <Text style={styles.loadingSubText}>잠시만 기다려 주세요</Text>
         </View>
       </SafeAreaView>
@@ -134,7 +137,7 @@ export default function PerspectiveScreen({ navigation, route }) {
             <HeaderWithIcon
               icon="favorite"
               title="관점 전환"
-              subtitle="상대방 입장에서"
+              subtitle={`상대의 입장에서`}
             />
           }
         />
@@ -164,7 +167,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           <HeaderWithIcon
             icon="visibility"
             title="관점 전환"
-            subtitle="상대방 입장에서"
+            subtitle={`상대의 입장에서`}
           />
         }
       />
@@ -178,7 +181,7 @@ export default function PerspectiveScreen({ navigation, route }) {
         <View style={styles.motivationHint}>
           <Icon name="ear-hearing" size={20} color={COLORS.textSecondary} style={styles.hintIcon} />
           <Text style={styles.hintText}>
-            상대방도 나름의 이유가 있었을 거예요
+            {partnerName}님도 나름의 이유가 있었을 거예요
           </Text>
         </View>
 
@@ -187,10 +190,10 @@ export default function PerspectiveScreen({ navigation, route }) {
           <View style={styles.cardGlow} />
           <View style={styles.cardHeader}>
             <View style={styles.partnerAvatar}>
-              <Text style={styles.avatarText}>상대</Text>
+              <Text style={styles.avatarText}>{partnerName.slice(0, 2)}</Text>
             </View>
             <View style={styles.cardHeaderText}>
-              <Text style={styles.partnerName}>상대님의 입장</Text>
+              <Text style={styles.partnerName}>{partnerName}님의 입장</Text>
               <Text style={styles.aiLabel}>AI 공감 해석</Text>
             </View>
           </View>
