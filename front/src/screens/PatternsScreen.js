@@ -176,7 +176,7 @@ export default function PatternsScreen({ navigation }) {
             <Text style={styles.periodText}>{getPeriodLabel()}</Text>
             <Icon
               name={showPeriodPicker ? 'expand-less' : 'expand-more'}
-              size={16}
+              size={14}
               color={COLORS.textSecondary}
             />
           </TouchableOpacity>
@@ -210,7 +210,7 @@ export default function PatternsScreen({ navigation }) {
         {!hasData ? (
           /* 데이터 없음 상태 */
           <View style={styles.emptyContainer}>
-            <Icon name="analytics" size={64} color={COLORS.textTertiary} />
+            <Icon name="analytics" size={48} color={COLORS.textTertiary} />
             <Text style={styles.emptyTitle}>아직 분석할 데이터가 없어요</Text>
             <Text style={styles.emptyText}>
               대화를 나눈 후에 패턴 분석을 확인할 수 있어요
@@ -230,7 +230,7 @@ export default function PatternsScreen({ navigation }) {
                     </Text>
                   </View>
                   <View style={styles.summaryIcon}>
-                    <Icon name="chat-bubble" size={28} color={COLORS.primary} />
+                    <Icon name="chat-bubble" size={22} color={COLORS.primary} />
                   </View>
                 </View>
                 <View style={styles.summaryFooter}>
@@ -289,7 +289,7 @@ export default function PatternsScreen({ navigation }) {
                       label={item.topic}
                       value={item.percentage}
                       color={item.color}
-                      size="md"
+                      size="sm"
                     />
                   ))}
                 </View>
@@ -312,7 +312,7 @@ export default function PatternsScreen({ navigation }) {
                       showIcon
                       icon={item.icon}
                       iconColor={item.color}
-                      size="md"
+                      size="sm"
                     />
                   ))}
                 </View>
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.sm,
   },
   loadingContainer: {
     flex: 1,
@@ -523,49 +523,49 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: SPACING.giant,
-    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
   },
   emptyTitle: {
-    marginTop: SPACING.lg,
-    fontSize: FONT_SIZE.lg,
+    marginTop: SPACING.md,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textPrimary,
   },
   emptyText: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZE.md,
+    marginTop: SPACING.xs,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
   periodSelector: {
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   periodButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.primaryBg,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.full,
   },
   periodText: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     marginRight: 4,
   },
   periodPickerContainer: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     ...SHADOWS.sm,
     borderWidth: 1,
     borderColor: COLORS.borderLight,
   },
   periodOption: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderLight,
   },
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryBg,
   },
   periodOptionText: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -584,8 +584,8 @@ const styles = StyleSheet.create({
   summaryCard: {
     backgroundColor: COLORS.primaryBg,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: `${COLORS.primary}20`,
     overflow: 'hidden',
@@ -593,11 +593,11 @@ const styles = StyleSheet.create({
   },
   summaryGlow: {
     position: 'absolute',
-    top: -24,
-    right: -24,
-    width: 128,
-    height: 128,
-    borderRadius: 64,
+    top: -20,
+    right: -20,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: `${COLORS.primary}20`,
   },
   summaryContent: {
@@ -610,19 +610,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   summaryLabel: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   summaryValue: {
-    fontSize: FONT_SIZE.giant,
+    fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   summaryIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BORDER_RADIUS.lg,
+    width: 40,
+    height: 40,
+    borderRadius: BORDER_RADIUS.md,
     backgroundColor: COLORS.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
   summaryFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: SPACING.md,
+    marginTop: SPACING.sm,
   },
   trendBadge: {
     flexDirection: 'row',
@@ -650,14 +650,14 @@ const styles = StyleSheet.create({
     color: COLORS.primaryDark,
   },
   summaryHint: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
   },
   resolvedCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     ...SHADOWS.sm,
@@ -666,19 +666,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   resolvedLabel: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
   },
   resolvedValue: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
   },
   resolvedBar: {
-    height: 8,
+    height: 6,
     backgroundColor: COLORS.borderLight,
     borderRadius: BORDER_RADIUS.full,
     overflow: 'hidden',
@@ -689,29 +689,29 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   resolvedDetail: {
-    marginTop: SPACING.sm,
-    fontSize: FONT_SIZE.sm,
+    marginTop: SPACING.xs,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textTertiary,
     textAlign: 'center',
   },
   section: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   sectionTitle: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
   },
   chartCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
+    padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     ...SHADOWS.sm,

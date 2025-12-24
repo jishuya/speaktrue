@@ -7,7 +7,7 @@ export default function HomeBottomBar({ navigation }) {
   const insets = useSafeAreaInsets();
 
   const leftItems = [
-    { name: 'Transform', icon: 'chat-bubble-outline', label: '메세지' },
+    { name: 'Transform', icon: 'chat', label: '메세지' },
     { name: 'Patterns', icon: 'analytics', label: '패턴분석' },
   ];
 

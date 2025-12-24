@@ -108,7 +108,7 @@ export default function HomeScreen({ navigation }) {
             activeOpacity={0.9}
           >
             <View style={[styles.featureIconContainer, styles.featureIconGreen]}>
-              <Icon name="ear-hearing" size={20} color={COLORS.primary} />
+              <Icon name="heart" size={20} color={COLORS.primary} />
             </View>
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>내 마음{'\n'}털어놓기</Text>
@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation }) {
             activeOpacity={0.9}
           >
             <View style={[styles.featureIconContainer, styles.featureIconWarm]}>
-              <Icon name="chat-bubble-outline" size={20} color="#9C7C58" />
+              <Icon name="chat" size={20} color="#9C7C58" />
             </View>
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>내가 진짜{'\n'}하고 싶은 말은</Text>
