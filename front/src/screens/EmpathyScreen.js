@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon, SessionFeedbackModal } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
-import { ChatBubble, EmotionTagList, ChatInput, DateSeparator } from '../components/chat';
+import { ChatBubble, ChatInput, DateSeparator } from '../components/chat';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { api } from '../services';
 import { getCurrentTime, shouldShowDateSeparator } from '../utils';
@@ -227,20 +227,13 @@ export default function EmpathyScreen({ navigation }) {
           isUser={item.isUser}
           showAvatar={showAvatar}
           timestamp={item.timestamp}
-          isRead={item.isRead}
-          coachLabel={item.coachLabel}
         />
-        {item.emotions && (
-          <View style={styles.emotionContainer}>
-            <EmotionTagList emotions={item.emotions} />
-          </View>
-        )}
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <Header
         showBack
@@ -366,11 +359,6 @@ const styles = StyleSheet.create({
   messageList: {
     paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.md,
-  },
-  emotionContainer: {
-    marginLeft: 48,
-    marginTop: -SPACING.xs,
-    marginBottom: SPACING.sm,
   },
   topButtonContainer: {
     alignItems: 'center',
