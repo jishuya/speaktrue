@@ -127,12 +127,10 @@ export default function SettingsScreen({ navigation }) {
   };
 
   const confirmLogout = async () => {
-    console.log('=== Logout confirmed ===');
     try {
       await logout();
-      console.log('=== logout() finished ===');
-    } catch (error) {
-      console.error('=== handleLogout error ===', error);
+    } catch {
+      // 로그아웃 실패 시 무시
     }
   };
 
@@ -225,8 +223,7 @@ export default function SettingsScreen({ navigation }) {
             iconBgColor={`${COLORS.primary}20`}
             iconColor={COLORS.primary}
             title="대화 패턴 분석"
-            subtitle="나의 NVC 실천 기록 확인하기"
-            onPress={() => setComingSoonModalVisible(true)}
+            onPress={() => navigation.navigate('Patterns')}
           />
           <MenuItem
             icon="menu-book"
@@ -368,17 +365,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: SPACING.md,
   },
-  profileImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: COLORS.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 4,
-    borderColor: COLORS.surface,
-    ...SHADOWS.md,
-  },
   profileImageImg: {
     width: 96,
     height: 96,
@@ -386,24 +372,6 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: COLORS.surface,
     ...SHADOWS.md,
-  },
-  profileInitial: {
-    fontSize: FONT_SIZE.display,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary,
-  },
-  editButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.surface,
   },
   profileName: {
     fontSize: FONT_SIZE.xl,

@@ -78,7 +78,7 @@ export function AlertModal({
       <View style={styles.backdrop}>
         <View style={styles.alertContainer}>
           <View style={[styles.iconCircle, { backgroundColor: `${icon.color}15` }]}>
-            <Icon name={icon.name} size={32} color={icon.color} />
+            <Icon name={icon.name} size={26} color={icon.color} />
           </View>
           <Text style={styles.alertTitle}>{title}</Text>
           <Text style={styles.alertMessage}>{message}</Text>
@@ -145,7 +145,7 @@ export function SessionFeedbackModal({
       <View style={styles.backdrop}>
         <View style={styles.feedbackContainer}>
           <View style={[styles.iconCircle, { backgroundColor: `${COLORS.primary}15` }]}>
-            <Icon name="favorite" size={32} color={COLORS.primary} />
+            <Icon name="favorite" size={26} color={COLORS.primary} />
           </View>
           <Text style={styles.feedbackTitle}>{title}</Text>
           <Text style={styles.feedbackSubtitle}>
@@ -159,7 +159,7 @@ export function SessionFeedbackModal({
                 onClose();
               }}
             >
-              <Icon name="sentiment-satisfied" size={28} color={COLORS.success} />
+              <Icon name="sentiment-satisfied" size={24} color={COLORS.success} />
               <Text style={styles.feedbackButtonText}>{resolveText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -169,7 +169,7 @@ export function SessionFeedbackModal({
                 onClose();
               }}
             >
-              <Icon name="sentiment-dissatisfied" size={28} color={COLORS.warning} />
+              <Icon name="sentiment-dissatisfied" size={24} color={COLORS.warning} />
               <Text style={styles.feedbackButtonText}>{unresolveText}</Text>
             </TouchableOpacity>
           </View>
@@ -188,10 +188,10 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
   },
   container: {
-    width: '100%',
-    maxWidth: 400,
+    width: '90%',
+    maxWidth: 340,
     backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.lg,
   },
   header: {
@@ -226,48 +226,48 @@ const styles = StyleSheet.create({
 
   // Alert & Confirm
   alertContainer: {
-    width: '100%',
-    maxWidth: 320,
+    width: '85%',
+    maxWidth: 280,
     backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
     alignItems: 'center',
     ...SHADOWS.lg,
   },
   iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   alertTitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
     textAlign: 'center',
   },
   alertMessage: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: SPACING.lg,
+    lineHeight: 20,
+    marginBottom: SPACING.md,
   },
   alertButton: {
     width: '100%',
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
   },
   alertButtonText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
   },
@@ -276,47 +276,47 @@ const styles = StyleSheet.create({
   confirmButtons: {
     flexDirection: 'row',
     width: '100%',
-    gap: SPACING.sm,
+    gap: SPACING.xs,
   },
   cancelButton: {
     flex: 1,
     backgroundColor: COLORS.borderLight,
     paddingVertical: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
   },
   cancelButtonText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textSecondary,
   },
   confirmButton: {
     flex: 1,
     paddingVertical: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
   },
   confirmButtonText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.base,
+    fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.surface,
   },
 
   // Session Feedback styles
   feedbackContainer: {
-    width: '100%',
-    maxWidth: 320,
+    width: '85%',
+    maxWidth: 280,
     backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
     alignItems: 'center',
     ...SHADOWS.lg,
   },
   feedbackTitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.base,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -324,29 +324,29 @@ const styles = StyleSheet.create({
   },
   feedbackSubtitle: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
     textAlign: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   feedbackButtons: {
     flexDirection: 'row',
     width: '100%',
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
   feedbackButton: {
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.sm,
-    borderRadius: BORDER_RADIUS.lg,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.borderLight,
   },
   feedbackButtonText: {
     fontFamily: FONT_FAMILY.base,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     fontWeight: FONT_WEIGHT.semiBold,
     color: COLORS.textPrimary,
     marginTop: SPACING.xs,

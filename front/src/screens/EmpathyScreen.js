@@ -294,16 +294,28 @@ export default function EmpathyScreen({ navigation }) {
               style={[styles.actionButton, isNavigating && styles.actionButtonDisabled]}
               disabled={isNavigating}
               onPress={async () => {
+                console.log('========================================');
                 console.log('=== 메세지 보내기 버튼 clicked ===');
+                console.log('========================================');
                 console.log('sessionIdRef.current:', sessionIdRef.current);
                 console.log('sessionId state:', sessionId);
+                console.log('두 값이 같은지:', sessionIdRef.current === sessionId);
                 setIsNavigating(true);
                 try {
                   // 세션 종료 (summary 생성) 후 TransformScreen으로 이동
                   console.log('📤 Ending session before navigate...');
-                  await endCurrentSession(sessionIdRef.current, false);
-                  console.log('✅ Session ended, navigating to Transform with sessionId:', sessionId);
-                  navigation.navigate('Transform', { sessionId });
+                  const endResult = await endCurrentSession(sessionIdRef.current, false);
+                  console.log('✅ endCurrentSession 완료, result:', endResult);
+
+                  // sessionIdRef.current 사용 (state보다 더 안정적)
+                  const sessionIdToPass = sessionIdRef.current;
+                  console.log('🚀 TransformScreen으로 이동합니다');
+                  console.log('🚀 전달할 sessionId:', sessionIdToPass);
+                  console.log('🚀 typeof sessionId:', typeof sessionIdToPass);
+
+                  navigation.navigate('Transform', { sessionId: sessionIdToPass });
+                } catch (error) {
+                  console.error('❌ 메세지 보내기 에러:', error);
                 } finally {
                   setIsNavigating(false);
                 }

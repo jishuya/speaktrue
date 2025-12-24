@@ -357,11 +357,15 @@ router.patch('/session/:id/end', async (req, res) => {
 
     console.log('✅ Session ended:', result.rows[0]);
 
-    // 5. 최종 요약 생성 (비동기로 백그라운드 처리 - 빠른 화면 전환을 위해)
-    console.log('📤 Starting background summary generation...');
-    generateAndSaveSessionSummary(id, messagesResult.rows).catch(err => {
-      console.error('❌ Background session summary generation failed:', err);
-    });
+    // 5. 최종 요약 생성 (동기 처리 - TransformScreen에서 바로 사용할 수 있도록)
+    console.log('📤 Generating session summary...');
+    try {
+      await generateAndSaveSessionSummary(id, messagesResult.rows);
+      console.log('✅ Session summary generated successfully');
+    } catch (err) {
+      console.error('❌ Session summary generation failed:', err);
+      // summary 생성 실패해도 세션 종료는 성공으로 처리
+    }
 
     res.json({
       message: '세션이 종료되었습니다.',
