@@ -275,24 +275,16 @@ export default function RecordingScreen({ navigation }) {
       if (result.success && result.analysis) {
         const analysis = result.analysis;
 
-        // AI 인사이트 텍스트 구성
-        const insightText = [
-          `📌 핵심 갈등: ${analysis.rootCause}`,
-          '',
-          `📝 요약: ${analysis.summary}`,
-          '',
-          `💭 나의 충족되지 못한 욕구: ${analysis.myUnmetNeed}`,
-          '',
-          `👤 상대방의 충족되지 못한 욕구: ${analysis.partnerUnmetNeed}`,
-          '',
-          `🔄 갈등 패턴: ${analysis.conflictPattern}`,
-          '',
-          `💡 제안: ${analysis.suggestedApproach}`,
-          '',
-          analysis.actionItems?.length > 0 ? `✅ 실천 항목:\n${analysis.actionItems.map(item => `• ${item}`).join('\n')}` : '',
-        ].filter(Boolean).join('\n');
-
-        setAiInsight(insightText);
+        // AI 인사이트 객체로 저장 (구조화된 데이터)
+        setAiInsight({
+          rootCause: analysis.rootCause,
+          summary: analysis.summary,
+          myUnmetNeed: analysis.myUnmetNeed,
+          partnerUnmetNeed: analysis.partnerUnmetNeed,
+          conflictPattern: analysis.conflictPattern,
+          suggestedApproach: analysis.suggestedApproach,
+          actionItems: analysis.actionItems || [],
+        });
 
         // 감정 태그 설정 (분석 결과에서 가져옴)
         const detectedEmotions = analysis.myEmotions?.slice(0, 4) || [];
@@ -536,21 +528,103 @@ export default function RecordingScreen({ navigation }) {
               </View>
             )}
 
-            {/* AI 인사이트 카드 */}
-            <View style={styles.insightCard}>
-              <View style={styles.insightHeader}>
-                <Icon name="auto-awesome" size={14} color={COLORS.primary} />
-                <Text style={styles.insightLabel}>AI 인사이트</Text>
-              </View>
-              {isAnalyzing ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="small" color={COLORS.primary} />
-                  <Text style={styles.loadingText}>대화를 분석하고 있습니다...</Text>
-                </View>
-              ) : (
-                <Text style={styles.insightContent}>{aiInsight}</Text>
-              )}
+            {/* AI 인사이트 헤더 */}
+            <View style={styles.insightTitleRow}>
+              <Icon name="auto-awesome" size={20} color={COLORS.primary} />
+              <Text style={styles.insightTitle}>AI 인사이트</Text>
             </View>
+
+            {isAnalyzing ? (
+              <View style={styles.insightLoadingCard}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text style={styles.insightLoadingText}>대화를 분석하고 있습니다...</Text>
+                <Text style={styles.insightLoadingSubtext}>잠시만 기다려주세요</Text>
+              </View>
+            ) : (
+              <View style={styles.insightContainer}>
+                {/* 핵심 갈등 */}
+                {aiInsight.rootCause && (
+                  <View style={[styles.insightCard, styles.keyInsightCard]}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="gps-fixed" size={18} color={COLORS.warning} />
+                      <Text style={styles.insightCardTitle}>핵심 갈등</Text>
+                    </View>
+                    <Text style={styles.keyInsightText}>{aiInsight.rootCause}</Text>
+                  </View>
+                )}
+
+                {/* 대화 요약 */}
+                {aiInsight.summary && (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="description" size={18} color={COLORS.primary} />
+                      <Text style={styles.insightCardTitle}>대화 요약</Text>
+                    </View>
+                    <Text style={styles.insightCardText}>{aiInsight.summary}</Text>
+                  </View>
+                )}
+
+                {/* 나의 욕구 */}
+                {aiInsight.myUnmetNeed && (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="favorite" size={18} color={COLORS.primary} />
+                      <Text style={styles.insightCardTitle}>나의 충족되지 못한 욕구</Text>
+                    </View>
+                    <Text style={styles.insightCardText}>{aiInsight.myUnmetNeed}</Text>
+                  </View>
+                )}
+
+                {/* 상대방의 욕구 */}
+                {aiInsight.partnerUnmetNeed && (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="person" size={18} color={COLORS.primary} />
+                      <Text style={styles.insightCardTitle}>상대방의 충족되지 못한 욕구</Text>
+                    </View>
+                    <Text style={styles.insightCardText}>{aiInsight.partnerUnmetNeed}</Text>
+                  </View>
+                )}
+
+                {/* 갈등 패턴 */}
+                {aiInsight.conflictPattern && (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="sync" size={18} color={COLORS.primary} />
+                      <Text style={styles.insightCardTitle}>갈등 패턴</Text>
+                    </View>
+                    <Text style={styles.insightCardText}>{aiInsight.conflictPattern}</Text>
+                  </View>
+                )}
+
+                {/* 제안 */}
+                {aiInsight.suggestedApproach && (
+                  <View style={[styles.insightCard, styles.suggestionCard]}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="lightbulb" size={18} color={COLORS.success} />
+                      <Text style={styles.insightCardTitle}>제안</Text>
+                    </View>
+                    <Text style={styles.suggestionText}>{aiInsight.suggestedApproach}</Text>
+                  </View>
+                )}
+
+                {/* 실천 항목 */}
+                {aiInsight.actionItems?.length > 0 && (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightCardHeader}>
+                      <Icon name="check-circle" size={18} color={COLORS.success} />
+                      <Text style={styles.insightCardTitle}>실천 항목</Text>
+                    </View>
+                    {aiInsight.actionItems.map((item, index) => (
+                      <View key={index} style={styles.actionItem}>
+                        <Text style={styles.actionNumber}>{index + 1}</Text>
+                        <Text style={styles.actionText}>{item}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            )}
           </View>
         )}
 
@@ -870,32 +944,112 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
 
-  // Insight Card
+  // Insight Styles
+  insightTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
+  },
+  insightTitle: {
+    fontFamily: FONT_FAMILY.bold,
+    fontSize: FONT_SIZE.lg,
+    color: COLORS.textPrimary,
+  },
+  insightLoadingCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    ...SHADOWS.sm,
+  },
+  insightLoadingText: {
+    fontFamily: FONT_FAMILY.medium,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.md,
+  },
+  insightLoadingSubtext: {
+    fontFamily: FONT_FAMILY.regular,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+    marginTop: SPACING.xs,
+  },
+  insightContainer: {
+    gap: SPACING.md,
+  },
   insightCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: `${COLORS.primary}10`,
+    borderColor: COLORS.borderLight,
     ...SHADOWS.sm,
   },
-  insightHeader: {
+  keyInsightCard: {
+    backgroundColor: '#FFF8E1',
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.warning,
+  },
+  suggestionCard: {
+    backgroundColor: '#E8F5E9',
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.success,
+  },
+  insightCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.xs,
+    gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
-  insightLabel: {
-    fontFamily: FONT_FAMILY.bold,
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.primary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  insightCardTitle: {
+    fontFamily: FONT_FAMILY.semiBold,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
   },
-  insightContent: {
+  insightCardText: {
     fontFamily: FONT_FAMILY.regular,
     fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
+    lineHeight: 22,
+  },
+  keyInsightText: {
+    fontFamily: FONT_FAMILY.medium,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+    lineHeight: 22,
+  },
+  suggestionText: {
+    fontFamily: FONT_FAMILY.medium,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+    lineHeight: 22,
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  actionNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.primaryBg,
+    fontFamily: FONT_FAMILY.bold,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.primary,
+    textAlign: 'center',
     lineHeight: 24,
+  },
+  actionText: {
+    flex: 1,
+    fontFamily: FONT_FAMILY.regular,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
   },
 });
