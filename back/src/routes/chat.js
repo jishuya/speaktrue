@@ -360,7 +360,9 @@ router.patch('/session/:id/end', async (req, res) => {
 // 세션 최종 요약 생성 및 저장
 async function generateAndSaveSessionSummary(sessionId, messages) {
   try {
+    console.log(`[Session Summary] 세션 ${sessionId} 요약 생성 시작, 메시지 수: ${messages.length}`);
     const summary = await claudeService.generateSessionSummary(messages);
+    console.log(`[Session Summary] AI 응답:`, JSON.stringify(summary, null, 2));
 
     // session_summaries 테이블에 저장
     await db.query(
@@ -393,6 +395,7 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
     );
 
     // session_tags 테이블에 주제 태그 저장
+    console.log(`[Session Tags] topics:`, summary.topics);
     if (summary.topics && summary.topics.length > 0) {
       for (const topic of summary.topics) {
         await db.query(
@@ -402,9 +405,11 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
           [sessionId, topic]
         );
       }
+      console.log(`[Session Tags] ${summary.topics.length}개 주제 태그 저장 완료`);
     }
 
     // 감정 태그 저장 (나의 감정)
+    console.log(`[Session Tags] myEmotions:`, summary.myEmotions);
     if (summary.myEmotions && summary.myEmotions.length > 0) {
       for (const emotion of summary.myEmotions.slice(0, 3)) {
         await db.query(
@@ -414,9 +419,13 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
           [sessionId, emotion]
         );
       }
+      console.log(`[Session Tags] ${Math.min(summary.myEmotions.length, 3)}개 나의 감정 태그 저장 완료`);
+    } else {
+      console.log(`[Session Tags] myEmotions가 비어있음!`);
     }
 
     // 감정 태그 저장 (상대방 감정)
+    console.log(`[Session Tags] partnerEmotions:`, summary.partnerEmotions);
     if (summary.partnerEmotions && summary.partnerEmotions.length > 0) {
       for (const emotion of summary.partnerEmotions.slice(0, 3)) {
         await db.query(
@@ -426,10 +435,15 @@ async function generateAndSaveSessionSummary(sessionId, messages) {
           [sessionId, emotion]
         );
       }
+      console.log(`[Session Tags] ${Math.min(summary.partnerEmotions.length, 3)}개 상대방 감정 태그 저장 완료`);
+    } else {
+      console.log(`[Session Tags] partnerEmotions가 비어있음!`);
     }
 
+    console.log(`[Session Summary] 세션 ${sessionId} 요약 및 태그 저장 완료!`);
+
   } catch (error) {
-    console.error('Failed to save session summary:', error);
+    console.error('[Session Summary] 저장 실패:', error);
     throw error;
   }
 }
