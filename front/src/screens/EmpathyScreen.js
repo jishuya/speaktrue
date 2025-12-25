@@ -358,12 +358,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    backgroundColor: COLORS.backgroundLight,
   },
   topButtonContainer: {
     alignItems: 'center',
     paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.backgroundLight,
   },
   bottomButtonContainer: {
     alignItems: 'center',
