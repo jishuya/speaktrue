@@ -1,5 +1,7 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { Icon, Logo } from '../ui';
+import { Icon } from '../ui';
+
+const LogoImageSmall = require('../../assets/logo/logo_only.png');
 import { COLORS, UI_COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '../../constants/theme';
 import { useAuth } from '../../store/AuthContext';
 
@@ -51,16 +53,16 @@ export default function Header({
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
         )}
+        {showLogo && (
+          <View style={styles.logoContainer}>
+            <Image source={LogoImageSmall} style={styles.logoImage} />
+          </View>
+        )}
         {!centerTitle && title && (
-          <View style={[styles.titleContainer, showBack && styles.titleWithBack]}>
+          <View style={[styles.titleContainer, showBack && styles.titleWithBack, showLogo && styles.titleWithLogo]}>
             {label && <Text style={styles.label}>{label}</Text>}
             <Text style={styles.title}>{title}</Text>
             {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-          </View>
-        )}
-        {showLogo && (
-          <View style={styles.logoContainer}>
-            <Logo size={36} color={COLORS.primary} />
           </View>
         )}
       </View>
@@ -151,6 +153,14 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginLeft: 0,
+  },
+  logoImage: {
+    width: 36,
+    height: 36,
+    resizeMode: 'contain',
+  },
+  titleWithLogo: {
+    marginLeft: SPACING.xs,
   },
   titleContainer: {
     gap: 2,

@@ -10,9 +10,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Linking,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Logo, Icon, Modal, AlertModal } from '../components/ui';
+import { Icon, Modal, AlertModal } from '../components/ui';
+
+const LogoImage = require('../assets/logo/logo_small(512x512).png');
 import { COLORS, SPACING, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/auth';
@@ -454,10 +457,10 @@ export default function LoginScreen() {
             {/* Logo Section */}
             <View style={styles.logoSection}>
               <View style={styles.logoContainer}>
-                <Logo size={40} color={COLORS.surface} />
+                <Image source={LogoImage} style={styles.logoImage} />
               </View>
               <Text style={styles.title}>
-                <Text style={styles.titleBold}>SpeakTrue</Text>
+                <Text style={styles.titleBold}>Usagain</Text>
               </Text>
               <Text style={styles.subtitle}>
                 서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
@@ -573,7 +576,7 @@ export default function LoginScreen() {
 
             {/* Footer */}
             <View style={styles.footer}>
-              <Text style={styles.footerText}>© SpeakTrue. All rights reserved.</Text>
+              <Text style={styles.footerText}>© Usagain. All rights reserved.</Text>
             </View>
           </View>
         </ScrollView>
@@ -789,7 +792,7 @@ export default function LoginScreen() {
                 <Text style={styles.requiredMark}>[필수]</Text> 이용약관에 동의합니다
               </Text>
               <TouchableOpacity
-                onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/terms.html')}
+                onPress={() => Linking.openURL('https://jishuya.github.io/Usagain/terms.html')}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Text style={styles.agreementLink}>보기</Text>
@@ -808,7 +811,7 @@ export default function LoginScreen() {
                 <Text style={styles.requiredMark}>[필수]</Text> 개인정보처리방침에 동의합니다
               </Text>
               <TouchableOpacity
-                onPress={() => Linking.openURL('https://jishuya.github.io/speaktrue/privacy.html')}
+                onPress={() => Linking.openURL('https://jishuya.github.io/Usagain/privacy.html')}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Text style={styles.agreementLink}>보기</Text>
@@ -1036,7 +1039,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
@@ -1046,6 +1048,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 6,
+  },
+  logoImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 28,

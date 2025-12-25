@@ -21,13 +21,13 @@ class EmailService {
   // 비밀번호 재설정 이메일 발송
   async sendPasswordResetEmail(email, resetToken) {
     const mailOptions = {
-      from: `SpeakTrue <${process.env.GMAIL_USER}>`,
+      from: `Usagain <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: '[SpeakTrue] 비밀번호 재설정 안내',
+      subject: '[Usagain] 비밀번호 재설정 안내',
       html: `
         <div style="max-width: 600px; margin: 0 auto; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;">
           <div style="background: linear-gradient(135deg, #6A8D73 0%, #5D7A69 100%); padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">SpeakTrue</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">Usagain</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">서로의 마음을 잇는 따뜻한 대화의 시작</p>
           </div>
 
@@ -52,7 +52,7 @@ class EmailService {
 
           <div style="padding: 20px 30px; background: #2C3E33; text-align: center;">
             <p style="color: #999; margin: 0; font-size: 12px;">
-              © SpeakTrue. All rights reserved.
+              © Usagain. All rights reserved.
             </p>
           </div>
         </div>

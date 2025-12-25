@@ -1,1 +1,1 @@
-export const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:9502';
+export const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.usagain.work';

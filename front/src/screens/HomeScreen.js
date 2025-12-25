@@ -78,7 +78,7 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <Header
-        title="SpeakTrue"
+        title="Usagain"
         showLogo
         showProfile
         onProfilePress={() => handleNavigate('Settings')}
