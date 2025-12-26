@@ -264,17 +264,17 @@ export default function EmpathyScreen({ navigation }) {
             />
           }
         />
-
-        {/* Perspective Button */}
-        {canShowPerspectiveButton && (
-          <View style={styles.topButtonContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={handlePerspectivePress}>
-              <Icon name="visibility" size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>상대방의 관점 보기</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </SafeAreaView>
+
+      {/* Perspective Button - 플로팅 */}
+      {canShowPerspectiveButton && (
+        <View style={styles.topButtonContainer}>
+          <TouchableOpacity style={styles.actionButton} onPress={handlePerspectivePress}>
+            <Icon name="visibility" size={20} color={COLORS.primary} />
+            <Text style={styles.actionButtonText}>상대방의 관점 보기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Chat Messages */}
       <FlatList
@@ -360,8 +360,13 @@ const styles = StyleSheet.create({
     right: 0,
   },
   topButtonContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 0,
+    right: 0,
     alignItems: 'center',
     paddingVertical: SPACING.sm,
+    zIndex: 10,
   },
   bottomButtonContainer: {
     alignItems: 'center',

@@ -332,14 +332,14 @@ export const FONT_SIZE = {
   giant: 40,   // 히어로 텍스트
 };
 
-// 폰트 패밀리 (weight별 static 폰트)
+// 폰트 패밀리 (시스템 기본 폰트 사용 - undefined로 설정하면 시스템 폰트 적용)
 export const FONT_FAMILY = {
-  regular: 'NotoSansKR-Regular',
-  medium: 'NotoSansKR-Medium',
-  semiBold: 'NotoSansKR-SemiBold',
-  bold: 'NotoSansKR-Bold',
+  regular: undefined,
+  medium: undefined,
+  semiBold: undefined,
+  bold: undefined,
   // 기본값 (하위 호환용)
-  base: 'NotoSansKR-Regular',
+  base: undefined,
 };
 
 // 폰트 두께

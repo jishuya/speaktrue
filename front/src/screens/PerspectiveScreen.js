@@ -118,7 +118,7 @@ export default function PerspectiveScreen({ navigation, route }) {
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>{partnerName}의 관점을 분석하고 있어요...</Text>
+          <Text style={styles.loadingText}>{partnerName}님의 관점을 분석하고 있어요...</Text>
           <Text style={styles.loadingSubText}>잠시만 기다려 주세요</Text>
         </View>
       </SafeAreaView>
@@ -190,7 +190,7 @@ export default function PerspectiveScreen({ navigation, route }) {
           <View style={styles.cardGlow} />
           <View style={styles.cardHeader}>
             <View style={styles.partnerAvatar}>
-              <Text style={styles.avatarText}>{partnerName.slice(0, 2)}</Text>
+              <Icon name="person" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.cardHeaderText}>
               <Text style={styles.partnerName}>{partnerName}님의 입장</Text>

@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon, Modal, AlertModal } from '../components/ui';
 
-const LogoImage = require('../assets/logo/logo_small(512x512).png');
+const LogoImage = require('../assets/logo/logo_only.png');
 import { COLORS, SPACING, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/auth';

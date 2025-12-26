@@ -1,40 +1,42 @@
-import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation';
 import { AuthProvider } from './src/store/AuthContext';
 
 // 폰트 로딩 전 스플래시 화면 유지
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // 이미 숨겨진 경우 무시
+});
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    // NotoSansKR Static 폰트 (각 weight별)
-    'NotoSansKR-Regular': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Regular.ttf'),
-    'NotoSansKR-Medium': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Medium.ttf'),
-    'NotoSansKR-SemiBold': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-SemiBold.ttf'),
-    'NotoSansKR-Bold': require('./src/assets/fonts/Noto_Sans_KR/static/NotoSansKR-Bold.ttf'),
-    // 기타 폰트
-    'GamjaFlower': require('./src/assets/fonts/Gamja_Flower/GamjaFlower-Regular.ttf'),
-  });
+  const [appIsReady, setAppIsReady] = useState(false);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // 필요한 초기화 작업이 있다면 여기서 수행
+        // 폰트는 시스템 폰트 사용 (커스텀 폰트 로딩 제거)
+      } catch (e) {
+        console.warn('App preparation error:', e);
+      } finally {
+        setAppIsReady(true);
+        await SplashScreen.hideAsync().catch(() => {});
+      }
     }
-  }, [fontsLoaded]);
+    prepare();
+  }, []);
 
-  if (!fontsLoaded) {
+  if (!appIsReady) {
     return null;
   }
 
   return (
     <AuthProvider>
       <SafeAreaProvider>
-        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <View style={{ flex: 1 }}>
           <StatusBar style="auto" />
           <AppNavigator />
         </View>
