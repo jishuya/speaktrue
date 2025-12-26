@@ -463,7 +463,7 @@ export default function LoginScreen() {
                 <Text style={styles.titleBold}>Usagain</Text>
               </Text>
               <Text style={styles.subtitle}>
-                서로의 마음을 잇는{'\n'}따뜻한 대화의 시작
+                서로의 마음을 잇는 따뜻한 대화의 시작
               </Text>
             </View>
 
@@ -1119,10 +1119,10 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: FONT_FAMILY.base,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.textPrimary,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     borderWidth: 0,
     backgroundColor: 'transparent',
   },
