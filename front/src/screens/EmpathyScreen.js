@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Keyboard,
+  KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon, SessionFeedbackModal } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
@@ -28,13 +28,12 @@ const INITIAL_MESSAGES = [
   },
 ];
 
-// ChatInput 예상 높이 (대략적인 값)
-const INPUT_AREA_HEIGHT = 70;
+// Header 높이 (SafeAreaView top + Header)
+const HEADER_HEIGHT = 60;
 
 export default function EmpathyScreen({ navigation }) {
   const { user } = useAuth();
   const partnerName = user?.partnerName || '상대';
-  const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,31 +42,8 @@ export default function EmpathyScreen({ navigation }) {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackAction, setFeedbackAction] = useState('back');
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef(null);
   const sessionIdRef = useRef(null);
-
-  // 키보드 이벤트 처리
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-
-    const keyboardShowListener = Keyboard.addListener(showEvent, (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    });
-
-    const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
-      setKeyboardHeight(0);
-    });
-
-    return () => {
-      keyboardShowListener.remove();
-      keyboardHideListener.remove();
-    };
-  }, []);
 
   // 세션 종료 함수
   const endCurrentSession = useCallback(async (currentSessionId, isResolved = false) => {
@@ -242,29 +218,23 @@ export default function EmpathyScreen({ navigation }) {
     );
   };
 
-  // Input 영역 높이 계산 (키보드 없을 때 safe area 포함)
-  const inputBottomPadding = keyboardHeight > 0 ? 0 : insets.bottom;
-  const totalInputHeight = INPUT_AREA_HEIGHT + inputBottomPadding + (canShowPerspectiveButton ? 50 : 0);
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header - 고정 */}
-      <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
-        <Header
-          showBack
-          borderBottom
-          darkBackground
-          onBackPress={handleBackPress}
-          leftComponent={
-            <HeaderWithAvatar
-              avatarText="AI"
-              title="부부코칭 전문가"
-              subtitle="항상 경청 중"
-              showOnlineDot
-            />
-          }
-        />
-      </SafeAreaView>
+      <Header
+        showBack
+        borderBottom
+        darkBackground
+        onBackPress={handleBackPress}
+        leftComponent={
+          <HeaderWithAvatar
+            avatarText="AI"
+            title="부부코칭 전문가"
+            subtitle="항상 경청 중"
+            showOnlineDot
+          />
+        }
+      />
 
       {/* Perspective Button - 플로팅 */}
       {canShowPerspectiveButton && (
@@ -276,60 +246,65 @@ export default function EmpathyScreen({ navigation }) {
         </View>
       )}
 
-      {/* Chat Messages */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[
-          styles.messageList,
-          { paddingBottom: totalInputHeight + SPACING.md }
-        ]}
-        keyboardShouldPersistTaps="handled"
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-        ListFooterComponent={
-          isLoading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color={COLORS.primary} />
-              <Text style={styles.loadingText}>응답 작성 중...</Text>
-            </View>
-          )
-        }
-      />
-
-      {/* Input Area - 하단 고정 */}
-      <View
-        style={[
-          styles.inputWrapper,
-          {
-            bottom: keyboardHeight,
-            paddingBottom: inputBottomPadding,
-          }
-        ]}
+      {/* KeyboardAvoidingView로 감싸기 */}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? HEADER_HEIGHT : 0}
       >
-        {/* Send Message Button */}
-        {canShowPerspectiveButton && (
-          <View style={styles.bottomButtonContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
-              <Icon name="send" size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>메세지 보내기</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <ChatInput
-          value={inputText}
-          onChangeText={setInputText}
-          onSend={handleSend}
-          onAttach={handleAttach}
-          attachedImage={attachedImage}
-          onRemoveImage={handleRemoveImage}
-          isLoading={isLoading}
-          placeholder="감정을 입력해 주세요..."
-          disableInternalKeyboardHandling
+        {/* Chat Messages */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.messageList}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          onContentSizeChange={() => {
+            setTimeout(() => {
+              flatListRef.current?.scrollToEnd({ animated: true });
+            }, 100);
+          }}
+          onLayout={() => {
+            setTimeout(() => {
+              flatListRef.current?.scrollToEnd({ animated: false });
+            }, 100);
+          }}
+          ListFooterComponent={
+            isLoading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+                <Text style={styles.loadingText}>응답 작성 중...</Text>
+              </View>
+            )
+          }
         />
-      </View>
+
+        {/* Input Area - 하단 자연스럽게 배치 */}
+        <View style={styles.inputContainer}>
+          {/* Send Message Button */}
+          {canShowPerspectiveButton && (
+            <View style={styles.bottomButtonContainer}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
+                <Icon name="send" size={20} color={COLORS.primary} />
+                <Text style={styles.actionButtonText}>메세지 보내기</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <ChatInput
+            value={inputText}
+            onChangeText={setInputText}
+            onSend={handleSend}
+            onAttach={handleAttach}
+            attachedImage={attachedImage}
+            onRemoveImage={handleRemoveImage}
+            isLoading={isLoading}
+            placeholder="감정을 입력해 주세요..."
+          />
+        </View>
+      </KeyboardAvoidingView>
 
       {/* Session Feedback Modal */}
       <SessionFeedbackModal
@@ -339,7 +314,7 @@ export default function EmpathyScreen({ navigation }) {
         onUnresolve={handleFeedbackUnresolve}
         isLoading={isFeedbackLoading}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -348,16 +323,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
   },
-  headerSafeArea: {
-    backgroundColor: COLORS.backgroundLight,
+  keyboardAvoidingView: {
+    flex: 1,
   },
   messageList: {
     paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.md,
   },
-  inputWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
+  inputContainer: {
+    backgroundColor: COLORS.backgroundLight,
   },
   topButtonContainer: {
     position: 'absolute',

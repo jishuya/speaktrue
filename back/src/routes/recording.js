@@ -30,47 +30,67 @@ async function ensureUploadDir() {
  * - location: 녹음 장소 (optional)
  */
 router.post('/upload', async (req, res) => {
+  const startTime = Date.now();
+  console.log('\n========== [RECORDING UPLOAD] 시작 ==========');
+
   try {
     const { audioData, filename = 'recording.m4a', duration, location, userId } = req.body;
+    console.log('[UPLOAD] 요청 정보:', {
+      userId,
+      filename,
+      duration,
+      audioDataLength: audioData?.length || 0
+    });
 
     if (!audioData) {
+      console.log('[UPLOAD] 실패: 오디오 데이터 없음');
       return res.status(400).json({ error: '오디오 데이터가 필요합니다.' });
     }
 
     if (!userId) {
+      console.log('[UPLOAD] 실패: userId 없음');
       return res.status(401).json({ error: '로그인이 필요합니다.' });
     }
 
     // 1. 세션 생성
     const sessionId = uuidv4();
-    const effectiveUserId = userId;
+    console.log('[UPLOAD] 1단계: 세션 생성 시작 - sessionId:', sessionId);
 
     await db.query(
       `INSERT INTO sessions (id, user_id, session_type, status, started_at)
        VALUES ($1, $2, 'recording', 'active', NOW())`,
-      [sessionId, effectiveUserId]
+      [sessionId, userId]
     );
+    console.log('[UPLOAD] 1단계 완료: sessions 테이블에 저장됨');
 
     // 2. 오디오 파일 저장
+    console.log('[UPLOAD] 2단계: 오디오 파일 저장 시작');
     await ensureUploadDir();
     const audioBuffer = Buffer.from(audioData, 'base64');
     const savedFilename = `${sessionId}_${Date.now()}.m4a`;
     const filePath = path.join(UPLOAD_DIR, savedFilename);
     await fs.writeFile(filePath, audioBuffer);
+    console.log('[UPLOAD] 2단계 완료: 파일 저장됨 -', savedFilename);
 
     // 3. recording_details 저장
+    console.log('[UPLOAD] 3단계: recording_details 저장 시작');
     const recordingId = uuidv4();
     await db.query(
       `INSERT INTO recording_details (id, session_id, audio_url, duration, location, recorded_at)
        VALUES ($1, $2, $3, $4, $5, NOW())`,
       [recordingId, sessionId, `/uploads/recordings/${savedFilename}`, duration || 0, location || null]
     );
+    console.log('[UPLOAD] 3단계 완료: recording_details 저장됨 - recordingId:', recordingId);
 
     // 4. Clova Speech API로 STT + 화자 분리
+    console.log('[UPLOAD] 4단계: Clova STT 시작');
     const clovaResult = await clovaSpeech.transcribeAudio(audioBuffer, filename);
+    console.log('[UPLOAD] 4단계 완료: Clova STT 완료');
 
     // 5. 결과 파싱 및 DB 저장
+    console.log('[UPLOAD] 5단계: 트랜스크립트 저장 시작');
     const transcripts = clovaSpeech.parseTranscriptResult(clovaResult);
+    console.log('[UPLOAD] 파싱된 트랜스크립트 수:', transcripts.length);
 
     for (const transcript of transcripts) {
       await db.query(
@@ -79,12 +99,19 @@ router.post('/upload', async (req, res) => {
         [uuidv4(), sessionId, transcript.speaker, transcript.content, transcript.startTime, transcript.endTime]
       );
     }
+    console.log('[UPLOAD] 5단계 완료: recording_transcripts 저장됨');
 
     // 6. 세션 완료 처리
+    console.log('[UPLOAD] 6단계: 세션 상태 업데이트 (ended)');
     await db.query(
       `UPDATE sessions SET status = 'ended', ended_at = NOW() WHERE id = $1`,
       [sessionId]
     );
+    console.log('[UPLOAD] 6단계 완료: 세션 상태 ended로 변경됨');
+
+    const elapsed = Date.now() - startTime;
+    console.log(`[UPLOAD] 전체 완료 - sessionId: ${sessionId}, 소요시간: ${elapsed}ms`);
+    console.log('========== [RECORDING UPLOAD] 완료 ==========\n');
 
     res.json({
       success: true,
@@ -94,7 +121,9 @@ router.post('/upload', async (req, res) => {
       fullText: clovaSpeech.getFullText(clovaResult),
     });
   } catch (error) {
-    console.error('녹음 업로드 오류:', error);
+    console.error('[UPLOAD] 오류 발생:', error);
+    console.error('[UPLOAD] 오류 스택:', error.stack);
+    console.log('========== [RECORDING UPLOAD] 실패 ==========\n');
     res.status(500).json({ error: '녹음 처리 중 오류가 발생했습니다.', details: error.message });
   }
 });
@@ -169,20 +198,27 @@ router.get('/list/all', async (req, res) => {
  * 녹음 대화 AI 분석 (session_summaries, session_tags에 저장)
  */
 router.post('/analyze/:sessionId', async (req, res) => {
-  try {
-    const { sessionId } = req.params;
+  const startTime = Date.now();
+  const { sessionId } = req.params;
+  console.log('\n========== [RECORDING ANALYZE] 시작 ==========');
+  console.log('[ANALYZE] sessionId:', sessionId);
 
+  try {
     // 1. 세션 존재 확인
+    console.log('[ANALYZE] 1단계: 세션 존재 확인');
     const sessionResult = await db.query(
-      `SELECT id, session_type FROM sessions WHERE id = $1`,
+      `SELECT id, session_type, user_id FROM sessions WHERE id = $1`,
       [sessionId]
     );
 
     if (sessionResult.rows.length === 0) {
+      console.log('[ANALYZE] 실패: 세션을 찾을 수 없음');
       return res.status(404).json({ error: '세션을 찾을 수 없습니다.' });
     }
+    console.log('[ANALYZE] 1단계 완료: 세션 찾음 -', sessionResult.rows[0]);
 
     // 2. 트랜스크립트 조회
+    console.log('[ANALYZE] 2단계: 트랜스크립트 조회');
     const transcriptsResult = await db.query(
       `SELECT speaker, content, start_time as "startTime", end_time as "endTime"
        FROM recording_transcripts
@@ -192,15 +228,24 @@ router.post('/analyze/:sessionId', async (req, res) => {
     );
 
     if (transcriptsResult.rows.length === 0) {
+      console.log('[ANALYZE] 실패: 트랜스크립트 없음');
       return res.status(400).json({ error: '분석할 대화 내용이 없습니다.' });
     }
 
     const transcripts = transcriptsResult.rows;
+    console.log('[ANALYZE] 2단계 완료: 트랜스크립트', transcripts.length, '개 조회됨');
 
     // 3. Claude API로 분석
+    console.log('[ANALYZE] 3단계: Claude API 분석 시작');
     const analysis = await claudeService.analyzeRecordingConversation(transcripts);
+    console.log('[ANALYZE] 3단계 완료: Claude 분석 결과 -', {
+      rootCause: analysis.rootCause?.substring(0, 50) + '...',
+      topicsCount: analysis.topics?.length || 0,
+      emotionsCount: analysis.myEmotions?.length || 0
+    });
 
     // 4. session_summaries 테이블에 저장
+    console.log('[ANALYZE] 4단계: session_summaries 저장 시작');
     await db.query(
       `INSERT INTO session_summaries (
         session_id, root_cause, trigger_situation, summary,
@@ -229,8 +274,10 @@ router.post('/analyze/:sessionId', async (req, res) => {
         analysis.actionItems,
       ]
     );
+    console.log('[ANALYZE] 4단계 완료: session_summaries 저장됨');
 
     // 5. session_tags 테이블에 주제 태그 저장
+    console.log('[ANALYZE] 5단계: session_tags (topic) 저장 시작');
     if (analysis.topics && analysis.topics.length > 0) {
       for (const topic of analysis.topics) {
         await db.query(
@@ -240,9 +287,13 @@ router.post('/analyze/:sessionId', async (req, res) => {
           [sessionId, topic]
         );
       }
+      console.log('[ANALYZE] 5단계 완료: topic 태그', analysis.topics.length, '개 저장됨');
+    } else {
+      console.log('[ANALYZE] 5단계 스킵: topic 없음');
     }
 
     // 6. 감정 태그 저장
+    console.log('[ANALYZE] 6단계: session_tags (emotion) 저장 시작');
     if (analysis.myEmotions && analysis.myEmotions.length > 0) {
       for (const emotion of analysis.myEmotions.slice(0, 3)) {
         await db.query(
@@ -252,13 +303,30 @@ router.post('/analyze/:sessionId', async (req, res) => {
           [sessionId, emotion]
         );
       }
+      console.log('[ANALYZE] 6단계 완료: emotion 태그 저장됨');
+    } else {
+      console.log('[ANALYZE] 6단계 스킵: emotion 없음');
     }
 
     // 7. 세션 상태 업데이트 (분석 완료)
+    console.log('[ANALYZE] 7단계: 세션 상태 업데이트');
     await db.query(
       `UPDATE sessions SET status = 'ended', ended_at = NOW() WHERE id = $1`,
       [sessionId]
     );
+    console.log('[ANALYZE] 7단계 완료: 세션 상태 ended로 변경됨');
+
+    // DB 검증
+    console.log('[ANALYZE] 검증: session_summaries 저장 확인');
+    const verifyResult = await db.query(
+      `SELECT session_id, root_cause FROM session_summaries WHERE session_id = $1`,
+      [sessionId]
+    );
+    console.log('[ANALYZE] 검증 결과:', verifyResult.rows.length > 0 ? '저장됨' : '저장 안됨!');
+
+    const elapsed = Date.now() - startTime;
+    console.log(`[ANALYZE] 전체 완료 - sessionId: ${sessionId}, 소요시간: ${elapsed}ms`);
+    console.log('========== [RECORDING ANALYZE] 완료 ==========\n');
 
     res.json({
       success: true,
@@ -266,7 +334,9 @@ router.post('/analyze/:sessionId', async (req, res) => {
       analysis,
     });
   } catch (error) {
-    console.error('녹음 분석 오류:', error);
+    console.error('[ANALYZE] 오류 발생:', error);
+    console.error('[ANALYZE] 오류 스택:', error.stack);
+    console.log('========== [RECORDING ANALYZE] 실패 ==========\n');
     res.status(500).json({ error: 'AI 분석 중 오류가 발생했습니다.', details: error.message });
   }
 });
