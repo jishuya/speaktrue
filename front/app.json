@@ -3,7 +3,7 @@
     "name": "usagain",
     "slug": "speaktrue",
     "scheme": "speaktrue",
-    "version": "1.0.0",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,6 +22,7 @@
       "bundleIdentifier": "com.speaktrue.app"
     },
     "android": {
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
