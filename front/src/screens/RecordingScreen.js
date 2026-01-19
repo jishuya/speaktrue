@@ -23,6 +23,9 @@ export default function RecordingScreen({ navigation }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [dailyUsedTime, setDailyUsedTime] = useState(0); // 오늘 사용한 시간 (초)
+  const DAILY_LIMIT_SECONDS = 300; // 5분 = 300초
+  const hasReachedLimitRef = useRef(false); // 제한 도달 플래그
 
   // 재생 상태
   const [recordedUri, setRecordedUri] = useState(null);
@@ -50,6 +53,7 @@ export default function RecordingScreen({ navigation }) {
   const timerRef = useRef(null);
   const recordedUriRef = useRef(null);
   const sessionIdRef = useRef(null);
+  const dailyUsedTimeRef = useRef(0); // dailyUsedTime을 ref로도 관리
 
   // recordedUri와 sessionId를 ref에 동기화
   useEffect(() => {
@@ -59,6 +63,14 @@ export default function RecordingScreen({ navigation }) {
   useEffect(() => {
     sessionIdRef.current = sessionId;
   }, [sessionId]);
+
+  // 오늘 사용한 녹음 시간 불러오기
+  useEffect(() => {
+    if (user?.id) {
+      fetchDailyUsage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   useEffect(() => {
     return () => {
@@ -89,9 +101,34 @@ export default function RecordingScreen({ navigation }) {
     return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
   };
 
+  // 일일 사용량 조회
+  const fetchDailyUsage = async () => {
+    try {
+      const result = await api.getDailyRecordingUsage(user.id);
+      if (result.success) {
+        setDailyUsedTime(result.usedSeconds);
+        dailyUsedTimeRef.current = result.usedSeconds; // ref도 동기화
+      }
+    } catch (error) {
+      console.error('일일 사용량 조회 오류:', error);
+    }
+  };
+
   // 녹음 시작
   const startRecording = async () => {
     try {
+      // 일일 제한 체크
+      const remainingTime = DAILY_LIMIT_SECONDS - dailyUsedTime;
+      if (remainingTime <= 0) {
+        setAlertModal({
+          visible: true,
+          title: '녹음 제한',
+          message: '오늘의 녹음 시간을 모두 사용했습니다. (하루 5분 제한)',
+          type: 'warning'
+        });
+        return;
+      }
+
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
         setAlertModal({ visible: true, title: '권한 필요', message: '녹음을 위해 마이크 권한이 필요합니다.', type: 'warning' });
@@ -115,9 +152,29 @@ export default function RecordingScreen({ navigation }) {
       setTranscripts([]);
       setAiInsight(null);
       setEmotions([]);
+      hasReachedLimitRef.current = false; // 플래그 초기화
 
       timerRef.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
+        setRecordingDuration(prev => {
+          const newDuration = prev + 1;
+          const totalUsed = dailyUsedTimeRef.current + newDuration; // ref 사용
+
+          // 제한 시간 초과 시 자동 중지 (한 번만 실행)
+          if (totalUsed >= DAILY_LIMIT_SECONDS && !hasReachedLimitRef.current) {
+            hasReachedLimitRef.current = true;
+            setTimeout(() => {
+              stopRecording();
+              setAlertModal({
+                visible: true,
+                title: '녹음 제한',
+                message: '일일 녹음 제한 시간(5분)에 도달하여 자동으로 중지되었습니다.',
+                type: 'info'
+              });
+            }, 100);
+          }
+
+          return newDuration;
+        });
       }, 1000);
     } catch (error) {
       console.error('녹음 시작 오류:', error);
@@ -131,9 +188,41 @@ export default function RecordingScreen({ navigation }) {
       if (!recordingRef.current) return;
 
       if (isPaused) {
+        // 재개 전 남은 시간 체크
+        const remainingTime = DAILY_LIMIT_SECONDS - dailyUsedTime - recordingDuration;
+        if (remainingTime <= 0) {
+          await stopRecording();
+          setAlertModal({
+            visible: true,
+            title: '녹음 제한',
+            message: '일일 녹음 제한 시간(5분)에 도달했습니다.',
+            type: 'warning'
+          });
+          return;
+        }
+
         await recordingRef.current.startAsync();
         timerRef.current = setInterval(() => {
-          setRecordingDuration(prev => prev + 1);
+          setRecordingDuration(prev => {
+            const newDuration = prev + 1;
+            const totalUsed = dailyUsedTimeRef.current + newDuration; // ref 사용
+
+            // 제한 시간 초과 시 자동 중지
+            if (totalUsed >= DAILY_LIMIT_SECONDS && !hasReachedLimitRef.current) {
+              hasReachedLimitRef.current = true;
+              setTimeout(() => {
+                stopRecording();
+                setAlertModal({
+                  visible: true,
+                  title: '녹음 제한',
+                  message: '일일 녹음 제한 시간(5분)에 도달하여 자동으로 중지되었습니다.',
+                  type: 'info'
+                });
+              }, 100);
+            }
+
+            return newDuration;
+          });
         }, 1000);
       } else {
         await recordingRef.current.pauseAsync();
@@ -271,6 +360,9 @@ export default function RecordingScreen({ navigation }) {
       setTranscripts(uploadResult.transcripts || []);
       setSessionId(uploadResult.sessionId);
 
+      // 업로드 완료 후 일일 사용량 갱신
+      await fetchDailyUsage();
+
       // 대화 내용이 없으면 분석 불가
       if (!uploadResult.transcripts || uploadResult.transcripts.length === 0) {
         setAlertModal({ visible: true, title: '알림', message: '인식된 대화 내용이 없습니다.', type: 'info' });
@@ -406,10 +498,26 @@ export default function RecordingScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={true}
       >
-        {/* 날짜 */}
-        <Text style={styles.dateText}>
-          {formatDate()} • {formatTime(recordedUri ? playbackDuration : recordingDuration)}
-        </Text>
+        {/* 테스트 안내 배너 */}
+        <View style={styles.testBanner}>
+          <Icon name="info" size={16} color={COLORS.primary} />
+          <Text style={styles.testBannerText}>
+            현재 테스트 중이에요. 하루 5분까지만 이용 가능합니다.
+          </Text>
+        </View>
+
+        {/* 날짜 & 남은 시간 */}
+        <View style={styles.headerInfo}>
+          <Text style={styles.dateText}>
+            {formatDate()} • {formatTime(recordedUri ? playbackDuration : recordingDuration)}
+          </Text>
+          <View style={styles.limitBadge}>
+            <Icon name="schedule" size={14} color={COLORS.textMuted} />
+            <Text style={styles.limitText}>
+              남은 시간: {formatTime(Math.max(0, DAILY_LIMIT_SECONDS - dailyUsedTime - recordingDuration))}
+            </Text>
+          </View>
+        </View>
 
         {/* 녹음/재생 카드 */}
         <View style={styles.audioCard}>
@@ -734,14 +842,55 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
   },
 
-  // Date
+  // Test Banner
+  testBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    backgroundColor: `${COLORS.primary}10`,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: `${COLORS.primary}20`,
+    marginBottom: SPACING.md,
+  },
+  testBannerText: {
+    flex: 1,
+    fontFamily: FONT_FAMILY.medium,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.primary,
+    lineHeight: 20,
+  },
+
+  // Header Info
+  headerInfo: {
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+    gap: SPACING.xs,
+  },
   dateText: {
     fontFamily: FONT_FAMILY.medium,
     fontSize: FONT_SIZE.md,
     color: COLORS.primary,
     textAlign: 'center',
-    marginBottom: SPACING.sm,
     opacity: 0.8,
+  },
+  limitBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  limitText: {
+    fontFamily: FONT_FAMILY.regular,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
   },
 
   // Audio Card

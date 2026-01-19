@@ -342,6 +342,49 @@ router.post('/analyze/:sessionId', async (req, res) => {
 });
 
 /**
+ * GET /api/recording/daily-usage/:userId
+ * 오늘 사용한 녹음 시간 조회 (초 단위)
+ */
+router.get('/daily-usage/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // 오늘 날짜 범위 계산 (한국 시간 기준)
+    const now = new Date();
+    const kstOffset = 9 * 60; // KST는 UTC+9
+    const kstTime = new Date(now.getTime() + kstOffset * 60 * 1000);
+
+    const today = new Date(kstTime.getFullYear(), kstTime.getMonth(), kstTime.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // 오늘 생성된 세션들의 녹음 시간 합계
+    const result = await db.query(
+      `SELECT COALESCE(SUM(rd.duration), 0) as total_seconds
+       FROM sessions s
+       LEFT JOIN recording_details rd ON s.id = rd.session_id
+       WHERE s.user_id = $1
+         AND s.session_type = 'recording'
+         AND s.created_at >= $2
+         AND s.created_at < $3`,
+      [userId, today.toISOString(), tomorrow.toISOString()]
+    );
+
+    const totalSeconds = parseInt(result.rows[0]?.total_seconds || 0);
+
+    res.json({
+      success: true,
+      usedSeconds: totalSeconds,
+      limitSeconds: 300, // 5분
+      remainingSeconds: Math.max(0, 300 - totalSeconds)
+    });
+  } catch (error) {
+    console.error('일일 사용량 조회 오류:', error);
+    res.status(500).json({ error: '사용량 조회 중 오류가 발생했습니다.' });
+  }
+});
+
+/**
  * DELETE /api/recording/:sessionId
  * 녹음 세션 삭제
  */

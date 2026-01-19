@@ -134,6 +134,11 @@ class ApiService {
     });
   }
 
+  // Recording - 일일 녹음 사용량 조회
+  async getDailyRecordingUsage(userId) {
+    return this.request(`/api/recording/daily-usage/${userId}`);
+  }
+
   // NVC
   async convertToNvc(message, sessionId = null) {
     const body = { message };
