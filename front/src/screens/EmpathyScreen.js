@@ -6,11 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { Icon, SessionFeedbackModal } from '../components/ui';
 import { Header, HeaderWithAvatar } from '../components/common';
 import { ChatBubble, ChatInput, DateSeparator } from '../components/chat';
@@ -27,9 +26,6 @@ const INITIAL_MESSAGES = [
     createdAt: new Date(),
   },
 ];
-
-// Header 높이 (SafeAreaView top + Header)
-const HEADER_HEIGHT = 60;
 
 export default function EmpathyScreen({ navigation }) {
   const { user } = useAuth();
@@ -121,9 +117,10 @@ export default function EmpathyScreen({ navigation }) {
   // 화면 포커스 시 스크롤 최하단으로 이동
   useFocusEffect(
     useCallback(() => {
+      // 약간의 딜레이 후 스크롤 (화면 렌더링 완료 대기)
       const timer = setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+        flatListRef.current?.scrollToEnd({ animated: false });
+      }, 150);
       return () => clearTimeout(timer);
     }, [])
   );
@@ -156,10 +153,6 @@ export default function EmpathyScreen({ navigation }) {
     setAttachedImage(null);
     setIsLoading(true);
 
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-
     try {
       const response = hasImage
         ? await api.sendChatMessageWithImage(text, attachedImage, 'empathy', sessionId)
@@ -172,10 +165,6 @@ export default function EmpathyScreen({ navigation }) {
         createdAt: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
-
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
     } catch {
       const errorResponse = {
         id: (Date.now() + 1).toString(),
@@ -246,65 +235,52 @@ export default function EmpathyScreen({ navigation }) {
         </View>
       )}
 
-      {/* KeyboardAvoidingView로 감싸기 */}
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? HEADER_HEIGHT : 0}
-      >
-        {/* Chat Messages */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.messageList}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-          onContentSizeChange={() => {
-            setTimeout(() => {
-              flatListRef.current?.scrollToEnd({ animated: true });
-            }, 100);
-          }}
-          onLayout={() => {
-            setTimeout(() => {
-              flatListRef.current?.scrollToEnd({ animated: false });
-            }, 100);
-          }}
-          ListFooterComponent={
-            isLoading && (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color={COLORS.primary} />
-                <Text style={styles.loadingText}>응답 작성 중...</Text>
-              </View>
-            )
-          }
-        />
-
-        {/* Input Area - 하단 자연스럽게 배치 */}
-        <View style={styles.inputContainer}>
-          {/* Send Message Button */}
-          {canShowPerspectiveButton && (
-            <View style={styles.bottomButtonContainer}>
-              <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
-                <Icon name="send" size={20} color={COLORS.primary} />
-                <Text style={styles.actionButtonText}>메세지 보내기</Text>
-              </TouchableOpacity>
+      {/* Chat Messages */}
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.messageList}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        onContentSizeChange={() => {
+          // 메시지 추가 시 자동 스크롤
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }}
+        ListFooterComponent={
+          isLoading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+              <Text style={styles.loadingText}>응답 작성 중...</Text>
             </View>
-          )}
+          )
+        }
+      />
 
-          <ChatInput
-            value={inputText}
-            onChangeText={setInputText}
-            onSend={handleSend}
-            onAttach={handleAttach}
-            attachedImage={attachedImage}
-            onRemoveImage={handleRemoveImage}
-            isLoading={isLoading}
-            placeholder="감정을 입력해 주세요..."
-          />
-        </View>
-      </KeyboardAvoidingView>
+      {/* Input Area - KeyboardStickyView로 키보드에 고정 */}
+      <KeyboardStickyView style={styles.stickyContainer}>
+        {/* Send Message Button */}
+        {canShowPerspectiveButton && (
+          <View style={styles.bottomButtonContainer}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
+              <Icon name="send" size={20} color={COLORS.primary} />
+              <Text style={styles.actionButtonText}>메세지 보내기</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <ChatInput
+          value={inputText}
+          onChangeText={setInputText}
+          onSend={handleSend}
+          onAttach={handleAttach}
+          attachedImage={attachedImage}
+          onRemoveImage={handleRemoveImage}
+          isLoading={isLoading}
+          placeholder="감정을 입력해 주세요..."
+        />
+      </KeyboardStickyView>
 
       {/* Session Feedback Modal */}
       <SessionFeedbackModal
@@ -323,15 +299,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
   messageList: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.md,
   },
-  inputContainer: {
+  stickyContainer: {
     backgroundColor: COLORS.backgroundLight,
   },
   topButtonContainer: {

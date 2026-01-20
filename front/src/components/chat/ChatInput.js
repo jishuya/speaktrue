@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator, Image, Text } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, ImagePickerModal } from '../ui';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS, FONT_FAMILY } from '../../constants/theme';
 import { useSpeechRecognition, useImagePicker } from '../../hooks';
@@ -22,7 +21,6 @@ export default function ChatInput({
   maxHeight = 100,
 }) {
   const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
-  const insets = useSafeAreaInsets();
 
   const isDisabled = disabled || isLoading;
 
@@ -75,7 +73,7 @@ export default function ChatInput({
   const canActuallySend = value?.trim().length > 0 && !isDisabled;
 
   return (
-    <View style={[styles.container, { paddingBottom: SPACING.sm + insets.bottom }]}>
+    <View style={styles.container}>
       {/* 첨부된 이미지 미리보기 */}
       {attachedImage && (
         <View style={styles.imagePreviewContainer}>
@@ -189,7 +187,8 @@ export function PerspectiveButton({ onPress }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.md,
     backgroundColor: COLORS.backgroundLight,
     borderTopWidth: 1,
     borderTopColor: `${COLORS.primary}10`,

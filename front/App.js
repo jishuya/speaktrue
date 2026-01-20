@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AppNavigator } from './src/navigation';
 import { AuthProvider } from './src/store/AuthContext';
 
@@ -34,13 +35,15 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <SafeAreaProvider>
-        <View style={{ flex: 1 }}>
-          <StatusBar style="auto" />
-          <AppNavigator />
-        </View>
-      </SafeAreaProvider>
-    </AuthProvider>
+    <KeyboardProvider>
+      <AuthProvider>
+        <SafeAreaProvider>
+          <View style={{ flex: 1 }}>
+            <StatusBar style="auto" />
+            <AppNavigator />
+          </View>
+        </SafeAreaProvider>
+      </AuthProvider>
+    </KeyboardProvider>
   );
 }
