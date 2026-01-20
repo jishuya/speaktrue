@@ -28,7 +28,17 @@ class ApiService {
     };
 
     const response = await fetch(url, config);
-    const data = await response.json();
+
+    // JSON 파싱 시도
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // JSON 파싱 실패 시 텍스트로 읽어서 에러 처리
+      const text = await response.text();
+      console.error('JSON 파싱 실패:', text.substring(0, 200));
+      throw new Error('서버 응답을 처리할 수 없습니다.');
+    }
 
     if (!response.ok) {
       throw new Error(data.error || 'API request failed');

@@ -3955,11 +3955,6 @@ react-native-is-edge-to-edge@^1.2.1:
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
-react-native-kakao-share-link@^1.0.12:
-  version "1.0.12"
-  resolved "https://registry.npmjs.org/react-native-kakao-share-link/-/react-native-kakao-share-link-1.0.12.tgz"
-  integrity sha512-bvLwpI/0ALP/rYNgIRGWqJ67nQII26HvUQihCA4BUQqTwF1+ivjmiXDHA7zsY/IWsv/hLFK0bdE2khS8ZLvwWA==
-
 "react-native-safe-area-context@>= 4.0.0", react-native-safe-area-context@~5.6.0:
   version "5.6.2"
   resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-5.6.2.tgz"

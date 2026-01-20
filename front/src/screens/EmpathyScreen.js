@@ -249,7 +249,7 @@ export default function EmpathyScreen({ navigation }) {
       {/* KeyboardAvoidingView로 감싸기 */}
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? HEADER_HEIGHT : 0}
       >
         {/* Chat Messages */}

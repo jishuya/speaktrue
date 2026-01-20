@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "usagain",
+    "name": "Usagain",
     "slug": "speaktrue",
     "scheme": "speaktrue",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./src/assets/splash.png",
       "resizeMode": "contain",
@@ -22,7 +22,7 @@
       "bundleIdentifier": "com.speaktrue.app"
     },
     "android": {
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

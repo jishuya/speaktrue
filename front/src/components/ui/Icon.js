@@ -157,6 +157,8 @@ const ICON_MAP = {
   'visibility-off': { set: 'ion', iconName: 'eye-off' },
   'settings': { set: 'ion', iconName: 'settings' },
   'history': { set: 'mat', iconName: 'history' },
+  'schedule': { set: 'mat', iconName: 'schedule' },
+  'access-time': { set: 'mat', iconName: 'access-time' },
   'home': { set: 'ion', iconName: 'home' },
   'inbox': { set: 'mat', iconName: 'inbox' },
   'description': { set: 'ion', iconName: 'document-text-outline' },

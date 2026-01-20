@@ -72,6 +72,16 @@ export default function RecordingScreen({ navigation }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  // 화면 포커스 시 일일 사용량 갱신
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (user?.id) {
+        fetchDailyUsage();
+      }
+    });
+    return unsubscribe;
+  }, [navigation, user?.id]);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -106,11 +116,18 @@ export default function RecordingScreen({ navigation }) {
     try {
       const result = await api.getDailyRecordingUsage(user.id);
       if (result.success) {
-        setDailyUsedTime(result.usedSeconds);
-        dailyUsedTimeRef.current = result.usedSeconds; // ref도 동기화
+        setDailyUsedTime(result.usedSeconds || 0);
+        dailyUsedTimeRef.current = result.usedSeconds || 0; // ref도 동기화
+      } else {
+        // 실패 시 기본값 0 사용
+        setDailyUsedTime(0);
+        dailyUsedTimeRef.current = 0;
       }
     } catch (error) {
       console.error('일일 사용량 조회 오류:', error);
+      // 오류 발생 시 기본값 0 사용 (앱이 정상 작동하도록)
+      setDailyUsedTime(0);
+      dailyUsedTimeRef.current = 0;
     }
   };
 

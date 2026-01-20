@@ -358,15 +358,15 @@ router.get('/daily-usage/:userId', async (req, res) => {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // 오늘 생성된 세션들의 녹음 시간 합계
+    // 오늘 녹음된 세션들의 녹음 시간 합계 (recorded_at 기준)
     const result = await db.query(
       `SELECT COALESCE(SUM(rd.duration), 0) as total_seconds
-       FROM sessions s
-       LEFT JOIN recording_details rd ON s.id = rd.session_id
+       FROM recording_details rd
+       JOIN sessions s ON rd.session_id = s.id
        WHERE s.user_id = $1
          AND s.session_type = 'recording'
-         AND s.created_at >= $2
-         AND s.created_at < $3`,
+         AND rd.recorded_at >= $2
+         AND rd.recorded_at < $3`,
       [userId, today.toISOString(), tomorrow.toISOString()]
     );
 

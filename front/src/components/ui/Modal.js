@@ -1,4 +1,4 @@
-import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
+import { Modal as RNModal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Dimensions, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from './Icon';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, BORDER_RADIUS, SHADOWS, Z_INDEX } from '../../constants/theme';
 
@@ -22,36 +22,42 @@ export default function Modal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
-        <View style={styles.backdrop}>
-          <TouchableWithoutFeedback>
-            <View style={[styles.container, scrollable && { maxHeight }]}>
-              {(title || showCloseButton) && (
-                <View style={styles.header}>
-                  <Text style={styles.title}>{title}</Text>
-                  {showCloseButton && (
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                      <Icon name="close" size={24} color={COLORS.textSecondary} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              )}
-              {scrollable ? (
-                <ScrollView
-                  style={styles.scrollContent}
-                  contentContainerStyle={styles.scrollContentContainer}
-                  showsVerticalScrollIndicator={true}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {children}
-                </ScrollView>
-              ) : (
-                <View style={styles.content}>{children}</View>
-              )}
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
+          <View style={styles.backdrop}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.container, scrollable && { maxHeight }]}>
+                {(title || showCloseButton) && (
+                  <View style={styles.header}>
+                    <Text style={styles.title}>{title}</Text>
+                    {showCloseButton && (
+                      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                        <Icon name="close" size={24} color={COLORS.textSecondary} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+                {scrollable ? (
+                  <ScrollView
+                    style={styles.scrollContent}
+                    contentContainerStyle={styles.scrollContentContainer}
+                    showsVerticalScrollIndicator={true}
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {children}
+                  </ScrollView>
+                ) : (
+                  <View style={styles.content}>{children}</View>
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </RNModal>
   );
 }
