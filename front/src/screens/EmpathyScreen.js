@@ -261,28 +261,26 @@ export default function EmpathyScreen({ navigation }) {
 
       {/* Input Area - KeyboardStickyView로 키보드에 고정 */}
       <KeyboardStickyView offset={{ closed: -insets.bottom, opened: 0 }}>
-        <View style={styles.stickyContainer}>
-          {/* Send Message Button */}
-          {canShowPerspectiveButton && (
-            <View style={styles.bottomButtonContainer}>
-              <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
-                <Icon name="send" size={20} color={COLORS.primary} />
-                <Text style={styles.actionButtonText}>메세지 보내기</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+        {/* Send Message Button */}
+        {canShowPerspectiveButton && (
+          <View style={styles.bottomButtonContainer}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
+              <Icon name="send" size={20} color={COLORS.primary} />
+              <Text style={styles.actionButtonText}>메세지 보내기</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-          <ChatInput
-            value={inputText}
-            onChangeText={setInputText}
-            onSend={handleSend}
-            onAttach={handleAttach}
-            attachedImage={attachedImage}
-            onRemoveImage={handleRemoveImage}
-            isLoading={isLoading}
-            placeholder="감정을 입력해 주세요..."
-          />
-        </View>
+        <ChatInput
+          value={inputText}
+          onChangeText={setInputText}
+          onSend={handleSend}
+          onAttach={handleAttach}
+          attachedImage={attachedImage}
+          onRemoveImage={handleRemoveImage}
+          isLoading={isLoading}
+          placeholder="감정을 입력해 주세요..."
+        />
       </KeyboardStickyView>
 
       {/* Session Feedback Modal */}
@@ -306,9 +304,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.md,
-  },
-  stickyContainer: {
-    backgroundColor: COLORS.backgroundLight,
   },
   topButtonContainer: {
     position: 'absolute',

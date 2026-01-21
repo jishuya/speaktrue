@@ -157,33 +157,6 @@ export default function ChatInput({
   );
 }
 
-// 플로팅 액션 버튼 (관점 전환 버튼 등)
-export function FloatingActionButton({ label, icon, onPress, style }) {
-  return (
-    <TouchableOpacity style={[styles.fab, style]} onPress={onPress} activeOpacity={0.9}>
-      <Icon name={icon} size={20} color={COLORS.primary} />
-      <View style={styles.fabTextContainer}>
-        <Icon name={icon} size={20} color={COLORS.primary} style={styles.fabIcon} />
-        <View style={styles.fabLabel}>
-          <Icon name="visibility" size={18} color={COLORS.primary} />
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-// 상대방 관점 보기 버튼
-export function PerspectiveButton({ onPress }) {
-  return (
-    <TouchableOpacity style={styles.perspectiveButton} onPress={onPress} activeOpacity={0.9}>
-      <Icon name="visibility" size={20} color={COLORS.primary} />
-      <View style={styles.perspectiveText}>
-        <Icon name="visibility" size={18} color={COLORS.primary} />
-      </View>
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.md,
@@ -262,50 +235,5 @@ const styles = StyleSheet.create({
   sendButtonActive: {
     backgroundColor: COLORS.primary,
     ...SHADOWS.md,
-  },
-
-  // Floating Action Button
-  fab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
-    ...SHADOWS.lg,
-    borderWidth: 1,
-    borderColor: `${COLORS.primary}20`,
-  },
-  fabIcon: {
-    marginRight: SPACING.sm,
-  },
-  fabTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fabLabel: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-
-  // Perspective Button
-  perspectiveButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.surface,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
-    ...SHADOWS.lg,
-    borderWidth: 1,
-    borderColor: `${COLORS.primary}20`,
-    gap: SPACING.sm,
-  },
-  perspectiveText: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
   },
 });
