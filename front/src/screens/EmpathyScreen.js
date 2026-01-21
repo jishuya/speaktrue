@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { Icon, SessionFeedbackModal } from '../components/ui';
@@ -29,6 +29,7 @@ const INITIAL_MESSAGES = [
 
 export default function EmpathyScreen({ navigation }) {
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const partnerName = user?.partnerName || '상대';
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
@@ -259,27 +260,29 @@ export default function EmpathyScreen({ navigation }) {
       />
 
       {/* Input Area - KeyboardStickyView로 키보드에 고정 */}
-      <KeyboardStickyView style={styles.stickyContainer}>
-        {/* Send Message Button */}
-        {canShowPerspectiveButton && (
-          <View style={styles.bottomButtonContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
-              <Icon name="send" size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>메세지 보내기</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+      <KeyboardStickyView offset={{ closed: -insets.bottom, opened: 0 }}>
+        <View style={styles.stickyContainer}>
+          {/* Send Message Button */}
+          {canShowPerspectiveButton && (
+            <View style={styles.bottomButtonContainer}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleTransformPress}>
+                <Icon name="send" size={20} color={COLORS.primary} />
+                <Text style={styles.actionButtonText}>메세지 보내기</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
-        <ChatInput
-          value={inputText}
-          onChangeText={setInputText}
-          onSend={handleSend}
-          onAttach={handleAttach}
-          attachedImage={attachedImage}
-          onRemoveImage={handleRemoveImage}
-          isLoading={isLoading}
-          placeholder="감정을 입력해 주세요..."
-        />
+          <ChatInput
+            value={inputText}
+            onChangeText={setInputText}
+            onSend={handleSend}
+            onAttach={handleAttach}
+            attachedImage={attachedImage}
+            onRemoveImage={handleRemoveImage}
+            isLoading={isLoading}
+            placeholder="감정을 입력해 주세요..."
+          />
+        </View>
       </KeyboardStickyView>
 
       {/* Session Feedback Modal */}

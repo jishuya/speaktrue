@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.sm,
-    paddingBottom: SPACING.md,
     backgroundColor: COLORS.backgroundLight,
     borderTopWidth: 1,
     borderTopColor: `${COLORS.primary}10`,
